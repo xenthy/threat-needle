@@ -3,6 +3,7 @@
 ## Table of Contents <!-- omit in toc -->
 - [Setting Up](#setting-up)
 	- [Cloning GitHub Repository (using vscode)](#cloning-github-repository-using-vscode)
+- [Installing Python](#installing-python)
 - [Installing Dependencies](#installing-dependencies)
 - [Using Make](#using-make)
 	- [Windows](#windows)
@@ -18,6 +19,8 @@
 2. Type: 'Clone' and select 'Git: Clone'
 3. Paste `https://github.com/xenthy/ict2202-assignment-1`
 4. Enter your GitHub credentials & select a location to save the repository
+
+## Installing Python
 
 ## Installing Dependencies
 1. Install [Npcap](https://nmap.org/npcap/#download)

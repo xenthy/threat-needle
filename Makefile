@@ -19,7 +19,7 @@ check:
 
 clean:
 ifeq ($(OS),Windows_NT)
-	powershell "(Get-ChildItem * -Include *.pkl -Recurse | Remove-Item)"
+	powershell "(Get-ChildItem * -Include *.pyc -Recurse | Remove-Item)"
 else
-	$(RM) -r *.pkl
+	$(RM) -r *.pyc
 endif
