@@ -13,8 +13,18 @@ logger.addHandler(file_handler)
 logger.info("__INIT__")
 
 
+def tcp_dump():
+    import subprocess as sub
+
+    p = sub.Popen(('sudo', 'tcpdump', '-l'), stdout=sub.PIPE)
+    for row in iter(p.stdout.readline, b''):
+        print(row.rstrip())   # process here
+
+
 def main():
-    init_sniffer()
+    print("Nothing for now...")
+    # init_sniffer()
+    # tcp_dump()
 
 
 if __name__ == "__main__":

@@ -29,22 +29,24 @@ def custom_action(packet):
 
 def init_sniffer():
     # Setup sniff, filtering for IP traffic
-    sniff(filter="ip", monitor=True, prn=custom_action, count=100)
-    # sniff(filter="ip", prn=custom_action, count=10)
+    # sniff(filter="ip", monitor=True, prn=custom_action, count=100)
+    packets = sniff(filter="ip", prn=custom_action, count=100)
+
+    # Print out packet count per A <--> Z address pair
+    logger.info("\n".join(
+        f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
 
     # basic sniffing
     # packets = sniff(count=10, monitor=True)
     # logger.info(packets)
 
     # save sniffed packets to pcap file
-    # wrpcap('sniffed.pcap', packets)
+    wrpcap('sniffed.pcap', packets)
+    logger.info("Save Pcap to disk")
 
     # load from pcap file
     # packets = rdpcap('sniffed.pcap')
-
-    # Print out packet count per A <--> Z address pair
-    logger.info("\n".join(
-        f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
+    # logger.info("Pcap loaded from disk")
 
 
 if __name__ == "__main__":
