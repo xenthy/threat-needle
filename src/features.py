@@ -12,10 +12,12 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-
 def test():
-    smth = Util.load_pcap('./pcap/test.pcap')
-    logger.info(smth)
+    pcap = Util.load_pcap("test.pcap")
+    logger.info(pcap)
+
+    Util.save_pcap("test.pcap", pcap)
+
 
 if __name__ == "__main__":
     test()
