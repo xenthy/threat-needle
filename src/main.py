@@ -34,7 +34,6 @@ def custom_action(packet):
 
 
 def main():
-    Sniffer.init()
     Sniffer.start(custom_action)
 
     input("Press enter to stop sniffing: ")
@@ -50,6 +49,10 @@ def main():
     Util.save_cap("sniffed", cap.results)
 
     logger.info(cap.results)
+
+    for packet in cap.results:
+        converted = Util.convert_packet(packet)
+        logger.info(pformat((converted)))
 
 
 if __name__ == "__main__":

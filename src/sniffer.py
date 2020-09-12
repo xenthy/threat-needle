@@ -17,11 +17,10 @@ class Sniffer:
     __cap = PacketList
 
     @staticmethod
-    def init():
+    def start(action=None):
+        # prepare for a fresh run (threading safety)
         Sniffer.__cap = PacketList
 
-    @staticmethod
-    def start(action=None):
         # enable monitor mode on linux based systems
         monitor_mode = False if os_name == "nt" else True
         logger.info(f"Monitor Mode: [{monitor_mode}]")
