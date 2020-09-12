@@ -1,4 +1,4 @@
-from config import PCAP_PATH
+from config import CAP_PATH, CAP_EXTENSION
 from scapy.all import wrpcap, rdpcap, PacketList
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -11,25 +11,24 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-logger.info("__INIT__")
 
 
 class Util:
     @staticmethod
-    def load_pcap(file_name) -> PacketList:
+    def load_cap(file_name) -> PacketList:
         try:
-            pcap = rdpcap(f"{PCAP_PATH}{file_name}")
-            logger.info(f"Pcap file LOADED: [{file_name}]")
-            return pcap
+            cap = rdpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}")
+            logger.info(f"\"{file_name}{CAP_EXTENSION}\" loaded")
+            return cap
         except FileNotFoundError as error:
-            logger.warning(f"Loading Pcap failed! [{error}]")
+            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
             exit(1)
 
     @staticmethod
-    def save_pcap(file_name, pcap) -> bool:
+    def save_cap(file_name, cap) -> bool:
         try:
-            wrpcap(f"{PCAP_PATH}{file_name}", pcap)
-            logger.info(f"Pcap file SAVED: [{file_name}]")
+            wrpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}", cap)
+            logger.info(f"\"{file_name}{CAP_EXTENSION}\" saved")
         except FileNotFoundError as error:
-            logger.warning(f"Saving Pcap failed! [{error}]")
+            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
             exit(1)

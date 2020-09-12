@@ -1,6 +1,5 @@
-from collections import Counter
-from scapy.all import sniff, wrpcap, rdpcap
-
+from os import name as os_name
+from scapy.all import AsyncSniffer, PacketList
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -13,41 +12,43 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
-# Create a Packet Counter
-packet_counts = Counter()
 
-# Define our Custom Action function
+class Sniffer:
+    __cap = PacketList
+
+    @staticmethod
+    def init():
+        Sniffer.__cap = PacketList
+
+    @staticmethod
+    def start(action=None):
+        # enable monitor mode on linux based systems
+        monitor_mode = False if os_name == "nt" else True
+        logger.info(f"Monitor Mode: [{monitor_mode}]")
+
+        Sniffer.__cap = AsyncSniffer(prn=action, monitor=monitor_mode, count=0)
+        Sniffer.__cap.start()
+
+    @staticmethod
+    def stop():
+        Sniffer.__cap.stop()
+        Sniffer.__cap.join()
+
+    @staticmethod
+    def get_cap():
+        return Sniffer.__cap
 
 
-def custom_action(packet):
-    # Create tuple of Src/Dst in sorted order
-    key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
-    packet_counts.update([key])
-    logger.info(
-        f"Packet #{sum(packet_counts.values())}: {packet[0][1].src} ==> {packet[0][1].dst}")
+def init_test_sniffer():
+    # packets = AsyncSniffer(monitor=True, count=0)
+    packets = AsyncSniffer(count=0)
+    packets.start()
 
+    input("Press enter to stop sniffing: ")
 
-def init_sniffer():
-    # Setup sniff, filtering for IP traffic
-    # sniff(filter="ip", monitor=True, prn=custom_action, count=100)
-    packets = sniff(filter="ip", prn=custom_action, count=100)
-
-    # Print out packet count per A <--> Z address pair
-    logger.info("\n".join(
-        f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
-
-    # basic sniffing
-    # packets = sniff(count=10, monitor=True)
-    # logger.info(packets)
-
-    # save sniffed packets to pcap file
-    wrpcap('sniffed.pcap', packets)
-    logger.info("Save Pcap to disk")
-
-    # load from pcap file
-    # packets = rdpcap('sniffed.pcap')
-    # logger.info("Pcap loaded from disk")
+    packets.stop()
+    packets.join()
 
 
 if __name__ == "__main__":
-    init_sniffer()
+    init_test_sniffer()
