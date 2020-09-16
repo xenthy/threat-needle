@@ -1,0 +1,1 @@
+Get-content logs/program.log -Tail 0 -Wait

@@ -19,7 +19,11 @@ check:
 
 clean:
 ifeq ($(OS),Windows_NT)
-	powershell "(Get-ChildItem * -Include *.pyc -Recurse | Remove-Item)"
+	@powershell "(Get-ChildItem * -Include *.pyc -Recurse | Remove-Item)"
+	@powershell "(Get-ChildItem * -Include *.cap -Recurse | Remove-Item)"
+	@echo Cleaned up .pyc and .cap files
 else
-	$(RM) -r *.pyc
+	@$(RM) -r *.pyc
+	@$(RM) -r *.cap
+	@echo Cleaned up .pyc and .cap files
 endif

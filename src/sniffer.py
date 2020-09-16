@@ -14,7 +14,7 @@ logger.addHandler(file_handler)
 
 
 class Sniffer:
-    __cap = PacketList
+    __cap = PacketList()
 
     @staticmethod
     def start(action=None):
