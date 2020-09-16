@@ -18,13 +18,14 @@ def extract_payload(stream):
     load = ''
     for pkt in stream:
         a = Util.convert_packet(pkt)
-        if 'Raw' in a.keys():
+        if 'Raw' in a.keys() and 'load' in a['Raw'].keys():
             load = load + a['Raw']['load']
     return load
 
 # recieves a PacketList and returns a dictionary of streams
 # dict_stream[key] = value
 # key = [IP IP portnumber] , value = list of Packet in the stream order
+
 def find_streams(pcap):
     # get every session in the pcap file
     stream = pcap.sessions()
@@ -70,9 +71,8 @@ def find_streams(pcap):
     logger.info(f"{len(stream_dict)} streams found")
     return stream_dict
 
-
 if __name__ == "__main__":
-    pcap = Util.load_cap("test")
+    pcap = Util.load_cap("test4")
     stream_dict = find_streams(pcap)
 
     for k, stream in stream_dict.items():
