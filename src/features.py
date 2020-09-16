@@ -26,14 +26,13 @@ def extract_payload(stream):
 # dict_stream[key] = value
 # key = [IP IP portnumber] , value = list of Packet in the stream order
 def find_streams(pcap):
-
     # get every session in the pcap file
     stream = pcap.sessions()
     stream_dict = OrderedDict()
 
     for k, v in stream.items():
 
-        if 'TCP' or 'UDP' in k:
+        if 'TCP' in k:
             inverse_key = k.split()
             inverse_key[1], inverse_key[3] = inverse_key[3], inverse_key[1]
             inverse_key.pop(2)
