@@ -44,6 +44,7 @@ class Util:
         packet_dict = OrderedDict()
 
         string_packet = packet.__repr__()
+        # logger.info(string_packet)
         packet_type = string_packet.split("|<")
 
         # remove header, "<"
@@ -61,7 +62,7 @@ class Util:
 
             # if it is 'Raw', or 'Padding' join the payload back together
             if layer_name in ["Raw", "Padding"]:
-                layer_list = ["".join(layer_list)]
+                layer_list = [" ".join(layer_list)]
 
             # init dictionary
             layer_dict = OrderedDict()
@@ -79,4 +80,5 @@ class Util:
 
             packet_dict[layer_name] = layer_dict
 
+        packet_dict["Timestamp"] = packet.time
         return packet_dict
