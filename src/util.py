@@ -43,18 +43,19 @@ class Util:
         # init dictionary of dictionaries
         packet_dict = OrderedDict()
 
-        string_packet = str(packet.show)
+        string_packet = packet.__repr__()
         packet_type = string_packet.split("|<")
 
-        # remove header, index 0 and 1 consists of the headers
-        packet_type[0] = packet_type[0].split("<", 2)[2]
+        # remove header, "<"
+        packet_type[0] = packet_type[0][1:]
 
         # remove trailer, e.g. (|>>>>)
-        index = packet_type[-1].find("'")
-        packet_type[-1] = packet_type[-1][:-index].strip()
+        index = packet_type[-1].find("|")
+        packet_type[-1] = packet_type[-1][:index].strip()
 
         for layer in packet_type:
             layer_list = layer.split()
+
             # remove catergory name
             layer_name = layer_list.pop(0)
 
@@ -71,7 +72,10 @@ class Util:
                     key, value = item.split("=", 1)
                 except ValueError:
                     continue
-                layer_dict[key] = value
+                if layer_name in ["Raw", "Padding"]:
+                    layer_dict[key] = value[1:-1]
+                else:
+                    layer_dict[key] = value
 
             packet_dict[layer_name] = layer_dict
 

@@ -33,35 +33,37 @@ def custom_action(packet):
     try:
         key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
         packet_counts.update([key])
-        logger.info(
-            f"Packet #{sum(packet_counts.values())}: {packet[0][1].src} ==> {packet[0][1].dst}")
+        logger.info(f"Packet #{sum(packet_counts.values())}: {packet[0][1].src} ==> {packet[0][1].dst}")
     except AttributeError:
         key = tuple(sorted([packet[0][0].src, packet[0][0].dst]))
         packet_counts.update([key])
-        logger.info(
-            f"Packet #{sum(packet_counts.values())}: {packet[0][0].src} ==> {packet[0][0].dst}")
+        logger.info(f"Packet #{sum(packet_counts.values())}: {packet[0][0].src} ==> {packet[0][0].dst}")
 
 
-def efficient():
+def efficient(lock):
     while True:
         if Vault.get_interrupt():
             break
+
+        lock.acquire()
         temp_plist = Vault.get_threading_plist()
         temp_count = len(temp_plist)
         Vault.add_count(temp_count)
-        logger.debug(temp_count)
+        lock.release()
 
-        time.sleep(2)
+        time.sleep(5)  # 2 seconds
 
 
 def main():
     """ threading test """
     Vault.set_interrupt(False)
-    efficient_thread = threading.Thread(target=efficient,  daemon=True)
+    lock = threading.Lock()
+    efficient_thread = threading.Thread(target=efficient, args=(lock, ), daemon=True)
 
     """ indefinite sniffing """
     Sniffer.start(custom_action)
     # Sniffer.start()
+
     efficient_thread.start()
 
     input("Press enter to stop sniffing: ")
@@ -80,8 +82,7 @@ def main():
 
     """ mapping """
     # Print out packet count per A <--> Z address pair
-    # logger.info("\n".join(
-    #     f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
+    logger.info("\n".join(f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
 
     """ saving """
     # save sniffed packets to cap file
@@ -95,9 +96,9 @@ def main():
     logger.debug("All 3 numbers above should be the same")
 
     """ dissect packets """
-    # for packet in cap:
-    #     converted = Util.convert_packet(packet)
-    #     logger.info(pformat((converted)))
+    for packet in cap:
+        converted = Util.convert_packet(packet)
+        logger.info(pformat((converted)))
 
 
 if __name__ == "__main__":
