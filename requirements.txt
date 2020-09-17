@@ -1,1 +1,2 @@
 scapy==2.4.4
+yara-python==4.0.2
