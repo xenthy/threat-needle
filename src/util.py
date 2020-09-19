@@ -1,5 +1,5 @@
 from config import CAP_PATH, CAP_EXTENSION
-from scapy.all import wrpcap, rdpcap, PacketList
+from scapy.all import wrpcap, rdpcap, PacketList, Packet
 
 from collections import OrderedDict
 
@@ -71,7 +71,8 @@ class Util:
                     key, value = item.split("=", 1)
                 except ValueError:
                     continue
-                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+                layer_dict[key] = value[1:-
+                                        1] if layer_name in ["Raw", "Padding"] else value
 
             # finally, add sanitized later into dict
             packet_dict[layer_name] = layer_dict
@@ -80,3 +81,25 @@ class Util:
         packet_dict["Timestamp"] = packet.time
         packet_dict["Size"] = len(packet)
         return packet_dict
+
+    @staticmethod
+    def convert_to_hex(string):
+        hex_format = ""
+        skip = 0
+
+        for index, char in enumerate(string):
+            if skip > 0:
+                skip -= 1
+                continue
+            if char == "\\" and index + 1 > len(string):
+                break
+            if char == "\\" and string[index+1] == "x":
+                hex_format += string[index+2] + string[index+3]
+                skip = 3
+            else:
+                char_hex = hex(ord(char))[2:]
+                hex_format += "0"*(2 - len(char_hex)) + char_hex
+
+            hex_format += " "
+
+        return hex_format.strip()
