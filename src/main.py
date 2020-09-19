@@ -3,6 +3,8 @@ from util import Util
 
 from pprint import pformat
 import time
+from manager import manager
+from thread import Thread
 import threading
 import copy
 from scapy.all import PacketList
@@ -10,9 +12,11 @@ from scapy.all import PacketList
 from sniffer import Sniffer
 from collections import Counter
 
+import tracemalloc
+from colour import GREEN, RED, YELLOW, RESET
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 
@@ -25,82 +29,104 @@ logger.info("__INIT__")
 # Create a Packet Counter
 packet_counts = Counter()
 
+""" MEMORY OPTIMIZING """
+tracemalloc.start()
+
+""" THREADING EVENT """
+e = threading.Event()
+
 
 def custom_action(packet):
     Vault.plist_append(packet)
 
-    # Create tuple of Src/Dst in sorted order
-    try:
-        key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
-        packet_counts.update([key])
-        logger.info(f"Packet #{sum(packet_counts.values())}: {packet[0][1].src} ==> {packet[0][1].dst}")
-    except AttributeError:
-        key = tuple(sorted([packet[0][0].src, packet[0][0].dst]))
-        packet_counts.update([key])
-        logger.info(f"Packet #{sum(packet_counts.values())}: {packet[0][0].src} ==> {packet[0][0].dst}")
+    # Create tuple of Src/Dst in sorted order | this is for debugging can delete
+    # try:
+    #     key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
+    #     packet_counts.update([key])
+    #     logger.debug(f"Packet #{sum(packet_counts.values())}: {packet[0][1].src} ==> {packet[0][1].dst}")
+    # except AttributeError:
+    #     key = tuple(sorted([packet[0][0].src, packet[0][0].dst]))
+    #     packet_counts.update([key])
+    #     logger.debug(f"Packet #{sum(packet_counts.values())}: {packet[0][0].src} ==> {packet[0][0].dst}")
 
 
-def efficient(lock):
-    while True:
-        if Vault.get_interrupt():
-            break
+def memory():
+    Thread.set_name("memory-thread")
 
-        lock.acquire()
-        temp_plist = Vault.get_threading_plist()
-        temp_count = len(temp_plist)
-        Vault.add_count(temp_count)
-        lock.release()
+    while not Vault.get_interrupt():
+        current, peak = tracemalloc.get_traced_memory()
+        logger.info(f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
 
-        time.sleep(5)  # 2 seconds
+        e.wait(timeout=5)  # 2 seconds
 
 
 def main():
-    """ threading test """
+    """ INIT VARIABLES """
+    Thread.set_name("main-thread")
+    file_name = None
+
+    """ THREADING """
     Vault.set_interrupt(False)
     lock = threading.Lock()
-    efficient_thread = threading.Thread(target=efficient, args=(lock, ), daemon=True)
+    memory_thread = threading.Thread(target=memory, daemon=True)
+    manager_thread = threading.Thread(target=manager, args=(lock, e,), daemon=True)
 
-    """ indefinite sniffing """
+    """ INDEFINITE SNIFFING """
     Sniffer.start(custom_action)
-    # Sniffer.start()
+    memory_thread.start()
+    manager_thread.start()
 
-    efficient_thread.start()
+    """ MENU """
+    info_data = [f"{RED}Sniffer is running but not saving anything locally{RESET}",
+                 f"{GREEN}Sniffer is running saving packets locally{RESET}"]
+    option = ["Type \"start\" to start saving: ", "Type \"stop\" to stop saving: "]
+    while True:
+        print(info_data[0 if not Vault.get_saving() else 1], end="\n")
+        user_input = input(option[0 if not Vault.get_saving() else 1])
+        if Vault.get_saving() == False and user_input == "start":
+            logger.info("Initalising saving to file...")
+            file_name = str(time.ctime(time.time())).replace(":", "-")
+            Vault.set_saving(True)
 
-    input("Press enter to stop sniffing: ")
+        elif Vault.get_saving() == True and user_input == "stop":
+            logger.info("Terminating saving to file...")
+            Vault.set_saving(False)
+
+            """ SAVING TO .CAP """
+            cap = Vault.get_saving_plist()
+            Util.save_cap(file_name, cap)
+
+        elif user_input == "q":
+            break
+        else:
+            print(f"{YELLOW}Invalid option{RESET}", end="\n\n")
+
+    """ SAVE TO FILE IF PROGRAM ENDED AND SAVING IS TRUE """
+    if Vault.get_saving() == True:
+        logger.info("Terminating saving to file...")
+        Vault.set_saving(False)
+
+        """ SAVING TO .CAP """
+        cap = Vault.get_saving_plist()
+        Util.save_cap(file_name, cap)
 
     Vault.set_interrupt(True)
     Sniffer.stop()
-    efficient_thread.join()
+    e.set()
+    memory_thread.join()
+    manager_thread.join()
 
-    temp_plist = Vault.get_threading_plist()
-    temp_count = len(temp_plist)
-    Vault.add_count(temp_count)
-    logger.debug(temp_count)
+    """ MAPPING: Print out packet count per A <--> Z address pair """
+    # logger.info("\n".join(f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
 
-    # cap = Sniffer.get_cap().results  # depreciated
-    cap = Vault.get_complete_plist()
-
-    """ mapping """
-    # Print out packet count per A <--> Z address pair
-    logger.info("\n".join(f"{f'{key[0]} <--> {key[1]}'}: {count}" for key, count in packet_counts.items()))
-
-    """ saving """
-    # save sniffed packets to cap file
-    Util.save_cap(str(time.ctime(time.time())).replace(":", "-"), cap)
-
-    """ misc logging """
-    logger.info(cap)
-    logger.debug(f"Async: {len(cap)}")
-    logger.debug(f"Custom Plist: {len(Vault.get_complete_plist())}")
-    logger.debug(f"Custom Count: {Vault.get_count()}")
-    logger.debug("All 3 numbers above should be the same")
-
-    """ dissect packets """
-    for packet in cap:
-        converted = Util.convert_packet(packet)
-        logger.info(pformat((converted)))
+    """ DISSECT PACKETS """
+    # for packet in cap:
+    #     converted = Util.convert_packet(packet)
+    #     logger.info(pformat((converted)))
 
 
 if __name__ == "__main__":
     main()
-    logger.info("__EOF__")
+
+logger.info("__EOF__")
+tracemalloc.stop()

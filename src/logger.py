@@ -9,4 +9,4 @@ TIMESTAMP = "%b %d  %Y %H:%M:%S"
 with open(LOG_FILE, "w+") as f:
     pass
 
-print("\n", CYAN, f"Log in {LOG_FILE}", RESET)
+print(f"\n{CYAN}Log in {LOG_FILE}{RESET}")

@@ -41,20 +41,21 @@ class Util:
         Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
         """
         # init dictionary of dictionaries
-        packet_dict = OrderedDict()
+        packet_dict, layer_dict = OrderedDict(), OrderedDict()
 
         string_packet = packet.__repr__()
-        # logger.info(string_packet)
+
         packet_type = string_packet.split("|<")
 
         # remove header, "<"
         packet_type[0] = packet_type[0][1:]
 
         # remove trailer, e.g. (|>>>>)
-        index = packet_type[-1].find("|")
+        index = packet_type[-1].rfind("|")
         packet_type[-1] = packet_type[-1][:index].strip()
 
         for layer in packet_type:
+            # split into respective layers
             layer_list = layer.split()
 
             # remove catergory name
@@ -64,21 +65,18 @@ class Util:
             if layer_name in ["Raw", "Padding"]:
                 layer_list = [" ".join(layer_list)]
 
-            # init dictionary
-            layer_dict = OrderedDict()
-
             for item in layer_list:
                 # get key and value for each item
                 try:
                     key, value = item.split("=", 1)
                 except ValueError:
                     continue
-                if layer_name in ["Raw", "Padding"]:
-                    layer_dict[key] = value[1:-1]
-                else:
-                    layer_dict[key] = value
+                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
 
+            # finally, add sanitized later into dict
             packet_dict[layer_name] = layer_dict
 
+        # misc information
         packet_dict["Timestamp"] = packet.time
+        packet_dict["Size"] = len(packet)
         return packet_dict

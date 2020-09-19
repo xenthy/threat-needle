@@ -5,8 +5,9 @@ from scapy.all import PacketList
 class Vault:
 
     __interrupt = False
+    __saving = False
     __threading_packet_list = PacketList()
-    __complete_packet_list = PacketList()
+    __saving_packet_list = PacketList()
     __debug_count = 0
 
     @staticmethod
@@ -18,9 +19,18 @@ class Vault:
         return Vault.__interrupt
 
     @staticmethod
+    def set_saving(saving):
+        Vault.__saving = saving
+
+    @staticmethod
+    def get_saving():
+        return Vault.__saving
+
+    @staticmethod
     def plist_append(packet):
         Vault.__threading_packet_list.append(packet)
-        Vault.__complete_packet_list.append(packet)
+        if Vault.__saving:
+            Vault.__saving_packet_list.append(packet)
 
     @staticmethod
     def get_threading_plist():
@@ -29,8 +39,10 @@ class Vault:
         return temp
 
     @staticmethod
-    def get_complete_plist():
-        return Vault.__complete_packet_list
+    def get_saving_plist():
+        temp = copy.deepcopy(Vault.__saving_packet_list)
+        Vault.__saving_packet_list.clear()
+        return temp
 
     @staticmethod
     def add_count(count):
