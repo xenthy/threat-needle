@@ -19,8 +19,11 @@ def extract_payload(stream):
     for pkt in stream:
         a = Util.convert_packet(pkt)
         if 'Raw' in a.keys() and 'load' in a['Raw'].keys():
-            load = load + a['Raw']['load'].replace("\\n", "\n").replace("\\r", " ")
-    return load
+            load = load + \
+                a['Raw']['load'].replace("\\n", "\n").replace(
+                    "\\r", " ")
+    return Util.convert_to_hex(load)
+    # return load
 
 # receives a PacketList and returns a dictionary of streams
 # dict_stream[key] = value
@@ -34,7 +37,7 @@ def find_streams(pcap):
 
     for k, v in stream.items():
 
-        if 'TCP' in k:
+        if 'TCP' in k or 'UDP' in k:
             inverse_key = k.split()
             inverse_key[1], inverse_key[3] = inverse_key[3], inverse_key[1]
             inverse_key.pop(2)
@@ -66,12 +69,13 @@ def find_streams(pcap):
                 tmp = " ".join(tmp)
                 stream_dict[tmp] = packets
 
-    logger.info(f"{len(stream_dict)} streams found")
+    # logger.info(f"{len(stream_dict)} streams found")
     return stream_dict
 
 
 if __name__ == "__main__":
-    pcap = Util.load_cap("Wed Sep 16 21-23-24 2020")
+
+    pcap = Util.load_cap("ftp")
     stream_dict = find_streams(pcap)
 
     for k, stream in stream_dict.items():
