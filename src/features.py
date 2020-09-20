@@ -22,8 +22,8 @@ def extract_payload(stream):
             load = load + \
                 a['Raw']['load'].replace("\\n", "\n").replace(
                     "\\r", " ")
-    return Util.convert_to_hex(load)
-    # return load
+    # return Util.convert_to_hex(load)
+    return load
 
 # receives a PacketList and returns a dictionary of streams
 # dict_stream[key] = value

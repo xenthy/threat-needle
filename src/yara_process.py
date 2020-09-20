@@ -19,7 +19,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-class YARA:
+class Yara:
     def __init__(self):
         self._rules = ""
         self._matches = []
@@ -38,13 +38,14 @@ class YARA:
         results = {}
         for fname in glob.iglob(RULES_DIR+"**/*.yar", recursive=True):
             with open(fname, 'r') as f:
-                results[os.path.basename(fname)[:-4]] = fname 
+                results[os.path.basename(fname)[:-4]] = fname
         return results
 
     def run(self, stream_dict):
         self.load_rules()
+        matches = None
 
-        for k,stream in stream_dict.items():
+        for k, stream in stream_dict.items():
             payload = extract_payload(stream)
             matches = self._rules.match(data=payload)
 
@@ -53,18 +54,14 @@ class YARA:
 
         if matches:
             logger.info(matches)
-            print(matches)
+            # print(matches)
 
-        
 
 if __name__ == "__main__":
-#    RULES_DIR = "."+RULES_DIR
-#    CAP_PATH = "."+CAP_PATH
+    #    RULES_DIR = "."+RULES_DIR
+    #    CAP_PATH = "."+CAP_PATH
 
     pcap = Util.load_cap("testing2")
     stream_dict = find_streams(pcap)
-    yar = YARA()
+    yar = Yara()
     yar.run(stream_dict)
-    
-
-

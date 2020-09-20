@@ -71,8 +71,7 @@ class Util:
                     key, value = item.split("=", 1)
                 except ValueError:
                     continue
-                layer_dict[key] = value[1:-
-                                        1] if layer_name in ["Raw", "Padding"] else value
+                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
 
             # finally, add sanitized later into dict
             packet_dict[layer_name] = layer_dict

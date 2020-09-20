@@ -8,7 +8,7 @@ class Vault:
     __threading_packet_list = PacketList()
     __saving_packet_list = PacketList()
     __debug_count = 0
-    __session_dict={}
+    __session_dict = {}
 
     @staticmethod
     def set_interrupt(interrupt):
@@ -57,8 +57,7 @@ class Vault:
         return Vault.__session_dict
 
     @staticmethod
-    def add_session(k,plist):
-        if k in Vault.__session_dict:
-            Vault.__session_dict[k] = Vault.__session_dict[k] + plist
-        else:
-            Vault.__session_dict[k] = plist
+    def add_session(stream_dict):
+        for header, plist in stream_dict.items():
+            Vault.__session_dict[header] = Vault.__session_dict[header] +\
+                plist if header in Vault.__session_dict else plist

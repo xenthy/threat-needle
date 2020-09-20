@@ -21,9 +21,10 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
-class Threat_intel:
+
+class ThreatIntel:
     def __init__(self):
-        self.intel_files = [fname for fname in glob.iglob(INTEL_DIR+"**/*.txt", recursive=True)] 
+        self.intel_files = [fname for fname in glob.iglob(INTEL_DIR+"**/*.txt", recursive=True)]
         self.threat_ips = set()
         self.threat_domains = set()
 
@@ -31,9 +32,9 @@ class Threat_intel:
         self.update()
         pcap = Util.load_cap("sniffed")
         stream_dict = find_streams(pcap)
-        
+
         for k, stream in stream_dict.items():
-            #self.search(k)
+            # self.search(k)
             print(stream)
             exit(1)
 
@@ -46,7 +47,7 @@ class Threat_intel:
         for fname in self.intel_files:
             if "domain" in fname.split("_")[2]:
                 with open(fname, 'r') as f:
-                    temp  = [line.strip() for line in f.readlines() if line[0] not in "#"]
+                    temp = [line.strip() for line in f.readlines() if line[0] not in "#"]
                     self.threat_domains.update(temp)
 
             elif "ip" in fname.split("_")[2]:
@@ -54,10 +55,9 @@ class Threat_intel:
                     temp = [line.strip() for line in f.readlines()]
                     self.threat_ips.update(temp)
 
+
 if __name__ == "__main__":
     INTEL_DIR = "."+INTEL_DIR
-    threat = threat_intel()
-    #threat.update()
+    threat = ThreatIntel()
+    # threat.update()
     threat.run()
-
-

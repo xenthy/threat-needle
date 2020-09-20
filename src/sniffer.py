@@ -25,7 +25,7 @@ class Sniffer:
         monitor_mode = False if os_name == "nt" else True
         logger.info(f"Monitor Mode: [{monitor_mode}]")
 
-        Sniffer.__cap = AsyncSniffer(prn=action, monitor=monitor_mode, count=0)
+        Sniffer.__cap = AsyncSniffer(prn=action, monitor=monitor_mode, count=0, store=False)
         Sniffer.__cap.start()
 
     @staticmethod

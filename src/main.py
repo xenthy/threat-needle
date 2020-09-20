@@ -1,18 +1,15 @@
 from vault import Vault
 from util import Util
 
-from pprint import pformat
 import time
 from manager import manager
 from thread import Thread
+import tracemalloc
 import threading
-import copy
-from scapy.all import PacketList
 
 from sniffer import Sniffer
 from collections import Counter
 
-import tracemalloc
 from colour import GREEN, RED, YELLOW, RESET
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
