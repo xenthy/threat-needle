@@ -3,7 +3,20 @@
 import os
 import glob
 import yara
+from util import Util
 from config import RULES_DIR, CAP_PATH
+from features import find_streams, extract_payload
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(FORMATTER, TIMESTAMP)
+
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 
 class YARA:
@@ -14,7 +27,6 @@ class YARA:
     # Loads in uncompiled rules files
     def load_rules(self):
         rule_files = self._prepare_rules(RULES_DIR)
-        
         # Compile all rules file in specified paths
         try:
             self._rules = yara.compile(filepaths=rule_files)
@@ -29,25 +41,30 @@ class YARA:
                 results[os.path.basename(fname)[:-4]] = fname 
         return results
 
-    def run(self):
+    def run(self, stream_dict):
         self.load_rules()
+
+        for k,stream in stream_dict.items():
+            payload = extract_payload(stream)
+            matches = self._rules.match(data=payload)
 
         # pcap matching
 #        matches = self._rules.match("./out3.pcap")
-        matches = self._rules.match(CAP_PATH+"sniffed.cap")
-
 
         if matches:
+            logger.info(matches)
             print(matches)
-            exit(1)
 
         
 
 if __name__ == "__main__":
-    RULES_DIR = "."+RULES_DIR
-    CAP_PATH = "."+CAP_PATH
+#    RULES_DIR = "."+RULES_DIR
+#    CAP_PATH = "."+CAP_PATH
+
+    pcap = Util.load_cap("testing2")
+    stream_dict = find_streams(pcap)
     yar = YARA()
-    yar.run()
+    yar.run(stream_dict)
     
 
 
