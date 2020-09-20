@@ -1,4 +1,3 @@
-import copy
 from scapy.all import PacketList
 
 
@@ -34,14 +33,14 @@ class Vault:
 
     @staticmethod
     def get_threading_plist():
-        temp = copy.deepcopy(Vault.__threading_packet_list)
-        Vault.__threading_packet_list.clear()
+        temp = Vault.__threading_packet_list
+        Vault.__threading_packet_list = PacketList()
         return temp
 
     @staticmethod
     def get_saving_plist():
-        temp = copy.deepcopy(Vault.__saving_packet_list)
-        Vault.__saving_packet_list.clear()
+        temp = Vault.__saving_packet_list
+        Vault.__saving_packet_list = PacketList()
         return temp
 
     @staticmethod
