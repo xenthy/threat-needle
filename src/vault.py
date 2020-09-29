@@ -7,7 +7,7 @@ class Vault:
     __saving = False
     __threading_packet_list = PacketList()
     __saving_packet_list = PacketList()
-    __debug_count = 0
+    __packet_count = 0
     __session_dict = {}
 
     @staticmethod
@@ -28,6 +28,8 @@ class Vault:
 
     @staticmethod
     def plist_append(packet):
+        # increment total packet count
+        Vault.__packet_count += 1
         Vault.__threading_packet_list.append(packet)
         if Vault.__saving:
             Vault.__saving_packet_list.append(packet)
@@ -45,14 +47,6 @@ class Vault:
         return temp
 
     @staticmethod
-    def add_count(count):
-        Vault.__debug_count += count
-
-    @staticmethod
-    def get_count():
-        return Vault.__debug_count
-
-    @staticmethod
     def get_sessions():
         return Vault.__session_dict
 
@@ -61,3 +55,7 @@ class Vault:
         for header, plist in stream_dict.items():
             Vault.__session_dict[header] = Vault.__session_dict[header] +\
                 plist if header in Vault.__session_dict else plist
+
+    @staticmethod
+    def get_total_packet_count():
+        return Vault.__packet_count

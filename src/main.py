@@ -1,6 +1,8 @@
 from vault import Vault
 from util import Util
 
+from app import app, socketio
+
 import time
 from manager import manager
 from thread import Thread
@@ -52,7 +54,8 @@ def memory():
 
     while not Vault.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
-        logger.info(f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
+        logger.info(
+            f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
 
         e.wait(timeout=5)  # 2 seconds
 
@@ -66,7 +69,8 @@ def main():
     Vault.set_interrupt(False)
     lock = threading.Lock()
     memory_thread = threading.Thread(target=memory, daemon=True)
-    manager_thread = threading.Thread(target=manager, args=(lock, e,), daemon=True)
+    manager_thread = threading.Thread(
+        target=manager, args=(lock, e,), daemon=True)
 
     """ INDEFINITE SNIFFING """
     Sniffer.start(custom_action)
@@ -76,7 +80,8 @@ def main():
     """ MENU """
     info_data = [f"{RED}Sniffer is running but not saving anything locally{RESET}",
                  f"{GREEN}Sniffer is running saving packets locally{RESET}"]
-    option = ["Type \"start\" to start saving: ", "Type \"stop\" to stop saving: "]
+    option = ["Type \"start\" to start saving: ",
+              "Type \"stop\" to stop saving: "]
     while True:
         print(info_data[0 if not Vault.get_saving() else 1], end="\n")
         user_input = input(option[0 if not Vault.get_saving() else 1])
@@ -122,7 +127,13 @@ def main():
     #     logger.info(pformat((converted)))
 
 
+def flask_app():
+    socketio.run(app)
+
+
 if __name__ == "__main__":
+    flask_thread = threading.Thread(target=flask_app, daemon=True)
+    flask_thread.start()
     main()
 
 logger.info("__EOF__")

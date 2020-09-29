@@ -34,10 +34,10 @@ def manager(lock, e):
         logger.info(f"{len(temp_plist)} packets processed [{Thread.name()}]")
 
         session_yara_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
-        threat_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
+        # threat_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
 
         session_yara_thread.start()
-        threat_thread.start()
+        # threat_thread.start()
 
         # lock.release()
 
@@ -49,7 +49,7 @@ def session_yara(temp_plist):
     # session_yara_thread.start()
     stream_dict = find_streams(temp_plist)
 
-    yar.run(stream_dict)
+    # yar.run(stream_dict)
 
     Vault.add_session(stream_dict)
 
