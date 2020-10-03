@@ -3,11 +3,21 @@ from flask_socketio import SocketIO, emit
 from time import sleep
 from threading import Thread, Event
 import random
-import logging
 from vault import Vault
 from os.path import isfile, join
 from os import listdir
 from config import CAP_PATH
+
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter(FORMATTER, TIMESTAMP)
+
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 
 app = Flask(__name__)
@@ -49,27 +59,28 @@ def get_data():
 def index():
     return render_template('index.html')
 
+
 @app.route('/viewfile')
 def savefile():
-    onlyfiles = [f for f in listdir(CAP_PATH) if isfile(join(CAP_PATH, f)) if f[-4:]=='.cap']
-    return render_template('viewfile.html', files = onlyfiles)
+    onlyfiles = [f for f in listdir(CAP_PATH) if isfile(join(CAP_PATH, f)) if f[-4:] == '.cap']
+    return render_template('viewfile.html', files=onlyfiles)
 
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
     # need visibility of the global thread object
     global thread
-    print('Client connected')
+    logger.info("client connected")
 
     # Start the random number generator thread only if the thread has not been started before.
     if not thread.isAlive():
-        print("Starting Thread")
+        logger.info("starting socket thread")
         thread = socketio.start_background_task(get_data)
 
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
-    print('Client disconnected')
+    logger.info('client disconnected')
 
 
 if __name__ == "__main__":
