@@ -83,7 +83,7 @@ class Yara_create:
                 f.write(content)
             
 
-            logger.info("Threat Intel rules created")
+            #logger.info("Threat Intel rules created")
         else:
             return -1
         
