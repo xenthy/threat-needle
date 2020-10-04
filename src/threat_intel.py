@@ -4,6 +4,7 @@
 Incomplete, thinking of implementing a convertor to yara instead, then use yara to run the whole search, with segmented parts for each different 'protocol'
 '''
 
+import re
 import glob
 from util import Util
 from yara_create import *
@@ -27,10 +28,25 @@ class ThreatIntel:
         self.rules = ""
 
     def run(self, temp_plist):
-        #self.threat_update()
         for packet in temp_plist:
-            logger.info(packet)
+            found = self.extract_ip_domains(bytes(packet).decode(errors="backslashreplace"))
+            if found:
+                self.hunt_threat(found) 
+
+    def extract_ip_domains(self, packet):
+        ips = re.findall( r'[0-9]+(?:\.[0-9]+){3}', packet)
+        url_regex = re.compile('((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)', re.DOTALL)
+        domains = re.findall(url_regex,packet)
+        domains = [domain[0] for domain in domains]
+        found = ips + domains
+        return found
     
+    def hunt_threat(self, found):
+        for threat in found:
+            matches = self.rules.match(data=threat)
+            if matches:
+                logger.info(f"{threat} --> {matches}")
+
     def threat_update(self):
         rule = Rule()
         filenames = rule.prepare_lists()
