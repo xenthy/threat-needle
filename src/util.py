@@ -19,6 +19,8 @@ logger.addHandler(file_handler)
 
 
 class Util:
+    file_name = ""
+
     @staticmethod
     def load_cap(file_name) -> PacketList:
         try:

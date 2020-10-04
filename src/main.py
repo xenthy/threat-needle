@@ -98,12 +98,7 @@ def main():
 
     """ SAVE TO FILE IF PROGRAM ENDED AND SAVING IS TRUE """
     if Vault.get_saving() == True:
-        logger.info("Terminating saving to file...")
-        Vault.set_saving(False)
-
-        """ SAVING TO .CAP """
-        cap = Vault.get_saving_plist()
-        Util.save_cap(file_name, cap)
+        Util.stop_saving()
 
     Vault.set_interrupt(True)
     Sniffer.stop()
