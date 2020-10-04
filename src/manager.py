@@ -4,6 +4,7 @@ from thread import Thread
 from features import find_streams
 from yara_process import Yara
 from threat_intel import ThreatIntel
+from util import Util
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -42,21 +43,29 @@ def manager(lock, e):
 
         # lock.release()
 
-        e.wait(timeout=2)  # 5 seconds
+        e.wait(timeout=5)  # 5 seconds
 
 
 def session_yara(temp_plist):
     """ SESSION & YARA """
+    Thread.set_name("session-yara-thread")
     # session_yara_thread.start()
     stream_dict = find_streams(temp_plist)
 
     # yar.run(stream_dict)
-
     Vault.add_session(stream_dict)
+
+    all_sessions = Vault.get_sessions()
+    logger.info(f"{len(all_sessions)} total sessions | using {Util.get_size(all_sessions)/ 10**6}MB [{Thread.name()}]")
 
 
 def threat(temp_plist):
+<<<<<<< HEAD
     threat_intel.run(temp_plist)
+=======
+    # Thread.set_name("threat-thread")
+    # threat_intel.run(temp_plist)
+>>>>>>> 2518aadeeee5a73b3bd35b9c9d2c05fe81277538
     pass
 
 

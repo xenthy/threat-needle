@@ -1,5 +1,8 @@
 from config import CAP_PATH, CAP_EXTENSION
+from vault import Vault
 from scapy.all import wrpcap, rdpcap, PacketList, Packet
+import sys
+import time
 
 from collections import OrderedDict
 
@@ -34,6 +37,18 @@ class Util:
         except FileNotFoundError as error:
             logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
             exit(1)
+
+    @staticmethod
+    def start_saving():
+        logger.info("Initalising saving to file...")
+        Util.file_name = str(time.ctime(time.time())).replace(":", "-")
+        Vault.set_saving(True)
+
+    @staticmethod
+    def stop_saving():
+        logger.info("Terminating saving to file...")
+        Vault.set_saving(False)
+        Util.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
     def convert_packet(packet) -> OrderedDict:
@@ -102,3 +117,22 @@ class Util:
             hex_format += " "
 
         return hex_format.strip()
+
+    @staticmethod
+    def get_size(obj, seen=None):
+        """Recursively finds size of objects"""
+        size = sys.getsizeof(obj)
+        if seen is None:
+            seen = set()
+        obj_id = id(obj)
+        if obj_id in seen:
+            return 0
+        seen.add(obj_id)
+        if isinstance(obj, dict):
+            size += sum([Util.get_size(v, seen) for v in obj.values()])
+            size += sum([Util.get_size(k, seen) for k in obj.keys()])
+        elif hasattr(obj, '__dict__'):
+            size += Util.get_size(obj.__dict__, seen)
+        elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+            size += sum([Util.get_size(i, seen) for i in obj])
+        return size
