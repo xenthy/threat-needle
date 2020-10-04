@@ -6,7 +6,7 @@ Incomplete, thinking of implementing a convertor to yara instead, then use yara 
 
 import glob
 from util import Util
-from pprint import pformat
+from yara_create import *
 from config import INTEL_DIR
 from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -24,40 +24,43 @@ logger.addHandler(file_handler)
 
 class ThreatIntel:
     def __init__(self):
-        self.intel_files = [fname for fname in glob.iglob(INTEL_DIR+"**/*.txt", recursive=True)]
-        self.threat_ips = set()
-        self.threat_domains = set()
+        self.rules = ""
 
-    def run(self):
-        self.update()
-        pcap = Util.load_cap("sniffed")
-        stream_dict = find_streams(pcap)
+    def run(self, temp_plist):
+        #self.threat_update()
+        for packet in temp_plist:
+            logger.info(packet)
+    
+    def threat_update(self):
+        rule = Rule()
+        filenames = rule.prepare_lists()
+        entries = {"domains":[],"ips":[]}
+        for filename in filenames:
+            identify = filename.split("_")[1]
+            with open(INTEL_DIR+filename+".txt",'r') as f:
+                lines = [line.strip() for line in f.readlines() if "#" not in line if line.strip() != ""]
 
-        for k, stream in stream_dict.items():
-            # self.search(k)
-            print(stream)
-            exit(1)
+            if "domain" == identify:
+                entries["domains"]+= lines
+            elif "ip" == identify:
+                entries["ips"]+= lines
 
-    def search(self, string):
-        for ip in self.threat_ips:
-            if ip in string:
-                print(ip)
+        for entry, lines in entries.items():
+            chunked = rule.chunker(lines,9999)
+            for index, chunk in enumerate(chunked):
+                name = entry+str(index)
+                author = "Auto Generated"
+                purpose = "Threat Intel Domains/IPs"
+                if "domains" == entry:
+                    category = "domains_"+str(index)
+                elif "ips" == entry:
+                    category = "ips_"+str(index)
 
-    def update(self):
-        for fname in self.intel_files:
-            if "domain" in fname.split("_")[2]:
-                with open(fname, 'r') as f:
-                    temp = [line.strip() for line in f.readlines() if line[0] not in "#"]
-                    self.threat_domains.update(temp)
+                rule.add_rule(name, author, purpose, chunk, category)
 
-            elif "ip" in fname.split("_")[2]:
-                with open(fname, 'r') as f:
-                    temp = [line.strip() for line in f.readlines()]
-                    self.threat_ips.update(temp)
+        self.rules = rule.load_rules()
 
 
 if __name__ == "__main__":
-    INTEL_DIR = "."+INTEL_DIR
     threat = ThreatIntel()
-    # threat.update()
     threat.run()

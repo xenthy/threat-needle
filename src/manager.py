@@ -19,6 +19,7 @@ logger.addHandler(file_handler)
 """ GLOBAL """
 yar = Yara()
 threat_intel = ThreatIntel()
+threat_intel.threat_update()
 
 
 def manager(lock, e):
@@ -33,11 +34,11 @@ def manager(lock, e):
         temp_plist = Vault.get_threading_plist()
         logger.info(f"{len(temp_plist)} packets processed [{Thread.name()}]")
 
-        session_yara_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
-        # threat_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
+        #session_yara_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
+        threat_thread = threading.Thread(target=threat, args=[temp_plist], daemon=True)
 
-        session_yara_thread.start()
-        # threat_thread.start()
+        #session_yara_thread.start()
+        threat_thread.start()
 
         # lock.release()
 
@@ -55,7 +56,7 @@ def session_yara(temp_plist):
 
 
 def threat(temp_plist):
-    # threat_intel.run(temp_plist)
+    threat_intel.run(temp_plist)
     pass
 
 

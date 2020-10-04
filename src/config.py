@@ -9,4 +9,4 @@ CAP_EXTENSION = ".cap"
 RULES_DIR = "./rules/"
 
 # Path to threat-intel folder
-INTEL_DIR = "./threat-intel/"
+INTEL_DIR = "./threat_intel/"
