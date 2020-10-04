@@ -1,6 +1,8 @@
 from config import CAP_PATH, CAP_EXTENSION
+from vault import Vault
 from scapy.all import wrpcap, rdpcap, PacketList, Packet
 import sys
+import time
 
 from collections import OrderedDict
 
@@ -35,6 +37,18 @@ class Util:
         except FileNotFoundError as error:
             logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
             exit(1)
+
+    @staticmethod
+    def start_saving():
+        logger.info("Initalising saving to file...")
+        Util.file_name = str(time.ctime(time.time())).replace(":", "-")
+        Vault.set_saving(True)
+
+    @staticmethod
+    def stop_saving():
+        logger.info("Terminating saving to file...")
+        Vault.set_saving(False)
+        Util.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
     def convert_packet(packet) -> OrderedDict:

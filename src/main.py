@@ -86,17 +86,10 @@ def main():
         print(info_data[0 if not Vault.get_saving() else 1], end="\n")
         user_input = input(option[0 if not Vault.get_saving() else 1])
         if Vault.get_saving() == False and user_input == "start":
-            logger.info("Initalising saving to file...")
-            file_name = str(time.ctime(time.time())).replace(":", "-")
-            Vault.set_saving(True)
+            Util.start_saving()
 
         elif Vault.get_saving() == True and user_input == "stop":
-            logger.info("Terminating saving to file...")
-            Vault.set_saving(False)
-
-            """ SAVING TO .CAP """
-            cap = Vault.get_saving_plist()
-            Util.save_cap(file_name, cap)
+            Util.stop_saving()
 
         elif user_input == "q":
             break
