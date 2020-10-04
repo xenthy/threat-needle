@@ -60,12 +60,8 @@ def session_yara(temp_plist):
 
 
 def threat(temp_plist):
-<<<<<<< HEAD
-    threat_intel.run(temp_plist)
-=======
     # Thread.set_name("threat-thread")
     # threat_intel.run(temp_plist)
->>>>>>> 2518aadeeee5a73b3bd35b9c9d2c05fe81277538
     pass
 
 
