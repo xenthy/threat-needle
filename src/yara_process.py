@@ -27,6 +27,7 @@ class Yara:
     def __init__(self):
         self._rules = ""
         self._matches = []
+        self.udp_ports = ["53", "80", "443"]
         self.flagged = {}
 
     # Loads in uncompiled rules files
@@ -51,6 +52,12 @@ class Yara:
         matches = None
 
         for k, stream in stream_dict.items():
+
+            # https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf
+            # Conversely, custom-UDP was found exclusively on well-known ports 53, 80, and 443
+            if "UDP" in k and k.split(":")[1] not in self.udp_ports:
+                continue
+
             payload = extract_payload(stream)
             matches = self._rules.match(data=payload)
 
