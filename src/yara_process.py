@@ -23,6 +23,7 @@ class Yara:
     def __init__(self):
         self._rules = ""
         self._matches = []
+        self.flagged = {}
 
     # Loads in uncompiled rules files
     def load_rules(self):
@@ -49,13 +50,12 @@ class Yara:
             payload = extract_payload(stream)
             matches = self._rules.match(data=payload)
 
-        # pcap matching
-#        matches = self._rules.match("./out3.pcap")
+            if matches:
+                logger.info(f"{k} --> {matches}")
+                self.flagged[k] = {matches:stream}
 
-        if matches:
-            logger.info(matches)
-            # print(matches)
-
+    def get_flagged(self):
+        return self.flagged
 
 if __name__ == "__main__":
     #    RULES_DIR = "."+RULES_DIR

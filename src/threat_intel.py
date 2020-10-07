@@ -26,12 +26,13 @@ logger.addHandler(file_handler)
 class ThreatIntel:
     def __init__(self):
         self.rules = ""
+        self.threat_list = []
 
     def run(self, temp_plist):
         for packet in temp_plist:
             found = self.extract_ip_domains(bytes(packet).decode(errors="backslashreplace"))
             if found:
-                self.hunt_threat(found) 
+                self.hunt_threat(found, packet) 
 
     def extract_ip_domains(self, packet):
         ips = re.findall( r'[0-9]+(?:\.[0-9]+){3}', packet)
@@ -41,11 +42,12 @@ class ThreatIntel:
         found = ips + domains
         return found
     
-    def hunt_threat(self, found):
+    def hunt_threat(self, found, packet):
         for threat in found:
             matches = self.rules.match(data=threat)
             if matches:
                 logger.info(f"{threat} --> {matches}")
+                self.threat_list.append(packet)
 
     def threat_update(self):
         rule = Rule()
@@ -76,6 +78,14 @@ class ThreatIntel:
 
         self.rules = rule.load_rules()
 
+    '''
+    May can implement another database to write to instead
+    - mysql
+    - postgresql
+    '''
+    def get_threats(self):
+        if self.threat_list:
+            return self.threat_list
 
 if __name__ == "__main__":
     threat = ThreatIntel()
