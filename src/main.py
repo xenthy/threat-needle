@@ -79,7 +79,7 @@ def session_caching():
             f.writelines(",".join(sessions.keys()))
 
         for header, plist in sessions.items():
-            header = header.replace(" ", "_")
+            header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
                 with open(f"{runtime_path}/{header}.txt", "a+") as f:
                     f.writelines(extract_payload(plist))
