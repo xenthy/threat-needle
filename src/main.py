@@ -3,7 +3,6 @@ from util import Util
 
 from app import app, socketio
 
-import time
 from manager import manager
 from thread import Thread
 import tracemalloc
@@ -11,6 +10,13 @@ import threading
 
 from sniffer import Sniffer
 from collections import Counter
+
+from os.path import isfile, join
+from os import listdir, mkdir
+
+from features import extract_payload
+
+from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
 
 from colour import GREEN, RED, YELLOW, RESET
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -54,27 +60,56 @@ def memory():
 
     while not Vault.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
-        logger.info(
-            f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
+        logger.info(f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
 
         e.wait(timeout=5)  # 2 seconds
+
+
+def session_caching():
+    Thread.set_name("session-caching-thread")
+
+    while not Vault.get_interrupt():
+        runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
+        cache_files = [f for f in listdir(runtime_path) if isfile(join(runtime_path, f)) if f[-4:] == ".txt"]
+
+        sessions = Vault.get_sessions()
+        Vault.reset_session()
+
+        with open(f"{runtime_path}/directory.txt", "w+") as f:
+            f.writelines(",".join(sessions.keys()))
+
+        for header, plist in sessions.items():
+            if header in cache_files:
+                with open(f"{runtime_path}/{header}.txt", "a+") as f:
+                    f.writelines(extract_payload(plist))
+            else:
+                with open(f"{runtime_path}/{header}.txt", "w+") as f:
+                    f.writelines(extract_payload(plist))
+
+        e.wait(timeout=SESSION_CACHING_INTERVAL)
 
 
 def main():
     """ INIT VARIABLES """
     Thread.set_name("main-thread")
-    file_name = None
+
+    """ SET RUNTIME NAME """
+    Vault.set_runtime_name(Util.datetime_to_string())
+
+    """ CREATE RUNTIME DIRECTORY """
+    mkdir(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}")
 
     """ THREADING """
     Vault.set_interrupt(False)
     lock = threading.Lock()
     memory_thread = threading.Thread(target=memory, daemon=True)
-    manager_thread = threading.Thread(
-        target=manager, args=(lock, e,), daemon=True)
+    session_caching_thread = threading.Thread(target=session_caching, daemon=True)
+    manager_thread = threading.Thread(target=manager, args=(lock, e,), daemon=True)
 
     """ INDEFINITE SNIFFING """
     Sniffer.start(custom_action)
     memory_thread.start()
+    session_caching_thread.start()
     manager_thread.start()
 
     """ MENU """
@@ -104,6 +139,7 @@ def main():
     Sniffer.stop()
     e.set()
     memory_thread.join()
+    session_caching_thread.join()
     manager_thread.join()
 
     """ MAPPING: Print out packet count per A <--> Z address pair """

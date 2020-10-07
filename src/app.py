@@ -50,7 +50,7 @@ def get_data():
         # total_flagged += int(random.random() * 100)
 
         socketio.emit(
-            'data', {'total_packets': Vault.get_total_packet_count(), 'total_streams': len(Vault.get_sessions()), 'total_flagged': total_flagged}, namespace='/test')
+            'data', {'total_packets': Vault.get_total_packet_count(), 'total_streams': len(Vault.get_session_headers()), 'total_flagged': total_flagged}, namespace='/test')
 
         socketio.sleep(0.01)
 

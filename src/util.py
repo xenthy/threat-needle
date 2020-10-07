@@ -1,10 +1,11 @@
-from config import CAP_PATH, CAP_EXTENSION
+from config import CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
 from vault import Vault
 from scapy.all import wrpcap, rdpcap, PacketList, Packet
 import sys
 import time
 
 from collections import OrderedDict
+
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -19,6 +20,10 @@ logger.addHandler(file_handler)
 
 
 class Util:
+    @staticmethod
+    def datetime_to_string():
+        return str(time.ctime(time.time())).replace(":", "-")
+
     @staticmethod
     def load_cap(file_name) -> PacketList:
         try:
@@ -41,7 +46,7 @@ class Util:
     @staticmethod
     def start_saving():
         logger.info("Initalising saving to file...")
-        Util.file_name = str(time.ctime(time.time())).replace(":", "-")
+        Util.file_name = Util.datetime_to_string()
         Vault.set_saving(True)
 
     @staticmethod
