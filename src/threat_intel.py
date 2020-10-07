@@ -39,6 +39,18 @@ class ThreatIntel:
 #                print(f"{ip_layer.fields} - {http_layer.fields}")
 
             found = self.extract_ip_domains(bytes(packet).decode(errors="backslashreplace"))
+            
+#            found = []
+#            try:
+#                ip_layer = packet.getlayer(IP)
+#                found.extend([ip_layer.fields['src'], ip_layer.fields['dst']])
+#                found.append(http_layer.fields['Host'])
+#            except:
+#                pass
+
+            '''
+                testing of IP layer, extracting IP and Domain names from scapy packet instead of regex
+            '''
             if found:
                 self.hunt_threat(found, packet) 
 
