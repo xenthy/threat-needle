@@ -29,7 +29,8 @@ class Yara_create:
         self.__name = ""
         self.__meta = {"author":"someone","purpose":"something"}
         self.__strings = dict()
-        self.__condition = "\n\tcondition:\n\t\tany of them"
+        self.any_condition = "\n\tcondition:\n\t\tany of them"
+        self.__condition = ""
 
     def new_rule(self, name):
         self.__name = name
@@ -55,6 +56,9 @@ class Yara_create:
         strings = f"\n\n\tstrings:"
         for k, v in self.__strings.items():
            strings += f"\n\t\t${k} = \"{v}\""
+
+        if not self.__condition:
+            self.__condition = self.any_condition
 
         tail = "\n}"
         
