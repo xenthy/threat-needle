@@ -7,6 +7,8 @@ Incomplete, thinking of implementing a convertor to yara instead, then use yara 
 import re
 import glob
 from util import Util
+from scapy.all import IP
+from scapy.layers import http
 from yara_create import *
 from config import INTEL_DIR
 from flagged_organize import Organize
@@ -31,6 +33,11 @@ class ThreatIntel:
 
     def run(self, temp_plist):
         for packet in temp_plist:
+#            if packet.haslayer(http.HTTPRequest):
+#                http_layer = packet.getlayer(http.HTTPRequest)
+#                ip_layer = packet.getlayer(IP)
+#                print(f"{ip_layer.fields} - {http_layer.fields}")
+
             found = self.extract_ip_domains(bytes(packet).decode(errors="backslashreplace"))
             if found:
                 self.hunt_threat(found, packet) 
@@ -45,7 +52,6 @@ class ThreatIntel:
     
     def hunt_threat(self, found, packet):
         for threat in found:
-            print(threat)
             matches = self.rules.match(data=threat)
             if matches:
                 logger.info(f"{threat} --> {matches}")
