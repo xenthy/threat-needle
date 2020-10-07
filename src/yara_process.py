@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+''' 
+    Need to make a separation of UDP and TCP searching, loading 2 different set of rules
+'''
+
 import os
 import glob
 import yara
@@ -52,8 +56,11 @@ class Yara:
 
             if matches:
                 logger.info(f"{k} --> {matches}")
-                self.flagged[k] = {matches:stream}
 
+                # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
+                self.flagged[k] = dict(matches = payload)
+
+    # Returns a dictionary of lists
     def get_flagged(self):
         return self.flagged
 
