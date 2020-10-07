@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 
+''' 
+    Need to make a separation of UDP and TCP searching, loading 2 different set of rules
+'''
+
 import os
 import glob
 import yara
 from util import Util
+from flagged_organize import Organize
 from config import RULES_DIR, CAP_PATH
 from features import find_streams, extract_payload
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -17,12 +22,13 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-
+org = Organize()
 
 class Yara:
     def __init__(self):
         self._rules = ""
         self._matches = []
+        self.udp_ports = ["53", "80", "443"]
 
     # Loads in uncompiled rules files
     def load_rules(self):
@@ -31,7 +37,8 @@ class Yara:
         try:
             self._rules = yara.compile(filepaths=rule_files)
         except Exception as e:
-            print(f"Invalid Rule file/syntax error: \n{e}")
+            logger.error(f"Invalid Rule file/syntax error: \n{e}")
+            #print(f"Invalid Rule file/syntax error: \n{e}")
 
     # Prepare uncompile yara rules files
     def _prepare_rules(self, rules):
@@ -49,13 +56,11 @@ class Yara:
             payload = extract_payload(stream)
             matches = self._rules.match(data=payload)
 
-        # pcap matching
-#        matches = self._rules.match("./out3.pcap")
+            if matches:
+                logger.info(f"{k} --> {matches}")
 
-        if matches:
-            logger.info(matches)
-            # print(matches)
-
+                # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
+                org.add_stream_entry(k, payload, matches)
 
 if __name__ == "__main__":
     #    RULES_DIR = "."+RULES_DIR

@@ -29,6 +29,7 @@ class Yara_create:
         self.__name = ""
         self.__meta = {"author":"someone","purpose":"something"}
         self.__strings = dict()
+        self.any_condition = "\n\tcondition:\n\t\tany of them"
         self.__condition = ""
 
     def new_rule(self, name):
@@ -47,21 +48,21 @@ class Yara_create:
     '''
     def add_strings(self, strings, identifier, condition=None):
         self.__strings[identifier] = strings
+        self.__condition = condition
 
     def generate(self):
         head = f"rule {self.__name}\n{{"
         meta = f"\n\tmeta:\n\t\tauthor = \"{self.__meta['author']}\"\n\t\tpurpose = \"{self.__meta['purpose']}\""
         strings = f"\n\n\tstrings:"
-        #condition = ""
         for k, v in self.__strings.items():
            strings += f"\n\t\t${k} = \"{v}\""
-           #condition += f"\n\t\t{k} or"
 
-#        condition = "\n\tcondition:"+condition[:-3]
-        condition = "\n\tcondition:\n\t\tany of them"
+        if not self.__condition:
+            self.__condition = self.any_condition
+
         tail = "\n}"
         
-        return head+meta+strings+"\n"+condition+tail
+        return head+meta+strings+"\n"+self.__condition+tail
     
     # For GUI adding of rules
     def append(self):

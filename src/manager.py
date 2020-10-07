@@ -49,10 +49,9 @@ def manager(lock, e):
 def session_yara(temp_plist):
     """ SESSION & YARA """
     Thread.set_name("session-yara-thread")
-    # session_yara_thread.start()
     stream_dict = find_streams(temp_plist)
 
-    # yar.run(stream_dict)
+    yar.run(stream_dict)
     Vault.add_session(stream_dict)
 
     all_sessions = Vault.get_session_headers()
@@ -62,7 +61,6 @@ def session_yara(temp_plist):
 def threat(temp_plist):
     Thread.set_name("threat-thread")
     threat_intel.run(temp_plist)
-    pass
 
 
 if __name__ == "__main__":
