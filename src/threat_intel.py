@@ -9,6 +9,7 @@ import glob
 from util import Util
 from yara_create import *
 from config import INTEL_DIR
+from flagged_organize import Organize
 from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
@@ -21,7 +22,7 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-
+org = Organize()
 
 class ThreatIntel:
     def __init__(self):
@@ -44,10 +45,12 @@ class ThreatIntel:
     
     def hunt_threat(self, found, packet):
         for threat in found:
+            print(threat)
             matches = self.rules.match(data=threat)
             if matches:
                 logger.info(f"{threat} --> {matches}")
                 self.threat_list.append(packet)
+                org.add_packet_entry(threat, packet, matches)
 
     def threat_update(self):
         rule = Rule()

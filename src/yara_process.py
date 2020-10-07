@@ -8,6 +8,7 @@ import os
 import glob
 import yara
 from util import Util
+from flagged_organize import Organize
 from config import RULES_DIR, CAP_PATH
 from features import find_streams, extract_payload
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -21,14 +22,13 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-
+org = Organize()
 
 class Yara:
     def __init__(self):
         self._rules = ""
         self._matches = []
         self.udp_ports = ["53", "80", "443"]
-        self.flagged = {}
 
     # Loads in uncompiled rules files
     def load_rules(self):
@@ -37,7 +37,8 @@ class Yara:
         try:
             self._rules = yara.compile(filepaths=rule_files)
         except Exception as e:
-            print(f"Invalid Rule file/syntax error: \n{e}")
+            logger.error(f"Invalid Rule file/syntax error: \n{e}")
+            #print(f"Invalid Rule file/syntax error: \n{e}")
 
     # Prepare uncompile yara rules files
     def _prepare_rules(self, rules):
@@ -52,12 +53,6 @@ class Yara:
         matches = None
 
         for k, stream in stream_dict.items():
-
-            # https://media.paloaltonetworks.com/documents/The-Modern-Malware-Review-March-2013.pdf
-            # Conversely, custom-UDP was found exclusively on well-known ports 53, 80, and 443
-            if "UDP" in k and k.split(":")[1] not in self.udp_ports:
-                continue
-
             payload = extract_payload(stream)
             matches = self._rules.match(data=payload)
 
@@ -65,11 +60,7 @@ class Yara:
                 logger.info(f"{k} --> {matches}")
 
                 # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
-                self.flagged[k] = dict(matches = payload)
-
-    # Returns a dictionary of lists
-    def get_flagged(self):
-        return self.flagged
+                org.add_stream_entry(k, payload, matches)
 
 if __name__ == "__main__":
     #    RULES_DIR = "."+RULES_DIR
