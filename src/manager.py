@@ -49,13 +49,14 @@ def manager(lock, e):
 def session_yara(temp_plist):
     """ SESSION & YARA """
     Thread.set_name("session-yara-thread")
+
     stream_dict = find_streams(temp_plist)
 
-    yar.run(stream_dict)
     Vault.add_session(stream_dict)
 
     all_sessions = Vault.get_session_headers()
     logger.info(f"{len(all_sessions)} total sessions | using {Util.get_size(all_sessions)/ 10**6}MB [{Thread.name()}]")
+    yar.run(stream_dict)
 
 
 def threat(temp_plist):

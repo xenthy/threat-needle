@@ -79,6 +79,7 @@ def session_caching():
             f.writelines(",".join(sessions.keys()))
 
         for header, plist in sessions.items():
+            header = header.replace(" ", "_")
             if header in cache_files:
                 with open(f"{runtime_path}/{header}.txt", "a+") as f:
                     f.writelines(extract_payload(plist))
@@ -86,6 +87,7 @@ def session_caching():
                 with open(f"{runtime_path}/{header}.txt", "w+") as f:
                     f.writelines(extract_payload(plist))
 
+        logger.info(f"cached to local file [{Thread.name()}]")
         e.wait(timeout=SESSION_CACHING_INTERVAL)
 
 

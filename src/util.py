@@ -22,7 +22,7 @@ logger.addHandler(file_handler)
 class Util:
     @staticmethod
     def datetime_to_string():
-        return str(time.ctime(time.time())).replace(":", "-")
+        return str(time.ctime(time.time())).replace(":", "-").replace(" ", "_")
 
     @staticmethod
     def load_cap(file_name) -> PacketList:
