@@ -1,7 +1,7 @@
 from vault import Vault
 import threading
 from thread import Thread
-from features import find_streams
+from features import find_streams, extract_payload
 from yara_process import Yara
 from threat_intel import ThreatIntel
 from util import Util
@@ -54,7 +54,7 @@ def session_yara(temp_plist):
     yar.run(stream_dict)
     Vault.add_session(stream_dict)
 
-    all_sessions = Vault.get_sessions()
+    all_sessions = Vault.get_session_headers()
     logger.info(f"{len(all_sessions)} total sessions | using {Util.get_size(all_sessions)/ 10**6}MB [{Thread.name()}]")
 
 
