@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-	CC=py
+	CC=python
 else
 	CC=python3
 endif
