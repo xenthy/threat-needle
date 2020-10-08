@@ -1,7 +1,7 @@
 ifeq ($(OS),Windows_NT)
 	CC=python
 else
-	CC=python3
+	CC=sudo python3
 endif
 
 PFLAGS=-3.8-64
@@ -23,8 +23,9 @@ ifeq ($(OS),Windows_NT)
 	@powershell "(Get-ChildItem * -Include *.cap -Recurse | Remove-Item)"
 	@echo Cleaned up .pyc, .cap files and .cache files
 else
+	@echo "Cleaning up workspace..."
 	@$(RM) -r *.pyc
 	@$(RM) -r *.cap
-	@$(RM) -rf ./.cache/* && touch ./.cache/placeholder
+	@sudo find ./.cache/* -type f,d -not -name 'placeholder' -delete
 	@echo Cleaned up .pyc, .cap files and .cache files
 endif

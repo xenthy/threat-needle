@@ -15,15 +15,13 @@ logger.addHandler(file_handler)
 
 # receive a list of packet in a stream and returns the payload
 def extract_payload(stream):
-    load = ""
+    payload = ""
     for pkt in stream:
-        a = Util.convert_packet(pkt)
-        if 'Raw' in a.keys() and 'load' in a['Raw'].keys():
-            load = load + \
-                a['Raw']['load'].replace("\\n", "\n").replace(
-                    "\\r", " ")
+        dict_pkt  = Util.convert_packet(pkt)
+        if 'Raw' in dict_pkt.keys() and 'load' in dict_pkt['Raw'].keys():
+            payload = payload + dict_pkt['Raw']['load'].replace("\\n", "\n").replace("\\r", " ")
     # return Util.convert_to_hex(load)
-    return load
+    return payload
 
 # receives a PacketList and returns a dictionary of streams
 # dict_stream[key] = value

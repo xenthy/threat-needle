@@ -75,17 +75,14 @@ def session_caching():
         sessions = Vault.get_sessions()
         Vault.reset_session()
 
-        with open(f"{runtime_path}/directory.txt", "w+") as f:
-            f.writelines(",".join(sessions.keys()))
-
         for header, plist in sessions.items():
             header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
                 with open(f"{runtime_path}/{header}.txt", "a+") as f:
-                    f.writelines(extract_payload(plist))
+                    f.write(extract_payload(plist))
             else:
                 with open(f"{runtime_path}/{header}.txt", "w+") as f:
-                    f.writelines(extract_payload(plist))
+                    f.write(extract_payload(plist))
 
         logger.info(f"cached to local file [{Thread.name()}]")
         e.wait(timeout=SESSION_CACHING_INTERVAL)
