@@ -55,7 +55,7 @@ def session_yara(temp_plist):
     Vault.add_session(stream_dict)
 
     all_sessions = Vault.get_session_headers()
-    logger.info(f"{len(all_sessions)} total sessions | using {Util.get_size(all_sessions)/ 10**6}MB [{Thread.name()}]")
+    logger.info(f"{len(all_sessions)} total sessions [{Thread.name()}]")
     yar.run(stream_dict)
 
 

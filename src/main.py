@@ -7,6 +7,7 @@ from manager import manager
 from thread import Thread
 import tracemalloc
 import threading
+import time
 
 from sniffer import Sniffer
 from collections import Counter
@@ -157,6 +158,7 @@ def flask_app():
 if __name__ == "__main__":
     flask_thread = threading.Thread(target=flask_app, daemon=True)
     flask_thread.start()
+    time.sleep(0.5)  # allow flask to init first
     main()
 
 logger.info("__EOF__")

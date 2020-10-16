@@ -23,9 +23,9 @@ ifeq ($(OS),Windows_NT)
 	@powershell "(Get-ChildItem * -Include *.cap -Recurse | Remove-Item)"
 	@echo Cleaned up .pyc, .cap files and .cache files
 else
-	@echo "Cleaning up workspace..."
-	@$(RM) -r *.pyc
-	@$(RM) -r *.cap
+	@echo "Cleaning up [.pyc, .cap, .cache] files..."
+	@sudo find . -type f -name "*.pyc" -delete
+	@sudo find . -type f -name "*.cap" -delete
 	@sudo find ./.cache/* -type f,d -not -name 'placeholder' -delete
-	@echo Cleaned up .pyc, .cap files and .cache files
+	@echo "Cleaning complete!"
 endif
