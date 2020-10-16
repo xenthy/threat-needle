@@ -1,8 +1,8 @@
-from config import CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
+from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
 from vault import Vault
 from scapy.all import wrpcap, rdpcap, PacketList, Packet
 import sys
-import time
+import datetime
 
 from collections import OrderedDict
 
@@ -22,7 +22,7 @@ logger.addHandler(file_handler)
 class Util:
     @staticmethod
     def datetime_to_string():
-        return str(time.ctime(time.time())).replace(":", "-").replace(" ", "_")
+        return datetime.datetime.now().strftime(DATETIME_FORMAT)
 
     @staticmethod
     def load_cap(file_name) -> PacketList:
