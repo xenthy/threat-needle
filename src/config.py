@@ -1,6 +1,9 @@
 # Path to logger folder
 LOGGER_PATH = "./logs/"
 
+# Datetime format
+DATETIME_FORMAT = "%Y-%m-%d_%H-%M-%S"
+
 # Path to cap folder
 CAP_PATH = "./cap/"
 CAP_EXTENSION = ".cap"
@@ -11,7 +14,7 @@ RULES_DIR = "./rules/"
 # Path to threat-intel folder
 INTEL_DIR = "./threat_intel/"
 
-## SESSION
+# SESSION
 # Path to session cache folder
 SESSION_CACHE_PATH = "./.cache"
 
