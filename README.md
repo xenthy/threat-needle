@@ -33,13 +33,11 @@
 > If you are using vscode, relaunch it
 
 #### Installing Dependencies
-1. Install pip requirements
+Install pip requirements
 ```bash
 > cd \Path\to\ict2202-assignment-1
 > pip install -r requirements.txt
 ```
-2. Install additional dependencies
-- Install [codecs](https://files3.codecguide.com/K-Lite_Codec_Pack_1575_Basic.exe)
 
 #### Setting up GNU Make
 1. [Install](https://sourceforge.net/projects/gnuwin32/files/make/3.81/make-3.81.exe/download?use_mirror=nchc&download=) Make for Windows
