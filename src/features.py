@@ -2,9 +2,6 @@ from util import Util
 from pprint import pformat
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 from collections import OrderedDict
-
-from scapy.all import Raw
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -18,15 +15,12 @@ logger.addHandler(file_handler)
 
 # receive a list of packet in a stream and returns the payload
 def extract_payload(stream):
-    payload = bytes()
+    payload = ""
     for pkt in stream:
-        # dict_pkt = Util.convert_packet(pkt)
-        # if 'Raw' in dict_pkt.keys() and 'load' in dict_pkt['Raw'].keys():
-        #     payload = payload + dict_pkt['Raw']['load'].replace("\\n", "\n").replace("\\r", " ")
-        if pkt.haslayer(Raw):
-            payload += pkt.getlayer(Raw).load
-    # return Util.convert_to_hex(payload)
-    # logger.info(payload)
+        dict_pkt  = Util.convert_packet(pkt)
+        if 'Raw' in dict_pkt.keys() and 'load' in dict_pkt['Raw'].keys():
+            payload = payload + dict_pkt['Raw']['load'].replace("\\n", "\n").replace("\\r", " ")
+    # return Util.convert_to_hex(load)
     return payload
 
 # receives a PacketList and returns a dictionary of streams
