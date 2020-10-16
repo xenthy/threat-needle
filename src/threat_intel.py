@@ -7,8 +7,6 @@ Incomplete, thinking of implementing a convertor to yara instead, then use yara 
 import re
 import glob
 from util import Util
-from scapy.all import IP
-from scapy.layers import http
 from yara_create import *
 from config import INTEL_DIR
 from flagged_organize import Organize
@@ -29,46 +27,41 @@ org = Organize()
 class ThreatIntel:
     def __init__(self):
         self.rules = ""
-        self.threat_list = []
+        self.threat_list = {}
 
     def run(self, temp_plist):
         for packet in temp_plist:
-#            if packet.haslayer(http.HTTPRequest):
-#                http_layer = packet.getlayer(http.HTTPRequest)
-#                ip_layer = packet.getlayer(IP)
-#                print(f"{ip_layer.fields} - {http_layer.fields}")
-
-            found = self.extract_ip_domains(bytes(packet).decode(errors="backslashreplace"))
-            
-#            found = []
-#            try:
-#                ip_layer = packet.getlayer(IP)
-#                found.extend([ip_layer.fields['src'], ip_layer.fields['dst']])
-#                found.append(http_layer.fields['Host'])
-#            except:
-#                pass
-
-            '''
-                testing of IP layer, extracting IP and Domain names from scapy packet instead of regex
-            '''
-            if found:
-                self.hunt_threat(found, packet) 
+            extracted = self.extract_ip_domains(packet)
+            if extracted:
+                self.hunt_threat(extracted, packet) 
 
     def extract_ip_domains(self, packet):
-        ips = re.findall( r'[0-9]+(?:\.[0-9]+){3}', packet)
-        url_regex = re.compile('((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)', re.DOTALL)
-        domains = re.findall(url_regex,packet)
-        domains = [domain[0] for domain in domains]
-        found = ips + domains
-        return found
+        extracted = []
+
+        parsed_pkt = Util.convert_packet(packet)
+        if "HTTPRequest" in parsed_pkt:
+            extracted.append(parsed_pkt['HTTPRequest']['Host'])
+            #extracted.append(parsed_pkt['HTTPRequest']['Path'])  # URI
+
+        if "DNSQR" in parsed_pkt:
+            extracted.append(parsed_pkt['DNSQR']['qname'])
+
+        if "IP" in parsed_pkt:
+            extracted.append(parsed_pkt['IP']['src'])
+            extracted.append(parsed_pkt['IP']['dst'])
+
+        return extracted 
+
     
     def hunt_threat(self, found, packet):
         for threat in found:
-            matches = self.rules.match(data=threat)
-            if matches:
-                logger.info(f"{threat} --> {matches}")
-                self.threat_list.append(packet)
-                org.add_packet_entry(threat, packet, matches)
+            if matches := self.rules.match(data=threat):
+                if threat not in self.threat_list:
+                    self.threat_list[threat] = [packet]
+                    org.add_packet_entry(threat, packet, matches)
+                else:
+                    self.threat_list[threat] = self.threat_list[threat] + [packet]
+
 
     def threat_update(self):
         rule = Rule()
