@@ -24,6 +24,33 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
+'''Yara_create
+
+There are 3 defined functions to craft a Yara Rule
+- new_rule(rule_name)
+- add_meata(value, key)
+- add_strings(strings, identifier, condition=None)
+
+E.g Yara Rule
+
+    rule with_attachment {
+            meta:
+                    author = "Antonio Sanchez <asanchez@hispasec.com>"
+                    reference = "http://laboratorio.blogs.hispasec.com/"
+                    description = "Rule to detect the presence of an or several attachments"
+            strings:
+                    $attachment_id = "X-Attachment-Id"
+            condition:
+                    $attachment_id
+    }
+
+E.g. Calling functions to craft yara rule (as per example above)
+
+1. new_rule("without_attachment")
+2. add_meata("Ella Vader","author")
+3. add_strings("X-Attachment-Id","attachment_id", )
+
+'''
 class Yara_create:
     def __init__(self):
         self.__name = ""
@@ -83,7 +110,6 @@ class Yara_create:
             with open(filename, 'a+') as f:
                 f.write(content)
             
-
             #logger.info("Threat Intel rules created")
         else:
             return -1
@@ -141,6 +167,8 @@ class Rule:
             size = size*2 +1
 
         return chunked
+
+
 
 if __name__ == "__main__":
     # Whole chunk below is for threat_intel.py

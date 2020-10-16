@@ -20,7 +20,8 @@ class Organize:
         logger.info(f"Key: {stream_key} --> {yara_flagged[0].rule}")
 
     def add_packet_entry(self, threat_ip, threat_packet, threat_flagged):
-        logger.info(f"Threat: {threat_ip} --> {threat_flagged[0].rule}")
+        logger.info(f"Threat found: {threat_ip} --> {threat_flagged[0].rule}")
+        print(f"Threat found: {threat_ip} --> {threat_flagged[0].rule}")
 
 if __name__ == "__main__":
     pass
