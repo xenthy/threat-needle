@@ -62,29 +62,26 @@ class Yara:
             if (matches := self._rules.match(data=payload)):
 
                 ### NOT TESTED YET so commented out
-                # if "url" in matches[0].rule:
-                    # self.url_yar(k, matches)    
-
-                logger.info(f"{k} --> {matches}")
+                if "url" in matches[0].rule:
+                    self.url_yar(k, matches)    
 
                 # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
                 org.add_stream_entry(k, payload, matches)
 
-'''
+    '''
+    function "url_yar(self, k, matches)" NOT TESTED YET
 
-function "url_yar(self, k, matches)" NOT TESTED YET
+    E.g. 
+    When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
 
-E.g. 
-When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
-
-
-''' 
-#    def url_yar(self, k, matches):
-#        for url in matches[0].strings:
-#            if (matches := self._url_rules.match(data=url[2])):
-#                raw_timestamp = Escapy.convert_packet(k, "Timestamp")
-#                timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
-#                org.add_packet_entry(url[2], k, matches, timestamp)
+    ''' 
+    def url_yar(self, k, matches):
+        for url in matches[0].strings:
+            if (matches := self._url_rules.match(data=url[2])):
+                raw_timestamp = Escapy.convert_packet(k, "Timestamp")
+                timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
+                print(f'in url_yar: {matches[0].strings}')
+                org.add_packet_entry(url[2], k, matches, timestamp)
         
 
 

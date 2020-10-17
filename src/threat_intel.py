@@ -63,7 +63,7 @@ class ThreatIntel:
         for threat in found:
             if (matches := self.rules.match(data=threat)):
                 self.threat_list[threat] = [packet]
-                org.add_packet_entry(threat, packet, matches, timestamp)
+                org.add_packet_entry(packet, matches, timestamp)
 
                 # To prevent multiple flags (TBC)
                 # if threat not in self.threat_list:
