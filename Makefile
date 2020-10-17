@@ -4,7 +4,7 @@ else
 	CC=sudo python3
 endif
 
-PFLAGS=-3.8-64
+PFLAGS=3.8
 
 TARGET?=src/main
 CHECK?=src/check
@@ -16,7 +16,7 @@ all:
 	$(CC) $(TARGET).py
 
 check:
-	$(CC) $(CHECK).py
+	$(CC).8 $(CHECK).py
 
 clean:
 ifeq ($(OS),Windows_NT)
