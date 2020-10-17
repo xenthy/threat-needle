@@ -7,6 +7,7 @@ endif
 PFLAGS=-3.8-64
 
 TARGET?=src/main
+CHECK?=src/check
 SOURCES:=$(wildcard src/*.py)
 
 .PHONY: all check clean
@@ -15,7 +16,7 @@ all:
 	$(CC) $(TARGET).py
 
 check:
-	$(CC) -m py_compile $(SOURCES)
+	$(CC) $(CHECK).py
 
 clean:
 ifeq ($(OS),Windows_NT)
