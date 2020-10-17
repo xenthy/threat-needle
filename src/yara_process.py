@@ -7,9 +7,11 @@
 import os
 import glob
 import yara
+import datetime
 from util import Util
+from escapy import Escapy
 from flagged_organize import Organize
-from config import RULES_DIR, CAP_PATH
+from config import RULES_DIR, CAP_PATH, INTEL_DIR
 from features import find_streams, extract_payload
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
@@ -27,15 +29,18 @@ org = Organize()
 class Yara:
     def __init__(self):
         self._rules = ""
+        self._url_rules = ""
         self._matches = []
         self.udp_ports = ["53", "80", "443"]
 
     # Loads in uncompiled rules files
     def load_rules(self):
         rule_files = self._prepare_rules(RULES_DIR)
+        url_rule_files = self._prepare_rules(INTEL_DIR)
         # Compile all rules file in specified paths
         try:
             self._rules = yara.compile(filepaths=rule_files)
+            self.url_rules = yara.compile(filepaths=url_rule_files)
         except Exception as e:
             logger.error(f"Invalid Rule file/syntax error: \n{e}")
             #print(f"Invalid Rule file/syntax error: \n{e}")
@@ -54,13 +59,34 @@ class Yara:
 
         for k, stream in stream_dict.items():
             payload = extract_payload(stream)
-            matches = self._rules.match(data=payload)
+            if (matches := self._rules.match(data=payload)):
 
-            if matches:
+                ### NOT TESTED YET so commented out
+                # if "url" in matches[0].rule:
+                    # self.url_yar(k, matches)    
+
                 logger.info(f"{k} --> {matches}")
 
                 # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
                 org.add_stream_entry(k, payload, matches)
+
+'''
+
+function "url_yar(self, k, matches)" NOT TESTED YET
+
+E.g. 
+When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
+
+
+''' 
+#    def url_yar(self, k, matches):
+#        for url in matches[0].strings:
+#            if (matches := self._url_rules.match(data=url[2])):
+#                raw_timestamp = Escapy.convert_packet(k, "Timestamp")
+#                timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
+#                org.add_packet_entry(url[2], k, matches, timestamp)
+        
+
 
 if __name__ == "__main__":
     #    RULES_DIR = "."+RULES_DIR
