@@ -37,7 +37,6 @@ class ThreatIntel:
         for packet in temp_plist:
             timestamp, extracted = self.extract_ip_domains(packet)
             if extracted:
-                print(f"{timestamp} -- {extracted}")
                 self.hunt_threat(timestamp, extracted, packet)
 
     def extract_ip_domains(self, packet):
