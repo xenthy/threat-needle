@@ -16,7 +16,7 @@ all:
 	$(CC) $(TARGET).py
 
 check:
-	$(CC).8 $(CHECK).py
+	python $(CHECK).py
 
 clean:
 ifeq ($(OS),Windows_NT)

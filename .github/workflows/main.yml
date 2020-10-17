@@ -15,4 +15,4 @@ jobs:
     - name: configure
       run: ./configure
     - name: make check
-      run: python -c "import sys; print(sys.version)"
+      run: make check
