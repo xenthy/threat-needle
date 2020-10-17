@@ -1,5 +1,6 @@
 from os import name as os_name
 from scapy.all import AsyncSniffer, PacketList
+from scapy.layers.http import HTTPRequest, HTTPResponse
 from collections import OrderedDict
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -16,6 +17,7 @@ logger.addHandler(file_handler)
 
 class Escapy:
     __packet_values = (int, float, str, bytes, bool, list, tuple, set, dict, type(None))
+    __explicit_layers = [HTTPRequest, HTTPResponse]
     __cap = PacketList()
 
     @staticmethod
@@ -41,6 +43,7 @@ class Escapy:
 
     @staticmethod
     def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
+        explicit_layers = Escapy.__explicit_layers + explicit_layers
         packet_dict = OrderedDict()
         count = 0
 
@@ -55,7 +58,7 @@ class Escapy:
 
         packet_dict["Timestamp"] = packet.time
         packet_dict["Size"] = packet.__len__()
-            
+
         # explicit layers
         for protocol_layer in explicit_layers:
             layer = packet.getlayer(protocol_layer)

@@ -14,8 +14,6 @@ from flagged_organize import Organize
 from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
-from scapy.layers.http import HTTPRequest
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -42,7 +40,7 @@ class ThreatIntel:
     def extract_ip_domains(self, packet):
         extracted = []
 
-        http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp", explicit_layers=[HTTPRequest])
+        http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
 
         if http_request:
             extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
@@ -67,12 +65,12 @@ class ThreatIntel:
                 self.threat_list[threat] = [packet]
                 org.add_packet_entry(threat, packet, matches, timestamp)
 
-                ## To prevent multiple flags (TBC)
-                 # if threat not in self.threat_list:
-                     # self.threat_list[threat] = [packet]
-                     # org.add_packet_entry(threat, packet, matches, timestamp)
-                 # else:
-                     # self.threat_list[threat] = self.threat_list[threat] + [packet]
+                # To prevent multiple flags (TBC)
+                # if threat not in self.threat_list:
+                # self.threat_list[threat] = [packet]
+                # org.add_packet_entry(threat, packet, matches, timestamp)
+                # else:
+                # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
     def threat_update(self):
         rule = Rule()

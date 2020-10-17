@@ -20,7 +20,27 @@ logger.addHandler(file_handler)
 def extract_payload(stream):
     payload = bytes()
     for pkt in stream:
-        if (raw := Escapy.convert_packet(pkt, "Raw")) is not None:
+        raw, http_request, http_response = Escapy.convert_packet(pkt, "Raw", "HTTP Request", "HTTP Response")
+
+        if http_request:
+            payload = payload + http_request["Method"] + b" " + http_request["Path"] + b" " + http_request["Http_Version"]
+            for k, v in http_request.items():
+                if k in ["Method", "Path", "Http_Version"] or v is None or type(v) != bytes:
+                    continue
+                payload = payload + b"\n" + k.encode() + b": " + v
+
+            payload = payload + b"\n\n"
+
+        if http_response:
+            payload = payload + http_response["Http_Version"] + b" " + http_response["Status_Code"] + b" " + http_response["Reason_Phrase"]
+            for k, v in http_response.items():
+                if k in ["Http_Version", "Status_Code", "Reason_Phrase"] or v is None or type(v) != bytes:
+                    continue
+                payload = payload + b"\n" + k.encode() + b": " + v
+
+            payload = payload + b"\n\n"
+
+        if raw is not None:
             payload = payload + raw["load"]
     # return Util.convert_to_hex(load)
     return payload
