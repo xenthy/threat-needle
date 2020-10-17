@@ -24,6 +24,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 org = Organize()
 
+
 class ThreatIntel:
     def __init__(self):
         self.rules = ""
@@ -33,7 +34,7 @@ class ThreatIntel:
         for packet in temp_plist:
             extracted = self.extract_ip_domains(packet)
             if extracted:
-                self.hunt_threat(extracted, packet) 
+                self.hunt_threat(extracted, packet)
 
     def extract_ip_domains(self, packet):
         extracted = []
@@ -41,7 +42,7 @@ class ThreatIntel:
         parsed_pkt = Util.convert_packet(packet)
         if "HTTPRequest" in parsed_pkt:
             extracted.append(parsed_pkt['HTTPRequest']['Host'])
-            #extracted.append(parsed_pkt['HTTPRequest']['Path'])  # URI
+            # extracted.append(parsed_pkt['HTTPRequest']['Path'])  # URI
 
         if "DNSQR" in parsed_pkt:
             extracted.append(parsed_pkt['DNSQR']['qname'])
@@ -50,35 +51,33 @@ class ThreatIntel:
             extracted.append(parsed_pkt['IP']['src'])
             extracted.append(parsed_pkt['IP']['dst'])
 
-        return extracted 
+        return extracted
 
-    
     def hunt_threat(self, found, packet):
         for threat in found:
-            if matches := self.rules.match(data=threat):
+            if (matches := self.rules.match(data=threat)):
                 if threat not in self.threat_list:
                     self.threat_list[threat] = [packet]
                     org.add_packet_entry(threat, packet, matches)
                 else:
                     self.threat_list[threat] = self.threat_list[threat] + [packet]
 
-
     def threat_update(self):
         rule = Rule()
         filenames = rule.prepare_lists()
-        entries = {"domains":[],"ips":[]}
+        entries = {"domains": [], "ips": []}
         for filename in filenames:
             identify = filename.split("_")[1]
-            with open(INTEL_DIR+filename+".txt",'r') as f:
+            with open(INTEL_DIR+filename+".txt", 'r') as f:
                 lines = [line.strip() for line in f.readlines() if "#" not in line if line.strip() != ""]
 
             if "domain" == identify:
-                entries["domains"]+= lines
+                entries["domains"] += lines
             elif "ip" == identify:
-                entries["ips"]+= lines
+                entries["ips"] += lines
 
         for entry, lines in entries.items():
-            chunked = rule.chunker(lines,9999)
+            chunked = rule.chunker(lines, 9999)
             for index, chunk in enumerate(chunked):
                 name = entry+str(index)
                 author = "Auto Generated"
@@ -97,9 +96,11 @@ class ThreatIntel:
     - mysql
     - postgresql
     '''
+
     def get_threats(self):
         if self.threat_list:
             return self.threat_list
+
 
 if __name__ == "__main__":
     threat = ThreatIntel()
