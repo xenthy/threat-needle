@@ -15,7 +15,7 @@ sudo apt install build-essential -y
 
 # install dependencies
 echo "\n${PURPLE}[+] Installing dependencies\n${END}"
-pip3 install -r requirements.txt
+sudo pip3 install -r requirements.txt
 
 # install addtional dependencies
 # echo "\n${PURPLE}[+] Installing addational dependencies\n${END}"
