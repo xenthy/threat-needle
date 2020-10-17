@@ -12,7 +12,7 @@ CAP_EXTENSION = ".cap"
 RULES_DIR = "./rules/"
 
 # Path to threat-intel folder
-INTEL_DIR = "./threat_intel/"
+INTEL_DIR = "./rules/threat_intel/"
 
 # SESSION
 # Path to session cache folder
