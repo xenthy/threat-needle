@@ -6,6 +6,7 @@ Incomplete, thinking of implementing a convertor to yara instead, then use yara 
 
 import re
 import glob
+import datetime
 from escapy import Escapy
 from yara_create import *
 from config import INTEL_DIR
@@ -34,18 +35,18 @@ class ThreatIntel:
 
     def run(self, temp_plist):
         for packet in temp_plist:
-            extracted = self.extract_ip_domains(packet)
+            timestamp, extracted = self.extract_ip_domains(packet)
             if extracted:
-                self.hunt_threat(extracted, packet)
+                print(f"{timestamp} -- {extracted}")
+                self.hunt_threat(timestamp, extracted, packet)
 
     def extract_ip_domains(self, packet):
         extracted = []
 
-        http_request, dns, ip = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
+        http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp", explicit_layers=[HTTPRequest])
 
         if http_request:
-            extracted.append(http_request["Host"].decode('utf-8'))
-            extracted.append(http_request["Path"].decode('utf-8'))  # URI
+            extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
 
         if dns:
             # not all DNS layers have qname for some reason
@@ -58,16 +59,21 @@ class ThreatIntel:
             extracted.append(ip["src"])
             extracted.append(ip["dst"])
 
-        return extracted
+        return timestamp, extracted
 
-    def hunt_threat(self, found, packet):
+    def hunt_threat(self, raw_timestamp, found, packet):
+        timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
         for threat in found:
             if (matches := self.rules.match(data=threat)):
-                if threat not in self.threat_list:
-                    self.threat_list[threat] = [packet]
-                    org.add_packet_entry(threat, packet, matches)
-                else:
-                    self.threat_list[threat] = self.threat_list[threat] + [packet]
+                self.threat_list[threat] = [packet]
+                org.add_packet_entry(threat, packet, matches, timestamp)
+
+                ## To prevent multiple flags (TBC)
+                 # if threat not in self.threat_list:
+                     # self.threat_list[threat] = [packet]
+                     # org.add_packet_entry(threat, packet, matches, timestamp)
+                 # else:
+                     # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
     def threat_update(self):
         rule = Rule()

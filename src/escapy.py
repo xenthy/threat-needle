@@ -53,6 +53,9 @@ class Escapy:
 
             packet_dict = {**packet_dict, **layer_dict}
 
+        packet_dict["Timestamp"] = packet.time
+        packet_dict["Size"] = packet.__len__()
+            
         # explicit layers
         for protocol_layer in explicit_layers:
             layer = packet.getlayer(protocol_layer)
