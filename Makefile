@@ -4,10 +4,9 @@ else
 	CC=sudo python3
 endif
 
-PFLAGS=3.8
+PFLAGS=-3.8-64
 
 TARGET?=src/main
-CHECK?=src/check
 SOURCES:=$(wildcard src/*.py)
 
 .PHONY: all check clean
@@ -16,7 +15,7 @@ all:
 	$(CC) $(TARGET).py
 
 check:
-	python $(CHECK).py
+	python -m py_compile $(SOURCES)
 
 clean:
 ifeq ($(OS),Windows_NT)
