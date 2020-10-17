@@ -1,9 +1,10 @@
 from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
 from vault import Vault
 from scapy.all import wrpcap, rdpcap, PacketList, Packet
+from scapy.layers.http import HTTPRequest, HTTPResponse
 import sys
 import datetime
-
+from pprint import pformat
 from collections import OrderedDict
 
 
@@ -56,50 +57,54 @@ class Util:
         Util.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
-    def convert_packet(packet) -> OrderedDict:
-        """
-        Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
-        """
-        # init dictionary of dictionaries
-        packet_dict, layer_dict = OrderedDict(), OrderedDict()
+    def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
+        packet_dict = OrderedDict()
+        count = 0
 
-        string_packet = packet.__repr__()
+        # normal layers
+        while (layer := packet.getlayer(count)):
+            count += 1
 
-        packet_type = string_packet.split("|<")
+            if (layer_dict := Util.__layer_dict(layer)) is None:
+                continue
 
-        # remove header, "<"
-        packet_type[0] = packet_type[0][1:]
+            packet_dict = {**packet_dict, **layer_dict}
 
-        # remove trailer, e.g. (|>>>>)
-        index = packet_type[-1].rfind("|")
-        packet_type[-1] = packet_type[-1][:index].strip()
+        # explicit layers
+        for protocol_layer in explicit_layers:
+            layer = packet.getlayer(protocol_layer)
+            if (layer_dict := Util.__layer_dict(layer)) is not None:
+                packet_dict = {**packet_dict, **layer_dict}
 
-        for layer in packet_type:
-            # split into respective layers
-            layer_list = layer.split()
+        if len(args) == 0:
+            return packet_dict
 
-            # remove catergory name
-            layer_name = layer_list.pop(0)
+        # if specific layers are required
+        return_list = []
 
-            # if it is 'Raw', or 'Padding' join the payload back together
-            if layer_name in ["Raw", "Padding"]:
-                layer_list = [" ".join(layer_list)]
+        for arg in args:
+            return_list.append(packet_dict[arg] if arg in packet_dict else None)
 
-            for item in layer_list:
-                # get key and value for each item
-                try:
-                    key, value = item.split("=", 1)
-                except ValueError:
-                    continue
-                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+        return return_list[0] if len(args) == 1 else return_list
 
-            # finally, add sanitized later into dict
-            packet_dict[layer_name] = layer_dict
+    @staticmethod
+    def __layer_dict(layer):
+        packet_values = (int, float, str, bytes, bool, list, tuple, set, dict, type(None))
+        layer_dict = {}
 
-        # misc information
-        packet_dict["Timestamp"] = packet.time
-        packet_dict["Size"] = len(packet)
-        return packet_dict
+        if not getattr(layer, 'fields_desc', None):
+            return
+
+        for key in layer.fields_desc:
+            value = getattr(layer, key.name)
+            value = None if value is type(None) else value
+
+            if not isinstance(value, packet_values):
+                value = Util.__layer_dict(value)
+
+            layer_dict[key.name] = value
+
+        return {layer.name: layer_dict}
 
     @staticmethod
     def convert_to_hex(string):
@@ -141,3 +146,88 @@ class Util:
         elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
             size += sum([Util.get_size(i, seen) for i in obj])
         return size
+
+    @staticmethod
+    def original_convert_packet(packet, *args) -> OrderedDict:
+        """
+        Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
+        """
+        string_packet = packet.__repr__()
+
+        packet_type = string_packet.split("|<")
+
+        # remove header, "<"
+        packet_type[0] = packet_type[0][1:]
+
+        # remove trailer, e.g. (|>>>>)
+        index = packet_type[-1].rfind("|")
+        packet_type[-1] = packet_type[-1][:index].strip()
+
+        # if a specific value was specified
+        if args:
+            return Util.__conditional_convert(packet_type, args)
+
+        # init dictionary of dictionaries
+        packet_dict, layer_dict = OrderedDict(), OrderedDict()
+
+        for layer in packet_type:
+            # split into respective layers
+            layer_list = layer.split()
+
+            # remove catergory name
+            layer_name = layer_list.pop(0)
+            # if it is 'Raw', or 'Padding' join the payload back together
+            if layer_name in ["Raw", "Padding"]:
+                layer_list = [" ".join(layer_list)]
+
+            for item in layer_list:
+                # get key and value for each item
+                try:
+                    key, value = item.split("=", 1)
+                except ValueError:
+                    continue
+                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+
+            # finally, add sanitized later into dict
+            packet_dict[layer_name] = layer_dict
+
+        # misc information
+        packet_dict["Timestamp"] = packet.time
+        packet_dict["Size"] = len(packet)
+        return packet_dict
+
+    @classmethod
+    def __conditional_convert(self, packet_type, args):
+        # init dictionary
+        return_list = []
+
+        # populate list with Nones
+        while len(args) != len(return_list):
+            return_list.append(None)
+        logger.info(packet_type)
+        for layer in packet_type:
+            # split into respective layers
+            layer_list = layer.split()
+
+            # remove catergory name and check against key1
+            if (layer_name := layer_list.pop(0)) not in args:
+                continue
+            if "DNSQR" == layer_name:
+                print(layer_list)
+            # if it is 'Raw', or 'Padding' join the payload back together
+            if layer_name in ["Raw", "Padding"]:
+                layer_list = [" ".join(layer_list)]
+
+            layer_dict = {}
+
+            for item in layer_list:
+                # get key and value for each item
+                try:
+                    key, value = item.split("=", 1)
+                    layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+                except ValueError:
+                    continue
+
+            return_list[args.index(layer_name)] = layer_dict
+        # logger.info(return_list)
+        return return_list[0] if len(return_list) == 1 else return_list

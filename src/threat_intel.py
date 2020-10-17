@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-'''
-Incomplete, thinking of implementing a convertor to yara instead, then use yara to run the whole search, with segmented parts for each different 'protocol'
-'''
+"""
+Incomplete, thinking of implementing a convertor to yara instead, then use yara to run the whole search, with segmented parts for each different "protocol"
+"""
 
 import re
 import glob
@@ -12,6 +12,8 @@ from config import INTEL_DIR
 from flagged_organize import Organize
 from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+
+from scapy.layers.http import HTTPRequest
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -38,18 +40,35 @@ class ThreatIntel:
 
     def extract_ip_domains(self, packet):
         extracted = []
+        parsed_pkt = Util.original_convert_packet(packet)
 
-        parsed_pkt = Util.convert_packet(packet)
         if "HTTPRequest" in parsed_pkt:
-            extracted.append(parsed_pkt['HTTPRequest']['Host'])
-            # extracted.append(parsed_pkt['HTTPRequest']['Path'])  # URI
+            extracted.append(parsed_pkt["HTTPRequest"]["Host"])
+            # extracted.append(parsed_pkt["HTTPRequest"]["Path"])  # URI
 
         if "DNSQR" in parsed_pkt:
-            extracted.append(parsed_pkt['DNSQR']['qname'])
+            extracted.append(parsed_pkt["DNSQR"]["qname"])
 
         if "IP" in parsed_pkt:
-            extracted.append(parsed_pkt['IP']['src'])
-            extracted.append(parsed_pkt['IP']['dst'])
+            extracted.append(parsed_pkt["IP"]["src"])
+            extracted.append(parsed_pkt["IP"]["dst"])
+
+        # http_request, dns, ip = Util.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
+
+        # if http_request:
+        #     extracted.append(http_request["Host"])
+        #     # extracted.append(http_request["Path"])  # URI
+
+        # if dns:
+        #     # not all DNS layers have qname for some reason
+        #     try:
+        #         extracted.append(dns["qd"]["DNS Question Record"]["qname"])  # bytes
+        #     except TypeError:
+        #         pass
+
+        # if ip:
+        #     extracted.append(ip["src"])
+        #     extracted.append(ip["dst"])
 
         return extracted
 
@@ -68,7 +87,7 @@ class ThreatIntel:
         entries = {"domains": [], "ips": []}
         for filename in filenames:
             identify = filename.split("_")[1]
-            with open(INTEL_DIR+filename+".txt", 'r') as f:
+            with open(INTEL_DIR+filename+".txt", "r") as f:
                 lines = [line.strip() for line in f.readlines() if "#" not in line if line.strip() != ""]
 
             if "domain" == identify:
@@ -91,11 +110,11 @@ class ThreatIntel:
 
         self.rules = rule.load_rules()
 
-    '''
+    """
     May can implement another database to write to instead
     - mysql
     - postgresql
-    '''
+    """
 
     def get_threats(self):
         if self.threat_list:

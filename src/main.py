@@ -79,10 +79,10 @@ def session_caching():
         for header, plist in sessions.items():
             header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
-                with open(f"{runtime_path}/{header}.txt", "a+") as f:
+                with open(f"{runtime_path}/{header}", "ab+") as f:
                     f.write(f"\n{extract_payload(plist)}")
             else:
-                with open(f"{runtime_path}/{header}.txt", "w+") as f:
+                with open(f"{runtime_path}/{header}", "wb+") as f:
                     f.write(extract_payload(plist))
 
         logger.info(f"cached to local file [{Thread.name()}]")
