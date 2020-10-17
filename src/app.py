@@ -1,12 +1,13 @@
-from flask import Flask, render_template, url_for, copy_current_request_context
+from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect
 from flask_socketio import SocketIO, emit
 from time import sleep
 from threading import Thread, Event
 import random
+from util import Util
 from vault import Vault
 from os.path import isfile, join
 from os import listdir
-from config import CAP_PATH
+from config import CAP_PATH , SESSION_CACHE_PATH
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -34,13 +35,6 @@ log.setLevel(logging.ERROR)
 
 
 total_flagged = 0
-packet = [
-    {'src': '192.168.2.3', 'dst': '127.2.4.5', 'prot': '80', 'desc': '1'},
-    {'src': '192.168.1.2', 'dst': '127.2.4.5', 'prot': '80', 'desc': '2'},
-    {'src': '192.168.2.3', 'dst': '127.20.4.5', 'prot': '333', 'desc': '3'},
-    {'src': '192.148.2.3', 'dst': '127.20.4.5', 'prot': '80', 'desc': '4'}
-]
-
 
 def get_data():
     global total_flagged
@@ -60,10 +54,63 @@ def index():
     return render_template('index.html')
 
 
+
 @app.route('/viewfile')
 def savefile():
     onlyfiles = [f for f in listdir(CAP_PATH) if isfile(join(CAP_PATH, f)) if f[-4:] == '.cap']
     return render_template('viewfile.html', files=onlyfiles)
+
+
+@app.route('/viewtcp', methods=['POST','GET'])
+def view_tcp():
+
+    tcp_sessions=[session_header for session_header in Vault.get_session_headers() if 'TCP' in session_header]
+
+    payload = None
+    if request.method == 'POST':
+        header = request.form['session']
+        header = header.replace(' ','_').replace(':','-')
+        path = f'{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{header}'
+        try:
+            with open(path, "rb") as f:
+                payload = f.read()           
+            #logger.info(payload)
+            payload = payload.decode('utf-8')
+        except Exception:
+            payload = None
+    return render_template('viewsession.html',tcp_sessions=tcp_sessions, payload=payload)
+
+@app.route('/viewudp')
+def view_udp():
+    udp_sessions=[session_header for session_header in Vault.get_session_headers() if 'UDP' in session_header]
+    return render_template('viewsession.html',udp_sessions=udp_sessions)
+    
+
+@app.route('/save', methods=['POST'])
+def save():
+    saving = request.json['data'].strip()
+    if saving == 'Save':
+        Util.start_saving()
+    else:
+        Util.stop_saving()
+    return f"sucessful operation: {saving}"
+
+
+@app.route('/addrule', methods=['POST','GET'])
+def add_rule():
+    if request.method == 'POST':
+        author = request.form['author']
+        rule_name = request.form['rulename']
+        description = request.form['description']
+        strings = request.form['strings']
+        condition = request.form['condition']
+
+        #save to yara config
+        print(author,rule_name,description,strings,condition)
+        
+        return redirect(request.url)
+    else:
+        return render_template('addrule.html')
 
 
 @socketio.on('connect', namespace='/test')

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+  {% extends "base.html" %}
+  {% block content %}
+    <div class="col-auto">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Sessions</h6>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <form action="/viewtcp" method="post">
+                <label for="sessions">Select Session:</label>
+                <select class="form-control" name="session" >
+                    {%for k in tcp_sessions%}
+                    <option>{{k}}</option>
+                    {%endfor%}
+                </select>
+            </br>
+                <input type="submit" value="view" class="btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Stream View</h6>
+        </div>
+        <div class="card-body">
+            <pre>{{payload}}</pre>
+        </div>
+    </div>
+
+
+    </div>
+  {% endblock content%}
+
+
+</body>
+
+</html>

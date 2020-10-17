@@ -10,33 +10,29 @@ $(document).ready(function (){
         $('#total_flagged').html(msg.total_flagged.toString());
     });
 
-});
-
-
-$(document).ready(function(){
 
     $("#save").click(function(){
-        change();
+        var btn = document.getElementById("save");
+        var save = btn.innerHTML;
+        console.log(save);
+        if (btn.innerHTML == "Save"){
+            console.log("change to stop saving");
+            btn.innerHTML = "Stop Saving";
+        }else{
+            console.log("change to Save");
+            btn.innerHTML = "Save";
+        }
+        var a = {'data':save};
         $.ajax({
             type:'post',
             url:'/save',
+            contentType: "application/json",
+            data:JSON.stringify(a),
             success:function(data){
-                change();
             }
-    
         });  
-        
+            
     });
 
 });
 
-
-function change(){
-    var btn = document.getElementById("save");
-
-    if (btn.innerHTML.equals("Save"))
-        btn.innerHTML = "Stop Saving";
-    else
-        btn.innerHTML = "Save";
-
-}
