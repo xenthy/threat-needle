@@ -13,6 +13,6 @@ jobs:
       with:
         python-version: '3.8.5'
     - name: configure
-      run: ./configure
+      run: ./configure_github
     - name: make check
       run: make check
