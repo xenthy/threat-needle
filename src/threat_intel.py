@@ -42,33 +42,22 @@ class ThreatIntel:
         extracted = []
         parsed_pkt = Util.original_convert_packet(packet)
 
-        if "HTTPRequest" in parsed_pkt:
-            extracted.append(parsed_pkt["HTTPRequest"]["Host"])
-            # extracted.append(parsed_pkt["HTTPRequest"]["Path"])  # URI
+        http_request, dns, ip = Util.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
 
-        if "DNSQR" in parsed_pkt:
-            extracted.append(parsed_pkt["DNSQR"]["qname"])
+        if http_request:
+            extracted.append(http_request["Host"].decode('utf-8'))
+            extracted.append(http_request["Path"].decode('utf-8'))  # URI
 
-        if "IP" in parsed_pkt:
-            extracted.append(parsed_pkt["IP"]["src"])
-            extracted.append(parsed_pkt["IP"]["dst"])
+        if dns:
+            # not all DNS layers have qname for some reason
+            try:
+                extracted.append(dns["qd"]["DNS Question Record"]["qname"].decode('utf-8'))  # bytes
+            except TypeError:
+                pass
 
-        # http_request, dns, ip = Util.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
-
-        # if http_request:
-        #     extracted.append(http_request["Host"])
-        #     # extracted.append(http_request["Path"])  # URI
-
-        # if dns:
-        #     # not all DNS layers have qname for some reason
-        #     try:
-        #         extracted.append(dns["qd"]["DNS Question Record"]["qname"])  # bytes
-        #     except TypeError:
-        #         pass
-
-        # if ip:
-        #     extracted.append(ip["src"])
-        #     extracted.append(ip["dst"])
+        if ip:
+            extracted.append(ip["src"])
+            extracted.append(ip["dst"])
 
         return extracted
 
