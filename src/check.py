@@ -1,3 +1,7 @@
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from colour import GREEN, RED, YELLOW, RESET
+from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
+from features import extract_payload
 from vault import Vault
 from util import Util
 
@@ -15,12 +19,11 @@ from collections import Counter
 from os.path import isfile, join
 from os import listdir, mkdir
 
-from features import extract_payload
+# fix for github actions
+import os
+os.sys.path.append('/usr/bin/')
 
-from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
 
-from colour import GREEN, RED, YELLOW, RESET
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
