@@ -9,7 +9,7 @@ import tracemalloc
 import threading
 import time
 
-from sniffer import Sniffer
+from escapy import Escapy
 from collections import Counter
 
 from os.path import isfile, join
@@ -107,7 +107,7 @@ def main():
     manager_thread = threading.Thread(target=manager, args=(lock, e,), daemon=True)
 
     """ INDEFINITE SNIFFING """
-    Sniffer.start(custom_action)
+    Escapy.async_sniff(custom_action)
     memory_thread.start()
     session_caching_thread.start()
     manager_thread.start()
@@ -136,7 +136,7 @@ def main():
         Util.stop_saving()
 
     Vault.set_interrupt(True)
-    Sniffer.stop()
+    Escapy.stop()
     e.set()
     memory_thread.join()
     session_caching_thread.join()

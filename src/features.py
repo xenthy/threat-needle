@@ -1,4 +1,5 @@
 from util import Util
+from escapy import Escapy
 from pprint import pformat
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 from collections import OrderedDict
@@ -19,7 +20,7 @@ logger.addHandler(file_handler)
 def extract_payload(stream):
     payload = bytes()
     for pkt in stream:
-        if (raw := Util.convert_packet(pkt, "Raw")) is not None:
+        if (raw := Escapy.convert_packet(pkt, "Raw")) is not None:
             payload = payload + raw["load"]
     # return Util.convert_to_hex(load)
     return payload

@@ -6,7 +6,7 @@ Incomplete, thinking of implementing a convertor to yara instead, then use yara 
 
 import re
 import glob
-from util import Util
+from escapy import Escapy
 from yara_create import *
 from config import INTEL_DIR
 from flagged_organize import Organize
@@ -40,9 +40,8 @@ class ThreatIntel:
 
     def extract_ip_domains(self, packet):
         extracted = []
-        parsed_pkt = Util.original_convert_packet(packet)
 
-        http_request, dns, ip = Util.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
+        http_request, dns, ip = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", explicit_layers=[HTTPRequest])
 
         if http_request:
             extracted.append(http_request["Host"].decode('utf-8'))
@@ -112,4 +111,4 @@ class ThreatIntel:
 
 if __name__ == "__main__":
     threat = ThreatIntel()
-    threat.run()
+    pass

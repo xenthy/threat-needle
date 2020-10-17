@@ -57,56 +57,6 @@ class Util:
         Util.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
-    def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
-        packet_dict = OrderedDict()
-        count = 0
-
-        # normal layers
-        while (layer := packet.getlayer(count)):
-            count += 1
-
-            if (layer_dict := Util.__layer_dict(layer)) is None:
-                continue
-
-            packet_dict = {**packet_dict, **layer_dict}
-
-        # explicit layers
-        for protocol_layer in explicit_layers:
-            layer = packet.getlayer(protocol_layer)
-            if (layer_dict := Util.__layer_dict(layer)) is not None:
-                packet_dict = {**packet_dict, **layer_dict}
-
-        if len(args) == 0:
-            return packet_dict
-
-        # if specific layers are required
-        return_list = []
-
-        for arg in args:
-            return_list.append(packet_dict[arg] if arg in packet_dict else None)
-
-        return return_list[0] if len(args) == 1 else return_list
-
-    @staticmethod
-    def __layer_dict(layer):
-        packet_values = (int, float, str, bytes, bool, list, tuple, set, dict, type(None))
-        layer_dict = {}
-
-        if not getattr(layer, 'fields_desc', None):
-            return
-
-        for key in layer.fields_desc:
-            value = getattr(layer, key.name)
-            value = None if value is type(None) else value
-
-            if not isinstance(value, packet_values):
-                value = Util.__layer_dict(value)
-
-            layer_dict[key.name] = value
-
-        return {layer.name: layer_dict}
-
-    @staticmethod
     def convert_to_hex(string):
         hex_format = ""
         skip = 0
