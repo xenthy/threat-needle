@@ -10,7 +10,7 @@ import datetime
 from escapy import Escapy
 from yara_create import *
 from config import INTEL_DIR
-from flagged_organize import Organize
+from organize import Organize
 from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
@@ -23,7 +23,6 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-org = Organize()
 
 
 class ThreatIntel:
@@ -63,12 +62,12 @@ class ThreatIntel:
         for threat in found:
             if (matches := self.rules.match(data=threat)):
                 self.threat_list[threat] = [packet]
-                org.add_packet_entry(packet, matches, timestamp)
+                Organize.add_packet_entry(packet, matches, timestamp)
 
                 # To prevent multiple flags (TBC)
                 # if threat not in self.threat_list:
                 # self.threat_list[threat] = [packet]
-                # org.add_packet_entry(threat, packet, matches, timestamp)
+                # Organize.add_packet_entry(threat, packet, matches, timestamp)
                 # else:
                 # self.threat_list[threat] = self.threat_list[threat] + [packet]
 

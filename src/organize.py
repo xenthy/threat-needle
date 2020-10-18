@@ -12,23 +12,20 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 class Organize:
-    def __init__(self):
-        self.flagged = {}
-        self.threats = {}
-    
-    def add_stream_entry(self, stream_key, stream_payload, yara_flagged):
+    @staticmethod
+    def add_stream_entry(stream_key, stream, stream_payload, yara_flagged, timestamp):
+        # Timestamp here might be inaccurate, as its only getting the first timestamp of the stream (multiple packets)
         flag_matches = []
         for match in yara_flagged[0].strings:
             flag_matches.append(match[2].decode('utf-8'))
 
         logger.info(f"Payload: {flag_matches} --> {yara_flagged[0].rule}")
 
-    def add_packet_entry(self, threat_packet, threat_flagged, timestamp):
+    @staticmethod
+    def add_packet_entry(threat_packet, threat_flagged, timestamp):
         flag_matches = []
         for match in threat_flagged[0].strings:
             flag_matches.append(match[2].decode('utf-8'))
 
         logger.info(f"Threat: {flag_matches} --> {threat_flagged[0].rule}")
 
-if __name__ == "__main__":
-    pass
