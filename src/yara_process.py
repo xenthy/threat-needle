@@ -59,16 +59,15 @@ class Yara:
         matches = None
 
         for k, stream in stream_dict.items():
-            if (payload := extract_payload(stream)) is None:
-                continue
-            if (matches := self._rules.match(data=payload)):
-                raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
-                timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
+            if (payload := extract_payload(stream)) is not None:
+                if (matches := self._rules.match(data=payload)):
+                    raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
+                    timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
 
-                if "url" in matches[0].rule:
-                    self.url_yar(stream, matches, timestamp)
+                    if "url" in matches[0].rule:
+                        self.url_yar(stream, k, payload, matches, timestamp)
 
-                Organize.add_stream_entry(k, stream, payload, matches, timestamp)
+                    Organize.add_stream_entry(k, stream, payload, matches, timestamp)
 
     '''
     function "url_yar(self, stream, k, matches)" 
@@ -77,7 +76,7 @@ class Yara:
     When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
 
     '''
-    def url_yar(self, stream, k, matches, timestamp):
+    def url_yar(self, stream, k, payload, matches, timestamp):
         for url in matches[0].strings:
             if (matches := self._url_rules.match(data=url[2])):
                 Organize.add_stream_entry(k, stream, payload, matches, timestamp)
