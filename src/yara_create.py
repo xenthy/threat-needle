@@ -11,7 +11,7 @@ import os
 import glob
 import math
 import yara
-from config import INTEL_DIR
+from config import INTEL_DIR, CUSTOM_RULES_DIR
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,8 @@ class Yara_create:
         self.__tag = ""
         self.__meta = {"author":"someone","purpose":"something"}
         self.__strings = dict()
-        self.any_condition = "\n\tcondition:\n\t\tany of them"
+        #self.any_condition = "\n\tcondition:\n\t\tany of them"
+        self.any_condition = "any of them"
         self.__condition = ""
 
     def new_rule(self, name, tag):
@@ -75,8 +76,10 @@ class Yara_create:
     '''
     Not implementing condition as of yet, after finish threat_intel.py working, then implement condition for web UI adding rules
     '''
-    def add_strings(self, strings, identifier, condition=None):
+    def add_strings(self, strings, identifier):
         self.__strings[identifier] = strings
+
+    def add_condition(self, condition):
         self.__condition = condition
 
     def generate(self):
@@ -89,9 +92,11 @@ class Yara_create:
         if not self.__condition:
             self.__condition = self.any_condition
 
+        cond_format = "\n\tcondition:\n\t\t"
+# 
         tail = "\n}"
         
-        return head+meta+strings+"\n"+self.__condition+tail
+        return head+meta+strings+"\n"+cond_format+self.__condition+tail
     
     # For GUI adding of rules
     def append(self):
@@ -170,6 +175,26 @@ class Rule:
 
         return chunked
 
+class Custom_create:
+    def custom_yara(author, name, desc, string, condition=None):
+        yar = Yara_create()
+        yar.new_rule(name.split(":")[0], name.split(":")[1])
+        yar.add_meta(author, "author")
+        yar.add_meta(desc, "purpose")
+
+        strings = string.split('\n')
+        for s in strings:
+            identifier = (s.split("=")[0]).replace("$","")
+            string_val = (s.split("=")[1]).replace("\"","")
+
+            yar.add_strings(string_val, identifier)
+
+        if condition:
+            yar.add_condition(condition)
+            
+        content = yar.generate()
+        with open(CUSTOM_RULES_DIR+"custom1.yar", 'a+') as f:
+            f.write(content)
 
 
 if __name__ == "__main__":
