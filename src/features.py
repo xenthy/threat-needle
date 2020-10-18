@@ -52,7 +52,7 @@ def find_streams(pcap):
 
     for k, v in stream.items():
 
-        if 'TCP' in k or 'UDP' in k:
+        if 'TCP' in k or 'UDP' in k or 'ARP' in k:
             inverse_key = k.split()
             inverse_key[1], inverse_key[3] = inverse_key[3], inverse_key[1]
             inverse_key.pop(2)
@@ -84,15 +84,18 @@ def find_streams(pcap):
                 tmp = " ".join(tmp)
                 stream_dict[tmp] = packets
 
+        elif 'ARP' in k:
+            inverse_key = k.split()
+
     # logger.info(f"{len(stream_dict)} streams found")
     return stream_dict
 
 
 if __name__ == "__main__":
+    pcap = Util.load_cap("2020-10-18_17-32-16")
+    a = find_streams(pcap)
+    for k,v in a.items():
+        if 'ARP' in k:
+            for x in v:
+                print(x.show())
 
-    pcap = Util.load_cap("ftp")
-    stream_dict = find_streams(pcap)
-
-    for k, stream in stream_dict.items():
-        # extract_payload(stream)
-        logger.info(f"{extract_payload(stream)}\n\n\n")
