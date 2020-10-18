@@ -60,14 +60,17 @@ class Yara:
 
         for k, stream in stream_dict.items():
             if (payload := extract_payload(stream)) is not None:
-                if (matches := self._rules.match(data=payload)):
-                    raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
-                    timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
+                try:
+                    if (matches := self._rules.match(data=payload)):
+                        raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
+                        timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
 
-                    if "url" in matches[0].rule:
-                        self.url_yar(stream, k, payload, matches, timestamp)
+                        if "url" in matches[0].rule:
+                            self.url_yar(stream, k, payload, matches, timestamp)
 
-                    Organize.add_stream_entry(k, stream, payload, matches, timestamp)
+                        Organize.add_stream_entry(k, stream, payload, matches, timestamp)
+                except AttributeError as e:
+                    logger.critical("Yara rules error, check rules in \"rules/custom_rules/<file>\"")
 
     '''
     function "url_yar(self, stream, k, matches)" 
