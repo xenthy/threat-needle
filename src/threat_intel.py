@@ -89,6 +89,7 @@ class ThreatIntel:
             chunked = rule.chunker(lines, 9999)
             for index, chunk in enumerate(chunked):
                 name = entry+str(index)
+                tag = "emerging_"+entry
                 author = "Auto Generated"
                 purpose = "Threat Intel Domains/IPs"
                 if "domains" == entry:
@@ -96,7 +97,7 @@ class ThreatIntel:
                 elif "ips" == entry:
                     category = "ips_"+str(index)
 
-                rule.add_rule(name, author, purpose, chunk, category)
+                rule.add_rule(name, tag, author, purpose, chunk, category)
 
         self.rules = rule.load_rules()
 

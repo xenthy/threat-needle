@@ -54,13 +54,15 @@ E.g. Calling functions to craft yara rule (as per example above)
 class Yara_create:
     def __init__(self):
         self.__name = ""
+        self.__tag = ""
         self.__meta = {"author":"someone","purpose":"something"}
         self.__strings = dict()
         self.any_condition = "\n\tcondition:\n\t\tany of them"
         self.__condition = ""
 
-    def new_rule(self, name):
+    def new_rule(self, name, tag):
         self.__name = name
+        self.__tag = tag
     
     def add_meta(self, value, key):
         if key == "author":
@@ -78,7 +80,7 @@ class Yara_create:
         self.__condition = condition
 
     def generate(self):
-        head = f"rule {self.__name}\n{{"
+        head = f"rule {self.__name} : {self.__tag}\n{{"
         meta = f"\n\tmeta:\n\t\tauthor = \"{self.__meta['author']}\"\n\t\tpurpose = \"{self.__meta['purpose']}\""
         strings = f"\n\n\tstrings:"
         for k, v in self.__strings.items():
@@ -144,9 +146,9 @@ class Rule:
                 results[os.path.basename(fname)[:-4]] = fname
         return results
 
-    def add_rule(self, name, author, purpose, lines, category):
+    def add_rule(self, name, tag, author, purpose, lines, category):
         yar = Yara_create()
-        yar.new_rule(name)
+        yar.new_rule(name, tag)
         yar.add_meta(author, "author")
         yar.add_meta(purpose, "purpose")
         ips = []
