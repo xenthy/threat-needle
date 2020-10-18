@@ -98,7 +98,7 @@ class Util:
         return size
 
     @staticmethod
-    def original_convert_packet(packet, *args) -> OrderedDict:
+    def convert_packet(packet, *args) -> OrderedDict:
         """
         Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
         """

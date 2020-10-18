@@ -43,6 +43,9 @@ class Escapy:
 
     @staticmethod
     def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
+        """
+        Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
+        """
         explicit_layers = Escapy.__explicit_layers + explicit_layers
         packet_dict = OrderedDict()
         count = 0

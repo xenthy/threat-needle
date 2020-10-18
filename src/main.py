@@ -43,7 +43,7 @@ e = threading.Event()
 
 
 def custom_action(packet):
-    
+
     Vault.plist_append(packet)
 
     # Create tuple of Src/Dst in sorted order | this is for debugging can delete
@@ -78,13 +78,15 @@ def session_caching():
         Vault.reset_session()
 
         for header, plist in sessions.items():
+            if (payload := extract_payload(plist)) is None:
+                continue
             header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
                 with open(f"{runtime_path}/{header}", "ab+") as f:
-                    f.write(f"\n{extract_payload(plist)}")
+                    f.write(b"\n" + payload)
             else:
                 with open(f"{runtime_path}/{header}", "wb+") as f:
-                    f.write(extract_payload(plist))
+                    f.write(payload)
 
         logger.info(f"cached to local file [{Thread.name()}]")
         e.wait(timeout=SESSION_CACHING_INTERVAL)

@@ -26,6 +26,7 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 org = Organize()
 
+
 class Yara:
     def __init__(self):
         self._rules = ""
@@ -40,7 +41,7 @@ class Yara:
         # Compile all rules file in specified paths
         try:
             self._rules = yara.compile(filepaths=rule_files)
-            self.url_rules = yara.compile(filepaths=url_rule_files)
+            self._url_rules = yara.compile(filepaths=url_rule_files)
         except Exception as e:
             logger.error(f"Invalid Rule file/syntax error: \n{e}")
             #print(f"Invalid Rule file/syntax error: \n{e}")
@@ -58,12 +59,13 @@ class Yara:
         matches = None
 
         for k, stream in stream_dict.items():
-            payload = extract_payload(stream)
+            if (payload := extract_payload(stream)) is None:
+                continue
             if (matches := self._rules.match(data=payload)):
 
-                ### NOT TESTED YET so commented out
+                # NOT TESTED YET so commented out
                 if "url" in matches[0].rule:
-                    self.url_yar(k, matches)    
+                    self.url_yar(k, matches)
 
                 # Need to make a separation of UDP and TCP searching, loading 2 different set of rules
                 org.add_stream_entry(k, payload, matches)
@@ -74,7 +76,8 @@ class Yara:
     E.g. 
     When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
 
-    ''' 
+    '''
+
     def url_yar(self, k, matches):
         for url in matches[0].strings:
             if (matches := self._url_rules.match(data=url[2])):
@@ -82,7 +85,6 @@ class Yara:
                 timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
                 print(f'in url_yar: {matches[0].strings}')
                 org.add_packet_entry(url[2], k, matches, timestamp)
-        
 
 
 if __name__ == "__main__":
