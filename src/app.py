@@ -8,6 +8,7 @@ from vault import Vault
 from os.path import isfile, join
 from os import listdir
 from config import CAP_PATH, SESSION_CACHE_PATH
+from yara_create import create_rule 
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -139,6 +140,7 @@ def save():
 @app.route("/addrule", methods=["POST", "GET"])
 def add_rule():
     if request.method == "POST":
+        filename = request.form["filename"]
         author = request.form["author"]
         rule_name = request.form["rulename"]
         tag = request.form["tag"]
@@ -147,7 +149,7 @@ def add_rule():
         condition = request.form["condition"]
 
         # save to yara config
-        print(author, rule_name, tag,description, strings, condition)
+        create_rule(filename, author, rule_name, tag, description, strings, condition)
         return redirect(request.url)
     else:
         return render_template("addrule.html")
