@@ -31,18 +31,20 @@ if url < 0:
 if ip == 0 and url == 0:
     ip, url = 1, 1
 
-for _ in range(ip):
+if ip != 0:
     with open("rules/threat_intel/malware_ip.txt") as f:
         lines = f.readlines()
-        while "#" in (random_ip := random.choice(lines).strip()):
-            continue
-    subprocess.run(["ping", "-c", "1", "-w", "1", random_ip], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    print(f"[!] probed {random_ip}")
+        for _ in range(ip):
+            while "#" in (random_ip := random.choice(lines).strip()):
+                continue
+            subprocess.run(["ping", "-c", "1", "-w", "1", random_ip], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            print(f"[!] probed {random_ip}")
 
-for _ in range(url):
+if url != 0:
     with open("rules/threat_intel/malware_domain.txt") as f:
         lines = f.readlines()
-        while "#" in (random_url := random.choice(lines).strip()):
-            continue
-    subprocess.run(["nslookup", random_url], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    print(f"[!] probed {random_url}")
+        for _ in range(url):
+            while "#" in (random_url := random.choice(lines).strip()):
+                continue
+            subprocess.run(["nslookup", random_url], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            print(f"[!] probed {random_url}")
