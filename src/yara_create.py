@@ -175,26 +175,25 @@ class Rule:
 
         return chunked
 
-class Custom_create:
-    def custom_yara(author, name, desc, string, condition=None):
-        yar = Yara_create()
-        yar.new_rule(name.split(":")[0], name.split(":")[1])
-        yar.add_meta(author, "author")
-        yar.add_meta(desc, "purpose")
+def create_rule(filename, author, name, tag, desc, string, condition=None):
+    yar = Yara_create()
+    yar.new_rule(name, tag)
+    yar.add_meta(author, "author")
+    yar.add_meta(desc, "purpose")
 
-        strings = string.split('\n')
-        for s in strings:
-            identifier = (s.split("=")[0]).replace("$","")
-            string_val = (s.split("=")[1]).replace("\"","")
+    strings = string.split('\n')
+    for s in strings:
+        identifier = (s.split("=")[0]).replace("$","")
+        string_val = ((s.split("=")[1]).replace("\"","")).strip()
 
-            yar.add_strings(string_val, identifier)
+        yar.add_strings(string_val, identifier)
 
-        if condition:
-            yar.add_condition(condition)
-            
-        content = yar.generate()
-        with open(CUSTOM_RULES_DIR+"custom1.yar", 'a+') as f:
-            f.write(content)
+    if condition:
+        yar.add_condition(condition)
+        
+    content = yar.generate()
+    with open(CUSTOM_RULES_DIR+filename+".yar", 'a+') as f:
+        f.write(content)
 
 
 if __name__ == "__main__":

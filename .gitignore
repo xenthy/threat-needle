@@ -154,5 +154,5 @@ cython_debug/
 *.cap
 *.pcap
 
-# Generated Yara files in /thread_intel
+# Generated Yara files in rules/threat_intel/
 rules/threat_intel/*.yar
