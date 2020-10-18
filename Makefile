@@ -21,6 +21,7 @@ clean:
 ifeq ($(OS),Windows_NT)
 	@powershell "(Get-ChildItem * -Include *.pyc -Recurse | Remove-Item)"
 	@powershell "(Get-ChildItem * -Include *.cap -Recurse | Remove-Item)"
+	@powershell "(Get-Item ./.cache/* -exclude placeholder | Remove-Item -Recurse)"
 	@echo Cleaned up .pyc, .cap files and .cache files
 else
 	@echo "Cleaning up [.pyc, .cap, .cache] files..."
