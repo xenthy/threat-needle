@@ -22,6 +22,7 @@ class Vault:
     __packet_count = 0
     __session_dict = {}
     __session_header = []
+    __flagged_dict = {}
 
     @staticmethod
     def set_interrupt(interrupt):
@@ -89,3 +90,7 @@ class Vault:
     @staticmethod
     def get_total_packet_count():
         return Vault.__packet_count
+
+    @staticmethod
+    def get_flagged() -> dict:
+        return Vault.__flagged_dict
