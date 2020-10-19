@@ -94,3 +94,7 @@ class Vault:
     @staticmethod
     def get_flagged() -> dict:
         return Vault.__flagged_dict
+
+    @staticmethod
+    def set_flagged(flagged_dict):
+        Vault.__flagged_dict.update(flagged_dict)
