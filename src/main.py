@@ -60,7 +60,7 @@ def custom_action(packet):
 def memory():
     Thread.set_name("memory-thread")
 
-    while not Vault.get_interrupt():
+    while not Thread.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
         logger.info(f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
 
@@ -70,7 +70,7 @@ def memory():
 def session_caching():
     Thread.set_name("session-caching-thread")
 
-    while not Vault.get_interrupt():
+    while not Thread.get_interrupt():
         runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
         cache_files = [f for f in listdir(runtime_path) if isfile(join(runtime_path, f)) if f[-4:] == ".txt"]
 
@@ -103,7 +103,7 @@ def main():
     mkdir(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}")
 
     """ THREADING """
-    Vault.set_interrupt(False)
+    Thread.set_interrupt(False)
     lock = threading.Lock()
     memory_thread = threading.Thread(target=memory, daemon=True)
     session_caching_thread = threading.Thread(target=session_caching, daemon=True)
@@ -138,7 +138,7 @@ def main():
     if Vault.get_saving() == True:
         Util.stop_saving()
 
-    Vault.set_interrupt(True)
+    Thread.set_interrupt(True)
     Escapy.stop()
     e.set()
     memory_thread.join()
