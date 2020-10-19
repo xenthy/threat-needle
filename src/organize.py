@@ -51,7 +51,7 @@ class Payload_flagged:
         self.rule = rule
         self.tags = tags
 
-    # Identifier of this Object, steam or packet
+    # Identifier of this Object, payload or endpoint
     def get_identifier(self):
         return self.identifier
 
@@ -89,7 +89,7 @@ class Threat_flagged:
         self.rule = rule
         self.tags = tags
 
-    # Identifier of this Object, steam or packet
+    # Identifier of this Object, payload or endpoint
     def get_identifier(self):
         return self.identifier
 
