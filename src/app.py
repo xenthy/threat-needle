@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect
+from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect ,jsonify
 from flask_socketio import SocketIO, emit
 from time import sleep
 from threading import Thread, Event
@@ -33,9 +33,6 @@ thread_stop_event = Event()
 
 log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)
-
-
-total_flagged = 0
 
 
 def open_file(header, sessions):
@@ -76,15 +73,13 @@ def get_formatted_header(prot_type):
 
 
 def get_data():
-    global total_flagged
 
     while not thread_stop_event.isSet():
         # total_streams += int(random.random() * 100)
         # total_flagged += int(random.random() * 100)
 
         socketio.emit(
-            "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": total_flagged}, namespace="/test")
-
+            "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/test")
         socketio.sleep(0.01)
 
 
@@ -100,6 +95,7 @@ def savefile():
     return render_template("viewfile.html", files=onlyfiles)
 
 
+
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
 
@@ -108,6 +104,7 @@ def view_tcp():
     if request.method == "POST":
         header = request.form["session"]
         payload = open_file(header, tcp_sessions)
+
     return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload)
 
 
@@ -155,6 +152,15 @@ def add_rule():
         return render_template("addrule.html")
 
 
+@app.route("/flagged", methods=["POST", "GET"])
+def flagged():
+    if request.method == "POST":
+
+        return "asd"
+    else:
+        return render_template("flagged.html" , flagged_packets=Vault.get_flagged())
+
+
 @socketio.on("connect", namespace="/test")
 def test_connect():
     # need visibility of the global thread object
@@ -165,7 +171,6 @@ def test_connect():
     if not thread.isAlive():
         logger.info("starting socket thread")
         thread = socketio.start_background_task(get_data)
-
 
 @socketio.on("disconnect", namespace="/test")
 def test_disconnect():

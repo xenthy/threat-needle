@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+  {% extends "base.html" %}
+  {% block content %}
+  <div class="row">
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Packets Sniffed</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" id="total_packets"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Streams</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" id = "total_streams"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Flagged Packets</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800" id="total_flagged"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- DataTales Example -->
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Malicious packet</h6>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>
+              <th>TimeStamp</th>
+              <th>Source Destination</th>
+              <th>Matching Pattern</th>
+              <th>Rule Name</th>
+              <th>Tags</th>
+            </tr>
+          </thead>
+          <tbody>
+           {% for timestamp, pkt in flagged_packets.items() %}
+            <tr>
+              <td>{{timestamp}}</td>
+              {% if pkt.identifier == "payload" %}
+              <td>{{pkt.stream_id}}</td>
+              {% else %}
+              <td>{{pkt.packet[0][1].src}} -> {{pkt.packet[0][1].dst}}</td>
+              {% endif %}
+              <td>{{pkt.strings[0][2].decode('utf-8')}}</td>
+              <td>{{pkt.rule}}</td>
+              <td>{{pkt.tags}}</td>
+
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      
+    </div>
+  </div>
+  </div>
+
+  </div>
+</div>
+
+
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Payload</h6>
+    </div>
+    <div class="card-body">
+    <pre id="payload">
+
+    </pre>
+
+    </div>
+  </div>
+  </div>
+  {% endblock content%}
+
+
+</body>
+
+</html>
