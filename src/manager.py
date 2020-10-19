@@ -30,8 +30,6 @@ def manager(lock, e):
     Thread.set_name("manager-thread")
 
     while not Thread.get_interrupt():
-        # lock.acquire()  # protect critical section
-
         temp_plist = Vault.get_threading_plist()
         logger.info(f"{len(temp_plist)} packets processed [{Thread.name()}]")
 
@@ -40,8 +38,6 @@ def manager(lock, e):
 
         session_yara_thread.start()
         threat_thread.start()
-
-        # lock.release()
 
         e.wait(timeout=5)  # 5 seconds
 

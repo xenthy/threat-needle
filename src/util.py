@@ -162,8 +162,7 @@ class Util:
             # remove catergory name and check against key1
             if (layer_name := layer_list.pop(0)) not in args:
                 continue
-            if "DNSQR" == layer_name:
-                print(layer_list)
+
             # if it is 'Raw', or 'Padding' join the payload back together
             if layer_name in ["Raw", "Padding"]:
                 layer_list = [" ".join(layer_list)]

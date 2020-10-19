@@ -4,15 +4,18 @@
     Need to make a separation of UDP and TCP searching, loading 2 different set of rules
 '''
 
+from util import Util
+from escapy import Escapy
+from thread import Thread
+from organize import Organize
+from config import RULES_DIR, CAP_PATH, INTEL_DIR
+from features import find_streams, extract_payload
+
 import os
 import glob
 import yara
 import datetime
-from util import Util
-from escapy import Escapy
-from organize import Organize
-from config import RULES_DIR, CAP_PATH, INTEL_DIR
-from features import find_streams, extract_payload
+
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
 logger = logging.getLogger(__name__)
@@ -24,7 +27,6 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
-
 
 
 class Yara:
@@ -43,7 +45,7 @@ class Yara:
             self._rules = yara.compile(filepaths=rule_files)
             self._url_rules = yara.compile(filepaths=url_rule_files)
         except Exception as e:
-            logger.error(f"Invalid Rule file/syntax error: \n{e}")
+            logger.error(f"Invalid Rule file/syntax error: \n{e} [{Thread.name()}]")
             #print(f"Invalid Rule file/syntax error: \n{e}")
 
     # Prepare uncompile yara rules files
@@ -69,8 +71,8 @@ class Yara:
                             self.url_yar(stream, k, payload, matches, timestamp)
 
                         Organize.add_stream_entry(k, stream, payload, matches, timestamp)
-                except AttributeError as e:
-                    logger.critical("Yara rules error, check rules in \"rules/custom_rules/<file>\"")
+                except AttributeError:
+                    logger.critical(f"Yara rules error, check rules in \"rules/custom_rules/<file>\" [{Thread.name()}]")
 
     '''
     function "url_yar(self, stream, k, matches)" 
@@ -79,6 +81,7 @@ class Yara:
     When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
 
     '''
+
     def url_yar(self, stream, k, payload, matches, timestamp):
         for url in matches[0].strings:
             if (matches := self._url_rules.match(data=url[2])):
