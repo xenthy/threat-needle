@@ -44,23 +44,26 @@ class Escapy:
     @staticmethod
     def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
         """
-        Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
+        Converts "scapy.layers.l2.Ether" to a dictionary form factor
         """
         explicit_layers = Escapy.__explicit_layers + explicit_layers
         packet_dict = OrderedDict()
         count = 0
 
-        # normal layers
+        # default scapy layers
         while (layer := packet.getlayer(count)):
             count += 1
 
+            # if layer is not required
+            if layer.name not in args:
+                continue
+
+            # if layer returns no data
             if (layer_dict := Escapy.__layer_dict(layer)) is None:
                 continue
 
+            # concatenate dictionaries
             packet_dict = {**packet_dict, **layer_dict}
-
-        packet_dict["Timestamp"] = packet.time
-        packet_dict["Size"] = packet.__len__()
 
         # explicit layers
         for protocol_layer in explicit_layers:
@@ -68,12 +71,18 @@ class Escapy:
             if (layer_dict := Escapy.__layer_dict(layer)) is not None:
                 packet_dict = {**packet_dict, **layer_dict}
 
+        # metadata
+        packet_dict["Timestamp"] = packet.time
+        packet_dict["Size"] = packet.__len__()
+
+        # return if no explicit layers are requested
         if len(args) == 0:
             return packet_dict
 
-        # if specific layers are required
+        # if explicit layers are required
         return_list = []
 
+        # order return list
         for arg in args:
             return_list.append(packet_dict[arg] if arg in packet_dict else None)
 
@@ -81,11 +90,15 @@ class Escapy:
 
     @staticmethod
     def __layer_dict(layer):
-        layer_dict = {}
-
+        """
+        Returns a dictionary of a layer
+        """
         if not getattr(layer, 'fields_desc', None):
             return
 
+        layer_dict = {}
+
+        # loop through each layer and find more layers
         for key in layer.fields_desc:
             value = getattr(layer, key.name)
             value = None if value is type(None) else value
