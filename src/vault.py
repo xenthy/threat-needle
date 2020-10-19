@@ -14,7 +14,6 @@ logger.addHandler(file_handler)
 
 class Vault:
 
-    __interrupt = False
     __runtime_name = None
     __saving = False
     __threading_packet_list = PacketList()
@@ -23,14 +22,6 @@ class Vault:
     __session_dict = {}
     __session_header = []
     __flagged_dict = {}
-
-    @staticmethod
-    def set_interrupt(interrupt):
-        Vault.__interrupt = interrupt
-
-    @staticmethod
-    def get_interrupt():
-        return Vault.__interrupt
 
     @staticmethod
     def set_runtime_name(runtime_name):

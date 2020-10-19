@@ -29,7 +29,7 @@ def manager(lock, e):
     """
     Thread.set_name("manager-thread")
 
-    while not Vault.get_interrupt():
+    while not Thread.get_interrupt():
         # lock.acquire()  # protect critical section
 
         temp_plist = Vault.get_threading_plist()
