@@ -22,6 +22,8 @@ class Vault:
     __session_dict = {}
     __session_header = []
     __flagged_dict = {}
+    __carving_queue = []
+    __carved_files = []
 
     @staticmethod
     def set_runtime_name(runtime_name):
@@ -89,3 +91,21 @@ class Vault:
     @staticmethod
     def set_flagged(flagged_dict):
         Vault.__flagged_dict.update(flagged_dict)
+
+    @staticmethod
+    def add_carving_queue(session_header, timestamp, cont_type, cont_length):
+        Vault.__carving_queue.append((session_header, timestamp, cont_type, cont_length))
+
+    @staticmethod
+    def get_carving_queue() -> list:
+        temp = Vault.__carving_queue
+        Vault.__carving_queue = []
+        return temp
+
+    @staticmethod
+    def add_carved_file(session_header, timestamp, filename, cont_type):
+        Vault.__carved_files.append((session_header, timestamp, filename. cont_type))
+
+    @staticmethod
+    def get_carved_files() -> list:
+        return Vault.__carved_files
