@@ -12,8 +12,7 @@ import time
 from escapy import Escapy
 from collections import Counter
 
-from os.path import isfile, join
-from os import listdir, mkdir
+from os import mkdir
 
 from features import extract_payload
 
@@ -57,42 +56,6 @@ def custom_action(packet):
     #     logger.debug(f"Packet #{sum(packet_counts.values())}: {packet[0][0].src} ==> {packet[0][0].dst}")
 
 
-def memory():
-    Thread.set_name("memory-thread")
-
-    while not Thread.get_interrupt():
-        current, peak = tracemalloc.get_traced_memory()
-        logger.info(f"Current: {current / 10**6}MB | Peak: {peak / 10**6}MB [{Thread.name()}]")
-
-        e.wait(timeout=5)  # 2 seconds
-
-
-def session_caching():
-    Thread.set_name("session-caching-thread")
-
-    while not Thread.get_interrupt():
-        runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
-        cache_files = [f for f in listdir(runtime_path) if isfile(join(runtime_path, f)) if f[-4:] == ".txt"]
-
-        sessions = Vault.get_sessions()
-        Vault.reset_session()
-
-        for header, plist in sessions.items():
-            if (payload := extract_payload(plist)) is None:
-                continue
-            header = header.replace(" ", "_").replace(":", "-")
-            if header in cache_files:
-                with open(f"{runtime_path}/{header}", "ab+") as f:
-                    f.seek(0,2)
-                    f.write(payload)
-            else:
-                with open(f"{runtime_path}/{header}", "wb+") as f:
-                    f.write(payload)
-
-        logger.info(f"cached to local file [{Thread.name()}]")
-        e.wait(timeout=SESSION_CACHING_INTERVAL)
-
-
 def main():
     """ INIT VARIABLES """
     Thread.set_name("main-thread")
@@ -106,14 +69,10 @@ def main():
     """ THREADING """
     Thread.set_interrupt(False)
     lock = threading.Lock()
-    memory_thread = threading.Thread(target=memory, daemon=True)
-    session_caching_thread = threading.Thread(target=session_caching, daemon=True)
     manager_thread = threading.Thread(target=manager, args=(lock, e,), daemon=True)
 
     """ INDEFINITE SNIFFING """
     Escapy.async_sniff(custom_action)
-    memory_thread.start()
-    session_caching_thread.start()
     manager_thread.start()
 
     """ MENU """
@@ -142,8 +101,6 @@ def main():
     Thread.set_interrupt(True)
     Escapy.stop()
     e.set()
-    memory_thread.join()
-    session_caching_thread.join()
     manager_thread.join()
 
     """ MAPPING: Print out packet count per A <--> Z address pair """

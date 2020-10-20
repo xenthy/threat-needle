@@ -55,7 +55,7 @@ class Escapy:
             count += 1
 
             # if layer is not required
-            if layer.name not in args:
+            if len(args) != 0 and layer.name not in args:
                 continue
 
             # if layer returns no data

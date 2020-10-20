@@ -17,16 +17,17 @@ logger.addHandler(file_handler)
 
 
 # receive a list of packet in a stream and returns the payload
-def extract_payload(stream):
+def extract_payload(stream, pure=False):
     payload = bytes()
     for pkt in stream:
         raw, http_request, http_response = Escapy.convert_packet(pkt, "Raw", "HTTP Request", "HTTP Response")
 
-        if http_request:
-            payload += __http_helper(http_request, ["Method", "Path", "Http_Version"])
+        if not pure:
+            if http_request:
+                payload += __http_helper(http_request, ["Method", "Path", "Http_Version"])
 
-        if http_response:
-            payload += __http_helper(http_response, ["Http_Version", "Status_Code", "Reason_Phrase"])
+            if http_response:
+                payload += __http_helper(http_response, ["Http_Version", "Status_Code", "Reason_Phrase"])
 
         if raw is not None:
             payload = payload + raw["load"]
@@ -94,8 +95,7 @@ def find_streams(pcap):
 if __name__ == "__main__":
     pcap = Util.load_cap("2020-10-18_17-32-16")
     a = find_streams(pcap)
-    for k,v in a.items():
+    for k, v in a.items():
         if 'ARP' in k:
             for x in v:
                 print(x.show())
-

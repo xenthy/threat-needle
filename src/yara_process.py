@@ -98,19 +98,17 @@ class Yara:
             if (matches := Yara._url_rules.match(data=url[2])):
                 Organize.add_stream_entry(k, stream, payload, matches, timestamp)
 
-
     @staticmethod
     def scan_carved(k, timestamp, payload):
-            try:
-                if (matches := Yara._rules.match(data=payload)):
+        try:
+            if (matches := Yara._rules.match(data=payload)):
 
-                    if "url" in matches[0].rule:
-                        Yara.url_yar(None, k, payload, matches, timestamp)
+                if "url" in matches[0].rule:
+                    Yara.url_yar(None, k, payload, matches, timestamp)
 
-                    Organize.add_stream_entry(k, None, payload, matches, timestamp)
-            except AttributeError:
-                logger.critical(f"Yara rules error, check rules in \"rules/custom_rules/<file>\" [{Thread.name()}]")
-
+                Organize.add_stream_entry(k, None, payload, matches, timestamp)
+        except AttributeError:
+            logger.critical(f"Yara rules error, check rules in \"rules/custom_rules/<file>\" [{Thread.name()}]")
 
 
 if __name__ == "__main__":
