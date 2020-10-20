@@ -6,6 +6,7 @@
 
 from util import Util
 from escapy import Escapy
+from carver import Carver
 from thread import Thread
 from organize import Organize
 from config import RULES_DIR, CAP_PATH, INTEL_DIR
@@ -59,9 +60,11 @@ class Yara:
     def run(self, stream_dict):
         self.load_rules()
         matches = None
+        carver = Carver()
 
         for k, stream in stream_dict.items():
             if (payload := extract_payload(stream)) is not None:
+                carver.carve_stream(payload) # Testing for carving files from stream payload
                 try:
                     if (matches := self._rules.match(data=payload)):
                         raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
