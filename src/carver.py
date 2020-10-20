@@ -11,27 +11,28 @@ from config import SESSION_CACHE_PATH, CARVED_DIR
 
 
 class Carver:
-    def __init__(self):
-        file_sigs = {"jgp":['255', '216'], "jpeg":['255','216'], "png":['137', '80'], "gif":['71', '73'], "pdf":['37', '80', '68', '70'], "docx":['80', '75', '3', '4']}
+    file_sigs = {"jgp":['255', '216'], "jpeg":['255','216'], "png":['137', '80'], "gif":['71', '73'], "pdf":['37', '80', '68', '70'], "docx":['80', '75', '3', '4']}
 
 
-    def carve_stream(self, stream_payload):
+    @staticmethod
+    def carve_stream():
         magic = ""
-        # cont_type, cont_length = self.get_content_info(b)
+        # cont_type, cont_length = Carver.get_content_info(b)
         carving_queue= Vault.get_carving_queue()
 
         for k, timestamp, cont_type, cont_length in carving_queue:
-            with open(f"{SESSION_CACHE_PATH}/{k}",'rb') as f:
+            k = k.replace(" ","_").replace(":","-")
+            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}",'rb') as f:
                 stream_payload = f.read()
                 
             b = BytesIO(stream_payload)
-            for ft, mb in self.file_sigs.items():
+            for ft, mb in Carver.file_sigs.items():
                 if ft == cont_type:
                     magic = mb
                     break
             
             if cont_type and cont_length and magic:
-                SOF = self.get_SOF(magic, b)
+                SOF = Carver.get_SOF(magic, b)
                 if not SOF:
                     return 0
                 
@@ -40,18 +41,19 @@ class Carver:
                 view = b.getbuffer()
                 carved = view[SOF:EOF]
 
-                with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := self.random_str)}."+cont_type,'ab+') as f:
+                with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type,'ab+') as f:
                     f.write(carved)
+                    print(f"File {fname} carved")
                     Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
-
-                
+       
                 return carved
 
     # def carve_packet(self, packet):
         # pass
 
-    def get_content_info(self, payload_b):
+    @staticmethod
+    def get_content_info(payload_b):
         cont_type  = ""
         cont_length = 0
         
@@ -70,7 +72,8 @@ class Carver:
         return None, None
         
 
-    def get_SOF(self, magic, payload_b):
+    @staticmethod
+    def get_SOF(magic, payload_b):
         num_bytes = len(magic)
         byte_count = 0
         payload_b.seek(0)
@@ -81,24 +84,18 @@ class Carver:
             for x in range(0,num_bytes):
                 compare += str(all_bytes[i+x])
 
-            print(''.join(magic),compare)
             if ''.join(magic) in compare:
+                print("FOUND")
                 return byte_count
 
             byte_count += 1
     
+        print("NOT FOUND")
         return 0
     
-    def random_str(self, length):
+    @staticmethod
+    def random_str(length):
         letters = string.ascii_lowercase
         result = ''.join(random.choice(letters) for i in range(length))
         return result
 
-
-if __name__ == "__main__":
-    carver = Carver()
-    stream = ""
-    with open("../carved/yakgm.txt", 'rb') as f:
-        stream = f.read()
-        
-    carver.carve_stream(stream)

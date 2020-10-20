@@ -25,4 +25,4 @@ CARVED_DIR = "./carved/"
 SESSION_CACHE_PATH = "./.cache"
 
 # session caching interval (in seconds)
-SESSION_CACHING_INTERVAL = 10
+SESSION_CACHING_INTERVAL = 2 

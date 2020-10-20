@@ -95,6 +95,7 @@ class Vault:
     @staticmethod
     def add_carving_queue(session_header, timestamp, cont_type, cont_length):
         Vault.__carving_queue.append((session_header, timestamp, cont_type, cont_length))
+        print(Vault.__carving_queue)
 
     @staticmethod
     def get_carving_queue() -> list:
@@ -104,7 +105,7 @@ class Vault:
 
     @staticmethod
     def add_carved_file(session_header, timestamp, filename, cont_type):
-        Vault.__carved_files.append((session_header, timestamp, filename. cont_type))
+        Vault.__carved_files.append((session_header, timestamp, filename, cont_type))
 
     @staticmethod
     def get_carved_files() -> list:

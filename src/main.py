@@ -83,7 +83,8 @@ def session_caching():
             header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
                 with open(f"{runtime_path}/{header}", "ab+") as f:
-                    f.write(b"\n" + payload)
+                    f.seek(0,2)
+                    f.write(payload)
             else:
                 with open(f"{runtime_path}/{header}", "wb+") as f:
                     f.write(payload)
