@@ -4,6 +4,7 @@ from thread import Thread
 from features import find_streams, extract_payload
 from yara_process import Yara
 from threat_intel import ThreatIntel
+from carver import Carver
 from util import Util
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -35,9 +36,11 @@ def manager(lock, e):
 
         session_yara_thread = threading.Thread(target=session_yara, args=[temp_plist], daemon=True)
         threat_thread = threading.Thread(target=threat, args=[temp_plist], daemon=True)
+        carving_thread = threading.Thread(target=carving, daemon=True)
 
         session_yara_thread.start()
         threat_thread.start()
+        carving_thread.start()
 
         e.wait(timeout=5)  # 5 seconds
 
@@ -58,6 +61,10 @@ def session_yara(temp_plist):
 def threat(temp_plist):
     Thread.set_name("threat-thread")
     threat_intel.run(temp_plist)
+
+
+def carving():
+    Carver.carve_stream()
 
 
 if __name__ == "__main__":
