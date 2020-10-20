@@ -155,11 +155,18 @@ def add_rule():
 @app.route("/flagged", methods=["POST", "GET"])
 def flagged():
     if request.method == "POST":
+        key = request.json["data"].strip()
+        flagged_dict = Vault.get_flagged()
 
-        return "asd"
+        flagged_obj = flagged_dict[key]
+        if flagged_obj.identifier == "payload":
+            return flagged_obj.payload
+        else:
+            flagged_obj.packet[0][1].src
+            flagged_obj.packet[0][1].dst
+            return flagged_obj.packet[0][1].src,flagged_obj.packet[0][1].dst
     else:
         return render_template("flagged.html" , flagged_packets=Vault.get_flagged())
-
 
 @socketio.on("connect", namespace="/test")
 def test_connect():
