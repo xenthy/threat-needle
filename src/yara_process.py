@@ -32,7 +32,6 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 
-## TODO: CHANGE TO STATIC METHOD
 class Yara:
     _rules = ""
     _url_rules = ""

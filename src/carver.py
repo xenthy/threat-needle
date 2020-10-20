@@ -9,6 +9,7 @@ from io import BytesIO
 from vault import Vault
 from config import SESSION_CACHE_PATH, CARVED_DIR
 
+# TODO: LEFT WITH using yara_scan(payload) to scan the files carved
 
 class Carver:
     file_sigs = {"jgp":['255', '216'], "jpeg":['255','216'], "png":['137', '80'], "gif":['71', '73'], "pdf":['37', '80', '68', '70'], "docx":['80', '75', '3', '4']}
