@@ -45,7 +45,6 @@ class ThreatIntel:
             extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
 
         if dns:
-            # not all DNS layers have qname for some reason
             try:
                 extracted.append(dns["qd"]["DNS Question Record"]["qname"].decode('utf-8'))  # bytes
             except TypeError:
