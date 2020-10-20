@@ -2,7 +2,7 @@
 <html>
 
 <head>
-
+  
 </head>
 
 <body>
@@ -65,6 +65,7 @@
           <thead>
             <tr>
               <th>TimeStamp</th>
+              <th>Malicious Type</th>
               <th>Source Destination</th>
               <th>Matching Pattern</th>
               <th>Rule Name</th>
@@ -75,28 +76,25 @@
            {% for timestamp, pkt in flagged_packets.items() %}
             <tr>
               <td>{{timestamp}}</td>
+            
               {% if pkt.identifier == "payload" %}
+              <td>Malicious Payload</td>
               <td>{{pkt.stream_id}}</td>
               {% else %}
+              <td>Malicious Domain</td>
               <td>{{pkt.packet[0][1].src}} -> {{pkt.packet[0][1].dst}}</td>
               {% endif %}
-              <td>{{pkt.strings[0][2].decode('utf-8')}}</td>
+              <td>{{pkt.strings[0][2]}}</td>
               <td>{{pkt.rule}}</td>
               <td>{{pkt.tags}}</td>
-
+              <td><button id ="dialog"class="payload btn btn-primary" value="{{timestamp}}">View Payload</button></td>
             </tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
-
-      
     </div>
   </div>
-  </div>
-
-  </div>
-</div>
 
 
   <div class="card shadow mb-4">
@@ -104,13 +102,10 @@
       <h6 class="m-0 font-weight-bold text-primary">Payload</h6>
     </div>
     <div class="card-body">
-    <pre id="payload">
-
-    </pre>
-
+      <div id="dialog">
+      <pre id="payload" class="pre-scrollable">
+      </pre>
     </div>
-  </div>
-  </div>
   {% endblock content%}
 
 
