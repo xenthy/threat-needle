@@ -17,6 +17,9 @@ INTEL_DIR = "./rules/threat_intel/"
 # Path to threat-intel folder
 CUSTOM_RULES_DIR = "./rules/custom_rules/"
 
+# Path to carved files directory
+CARVED_DIR = "./carved/"
+
 # SESSION
 # Path to session cache folder
 SESSION_CACHE_PATH = "./.cache"
