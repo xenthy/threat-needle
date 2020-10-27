@@ -7,24 +7,25 @@
     <img src="pictures/rustscan.png" height=400px width=400px>
 </p>
 <p align="center">
-<u><b> Making network forensics easy </b></u><br> Run the program, <b>sit back</b>, and relax.
+<u><b> Making network forensics easy </b></u><br> Run the program, set rules, <b>sit back</b>, and monitor.
 </p>
 
 <hr>
 
-| <p align="center"><a href="https://hub.docker.com/r/cmnatic/rustscan"> 👩‍💻 Linux (Debian) Recommended </a></p>    | <p align="center"><a href="https://github.com/RustScan/RustScan/releases">🪟 Windows </p> | <p align="center"><a href="https://aur.archlinux.org/packages/rustscan/"> 🐋 Docker </a></p>                      |
-| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/kali.png?raw=true" /></p> | <p align="center"><img src=/></p>                                                        | <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/docker.png?raw=true"/></p> | <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/rust.png?raw=true" /></p> |
-| [Install Guide](https://github.com/xenthy/ict2202-assignment-1#️-linux-debian)                                   | [Install guide](https://github.com/xenthy/ict2202-assignment-1#️-windows)                 |                                                                                                                  |
+| <p align="center"><a href="https://hub.docker.com/r/cmnatic/rustscan"> 👩‍💻 Linux (Debian) Recommended </a></p>              | <p align="center"><a href="https://github.com/RustScan/RustScan/releases">🪟 Windows </p> | <p align="center"><a href="https://aur.archlinux.org/packages/rustscan/"> 🐋 Docker </a></p>                              |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/debian.jpg?raw=true" /></p> | <p align="center"><img src=/></p>                                                        | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/docker.png?raw=true"/></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/windows.jpg?raw=true" /></p> |
+| [Install Guide](https://github.com/xenthy/ict2202-assignment-1#️-linux-debian)                                             | [Install guide](https://github.com/xenthy/ict2202-assignment-1#️-windows)                 | [Usage guide](https://github.com/xenthy/ict2202-assignment-1#️-windows)                                                   |
 
 <hr>
 
 - [🛠️ Installation Guide](#️-installation-guide)
   - [🖥️ Linux (Debian)](#️-linux-debian)
   - [🪟 Windows](#-windows)
-- [Running the Application](#running-the-application)
-- [Usage](#usage)
-  - [Collaborators](#collaborators)
+  - [🐋 Docker](#-docker)
+- [🏃‍♂️ Running the Application](#️-running-the-application)
+- [🤸 Usage](#-usage)
+- [✨ Collaborators](#-collaborators)
 
 # 🛠️ Installation Guide
 ## 🖥️ Linux (Debian)
@@ -66,8 +67,9 @@
    2. Under System Variable, Select PATH
    3. Click on Edit, enter Make location. Usually: `C:\Program Files (x86)\GnuWin32\bin`
 
+## 🐋 Docker
 
-# Running the Application
+# 🏃‍♂️ Running the Application
 1. To run the program
 ```bash
 > cd \Path\to\ict2202-assignment-1
@@ -78,9 +80,9 @@
 > make clean
 ```
 
-# Usage
+# 🤸 Usage
 
-## Collaborators
+# ✨ Collaborators
 | Name                | GitHub                                     |
 | ------------------- | ------------------------------------------ |
 | **Zen Tan**         | [@xenthy](https://github.com/xenthy)       |
