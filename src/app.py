@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect ,jsonify
+from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect ,jsonify , send_file
 from flask_socketio import SocketIO, emit
 from time import sleep
 from threading import Thread, Event
@@ -7,7 +7,7 @@ from util import Util
 from vault import Vault
 from os.path import isfile, join
 from os import listdir
-from config import CAP_PATH, SESSION_CACHE_PATH
+from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 from yara_create import create_rule 
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -35,9 +35,9 @@ log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)
 
 
-def open_file(header, sessions):
+def open_file(header,sessions):
     path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{sessions[header].replace(' ', '_').replace(':','-')}"
-
+    
     try:
         with open(path, "rb") as f:
             payload = f.read()
@@ -60,7 +60,7 @@ def get_formatted_header(prot_type):
     sessions={}
     for session_header in Vault.get_session_headers():
         if prot_type in session_header:
-            header_list = session_header[4:].replace(' ' , ':').split(':')
+            header_list = session_header[4:].replace('_' , '-').split('-')
             for index in range(1, 4, 2):
                 if header_list[index] in common_protocols:
                     formatted_header = common_protocols[header_list[index]] + " " + " ".join(header_list)
@@ -90,31 +90,50 @@ def index():
 
 @app.route("/viewfile")
 def savefile():
-    onlyfiles = [f for f in listdir(CAP_PATH) if isfile(
+    pcap_files = [f for f in listdir(CAP_PATH) if isfile(
         join(CAP_PATH, f)) if f[-4:] == ".cap"]
-    return render_template("viewfile.html", files=onlyfiles)
+    
+    carved_files = [f for f in listdir(CARVED_DIR) if isfile(
+        join(CARVED_DIR, f))]
 
+    return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files )
 
+@app.route("/viewfile/<file_name>")
+def savefile2(file_name):
+
+    
+    pcap_files = [f for f in listdir(CAP_PATH) if isfile(
+        join(CAP_PATH, f)) if f[-4:] == ".cap"]
+    
+    carved_files = [f for f in listdir(CARVED_DIR) if isfile(
+        join(CARVED_DIR, f))]
+
+    if file_name in pcap_files:
+        return send_file(join("..\\cap\\",pcap_files[pcap_files.index(file_name)]), as_attachment=True)
+    elif file_name in carved_files:
+        return send_file(join("..\\carved\\",carved_files[carved_files.index(file_name)]), as_attachment=True)
+    else:
+        return "Error"
 
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
 
-    tcp_sessions = get_formatted_header('TCP')
+    tcp_sessions= get_formatted_header('TCP')
     payload = None
     if request.method == "POST":
         header = request.form["session"]
-        payload = open_file(header, tcp_sessions)
+        payload = open_file(header , tcp_sessions)
 
     return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload)
 
-
 @app.route("/viewudp", methods=["POST", "GET"])
 def view_udp():
-    udp_sessions =get_formatted_header('UDP')
+    udp_sessions = get_formatted_header('UDP')
     payload = None
     if request.method == "POST":
         header = request.form["session"]
-        payload = open_file(header, udp_sessions)
+        payload = open_file(header , udp_sessions)
+
     return render_template("viewudp.html", udp_sessions=udp_sessions, payload=payload)
 
 
@@ -164,7 +183,7 @@ def flagged():
         else:
             flagged_obj.packet[0][1].src
             flagged_obj.packet[0][1].dst
-            return flagged_obj.packet[0][1].src,flagged_obj.packet[0][1].dst
+            return flagged_obj.packet[0][1]
     else:
         return render_template("flagged.html" , flagged_packets=Vault.get_flagged())
 

@@ -45,23 +45,52 @@ var data = {
         pointRadius: 5,
         pointHitRadius: 10,
         data: [0, 0, 0, 0, 0 ,0, 0, 0, 0,0]
-      }
+    },
+
+    {
+      
+      label: "Flagged Packets",
+      fill: false,
+      lineTension: 0.0,
+      backgroundColor: "rgba(75,192,192,0.4)",
+      borderColor: "#f6c23e",
+      borderCapStyle: 'butt',
+      borderDash: [],
+      borderDashOffset: 0.0,
+      borderJoinStyle: 'miter',
+      pointBorderColor: "rgba(75,192,192,1)",
+      pointBackgroundColor: "#fff",
+      pointBorderWidth: 1,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: "rgba(75,192,192,1)",
+      pointHoverBorderColor: "rgba(220,220,220,1)",
+      pointHoverBorderWidth: 2,
+      pointRadius: 5,
+      pointHitRadius: 10,
+      data: [0, 0, 0, 0, 0 ,0, 0, 0, 0,0]
+  }
   ]
 };
 
 
 var prev = 0;
 var prev_stream = 0;
+var prev_flagged=0;
+
 var time = "00:00";
 var a=0;
+
 var highest = null;
 var lowest = null;
+
 function add_data() {
     highest = null;
     lowest = null;
     var pkts = document.getElementById("total_packets").innerText;
     var stream_count = document.getElementById("total_streams").innerText;
-    var temp = pkts;
+    var flagged_count =document.getElementById("total_flagged").innerHTML;
+
+
 
     var str = myLineChart.data.labels.slice(-1)[0];
     if(str.slice(-2) == "59"){
@@ -80,16 +109,23 @@ function add_data() {
             time = str.slice(0,3) + "" + a;
         }
     }
+
     myLineChart.data.labels.push(time);
     myLineChart.data.labels.splice(0, 1);
 
+    var temp = pkts;
     temp = (Number(pkts) - prev);
     myLineChart.data.datasets[0].data.splice(0, 1);
     myLineChart.data.datasets[0].data.push(temp);
 
+
     temp = (Number(stream_count) - prev_stream);
     myLineChart.data.datasets[1].data.splice(0, 1);
     myLineChart.data.datasets[1].data.push(temp);
+
+    temp = (Number(prev_flagged) - prev_flagged);
+    myLineChart.data.datasets[2].data.splice(0, 1);
+    myLineChart.data.datasets[2].data.push(temp);
     
     var data_list = myLineChart.data.datasets[0].data;
 
@@ -109,6 +145,7 @@ function add_data() {
     myLineChart.update();
     prev = Number(pkts);
     prev_stream = Number(stream_count);
+    prev_flagged = Number(flagged_count);
   
 }
 
