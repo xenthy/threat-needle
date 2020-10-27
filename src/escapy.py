@@ -1,5 +1,5 @@
 from os import name as os_name
-from scapy.sendrecv import AsyncSniffer
+from scapy.all import AsyncSniffer
 from scapy.plist import PacketList
 from scapy.layers.http import HTTPRequest, HTTPResponse
 from collections import OrderedDict

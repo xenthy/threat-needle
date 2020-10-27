@@ -9,7 +9,7 @@ from os.path import isfile, join
 from os import listdir ,name as os_name
 
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
-from yara_create import create_rule 
+from yara_create import Rule
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -172,7 +172,7 @@ def add_rule():
         condition = request.form["condition"]
 
         # save to yara config
-        create_rule(filename, author, rule_name, tag, description, strings, condition)
+        Rule.create_rule(filename, author, rule_name, tag, description, strings, condition)
         return redirect(request.url)
     else:
         return render_template("addrule.html", status=Vault.get_saving())

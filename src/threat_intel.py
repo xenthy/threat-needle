@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-Incomplete, thinking of implementing a convertor to yara instead, then use yara to run the whole search, with segmented parts for each different "protocol"
-"""
-
 import re
 import glob
 import datetime
@@ -42,6 +38,7 @@ class ThreatIntel:
         http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
 
         if http_request:
+            print(http_request["Host"])
             extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
 
         if dns:
@@ -71,8 +68,7 @@ class ThreatIntel:
                 # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
     def threat_update(self):
-        rule = Rule()
-        filenames = rule.prepare_lists()
+        filenames = Rule.prepare_lists()
         entries = {"domains": [], "ips": []}
         for filename in filenames:
             identify = filename.split("_")[1]
@@ -85,7 +81,7 @@ class ThreatIntel:
                 entries["ips"] += lines
 
         for entry, lines in entries.items():
-            chunked = rule.chunker(lines, 9999)
+            chunked = Rule.chunker(lines, 9999)
             for index, chunk in enumerate(chunked):
                 name = entry+str(index)
                 tag = "emerging_"+entry
@@ -96,19 +92,13 @@ class ThreatIntel:
                 elif "ips" == entry:
                     category = "ips_"+str(index)
 
-                rule.add_rule(name, tag, author, purpose, chunk, category)
+                Rule.add_rule(name, tag, author, purpose, chunk, category)
 
-        self.rules = rule.load_rules()
+        self.rules = Rule.load_rules()
 
-    """
-    May can implement another database to write to instead
-    - mysql
-    - postgresql
-    """
-
-    def get_threats(self):
-        if self.threat_list:
-            return self.threat_list
+    # def get_threats(self):
+        # if self.threat_list:
+            # return self.threat_list
 
 
 if __name__ == "__main__":

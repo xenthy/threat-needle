@@ -6,7 +6,7 @@ from os.path import isfile, join
 from vault import Vault
 from thread import Thread
 from features import find_streams, extract_payload
-from yara_process import Yara
+from yara_process import Yara 
 from threat_intel import ThreatIntel
 from carver import Carver
 from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
@@ -23,7 +23,6 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # GLOBAL
-yar = Yara()
 threat_intel = ThreatIntel()
 threat_intel.threat_update()
 
@@ -33,6 +32,9 @@ def manager(event):
     To be sent to the manager
     """
     Thread.set_name("main-manager-thread")
+
+    # Load Yara rules recurively from the .yar files in the "rules" directory
+    Yara.load_rules()
 
     session_yara_control = threading.Thread(target=bulk_manager,
                                             args=[event],
@@ -86,8 +88,7 @@ def bulk_manager(event):
 
 def session_yara(stream_dict):
     Thread.set_name("session-yara-thread")
-
-    yar.run(stream_dict)
+    Yara.run(stream_dict)
 
 
 def threat(temp_plist):

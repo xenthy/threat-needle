@@ -122,21 +122,21 @@ class Yara_create:
             return -1
         
 class Rule:
-    def __init__(self):
-        self.rules = ""
     # Loads in uncompiled rules files
-    def load_rules(self):
-        rule_files = self.prepare_rules()
+    @staticmethod
+    def load_rules():
+        rule_files = Rule.prepare_rules()
         # Compile all rules file in specified paths
         try:
-            self.rules = yara.compile(filepaths=rule_files)
+            rules = yara.compile(filepaths=rule_files)
             logger.info("Threat Intel rules Loaded successfully")
-            return self.rules
+            return rules
         except Exception as e:
             print(f"Invalid Rule file/syntax error: \n{e}")
 
     # Prepare uncompile yara rules files
-    def prepare_rules(self):
+    @staticmethod
+    def prepare_rules():
         results = {}
         for fname in glob.iglob(INTEL_DIR+"**/*.yar", recursive=True):
             with open(fname, 'r') as f:
@@ -144,14 +144,16 @@ class Rule:
         return results
 
     # Prepare uncompile yara rules files
-    def prepare_lists(self):
+    @staticmethod
+    def prepare_lists():
         results = {}
         for fname in glob.iglob(INTEL_DIR+"**/*.txt", recursive=True):
             with open(fname, 'r') as f:
                 results[os.path.basename(fname)[:-4]] = fname
         return results
 
-    def add_rule(self, name, tag, author, purpose, lines, category):
+    @staticmethod
+    def add_rule(name, tag, author, purpose, lines, category):
         yar = Yara_create()
         yar.new_rule(name, tag)
         yar.add_meta(author, "author")
@@ -164,7 +166,8 @@ class Rule:
         
         yar.build_rule(category)
 
-    def chunker(self, seq, size):
+    @staticmethod
+    def chunker(seq, size):
         num = math.ceil(len(seq)/size)
         index = 0
         chunked = []
@@ -175,25 +178,26 @@ class Rule:
 
         return chunked
 
-def create_rule(filename, author, name, tag, desc, string, condition=None):
-    yar = Yara_create()
-    yar.new_rule(name, tag)
-    yar.add_meta(author, "author")
-    yar.add_meta(desc, "purpose")
+    @staticmethod
+    def create_rule(filename, author, name, tag, desc, string, condition=None):
+        yar = Yara_create()
+        yar.new_rule(name, tag)
+        yar.add_meta(author, "author")
+        yar.add_meta(desc, "purpose")
 
-    strings = string.split('\n')
-    for s in strings:
-        identifier = (s.split("=")[0]).replace("$","")
-        string_val = ((s.split("=")[1]).replace("\"","")).strip()
+        strings = string.split('\n')
+        for s in strings:
+            identifier = (s.split("=")[0]).replace("$","")
+            string_val = ((s.split("=")[1]).replace("\"","")).strip()
 
-        yar.add_strings(string_val, identifier)
+            yar.add_strings(string_val, identifier)
 
-    if condition:
-        yar.add_condition(condition)
-        
-    content = yar.generate()
-    with open(CUSTOM_RULES_DIR+filename+".yar", 'a+') as f:
-        f.write(content)
+        if condition:
+            yar.add_condition(condition)
+            
+        content = yar.generate()
+        with open(CUSTOM_RULES_DIR+filename+".yar", 'a+') as f:
+            f.write(content)
 
 
 if __name__ == "__main__":

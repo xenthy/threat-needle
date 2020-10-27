@@ -61,7 +61,7 @@ class Yara:
 
     @staticmethod
     def run(stream_dict):
-        Yara.load_rules()
+        # Yara.load_rules()
         matches = None
         carver = Carver()
 

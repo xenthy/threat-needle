@@ -156,3 +156,4 @@ cython_debug/
 
 # Generated Yara files in rules/threat_intel/
 rules/threat_intel/*.yar
+rules/custom_rules/*.yar

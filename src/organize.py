@@ -30,7 +30,7 @@ class Organize:
         flagged_dict[timestamp] = flagged_details
 
         Vault.set_flagged(flagged_dict)
-        logger.info(f"Payload: {flag_matches} --> {yara_flagged[0].rule} [{Thread.name()}]")
+        logger.info(f"Payload: {stream_key} --> {yara_flagged[0].rule} [{Thread.name()}]")
 
     @staticmethod
     def add_packet_entry(threat_packet, threat_flagged, timestamp):
