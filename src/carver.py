@@ -68,7 +68,9 @@ class Carver:
             if not cont_type:
                 cont_type = re.findall(r"Content\_Type:\ \w+/(\w+)", line)
 
+            # might have more than one file in a session
             if cont_type and cont_length:
+                print(f"{cont_type} - {cont_length}")
                 return cont_type[0], int(cont_length[0])
 
         return None, None

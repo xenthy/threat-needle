@@ -1,5 +1,6 @@
 from os import name as os_name
-from scapy.all import AsyncSniffer, PacketList
+from scapy.sendrecv import AsyncSniffer
+from scapy.plist import PacketList
 from scapy.layers.http import HTTPRequest, HTTPResponse
 from collections import OrderedDict
 
@@ -16,7 +17,8 @@ logger.addHandler(file_handler)
 
 
 class Escapy:
-    __packet_values = (int, float, str, bytes, bool, list, tuple, set, dict, type(None))
+    __packet_values = (int, float, str, bytes, bool, list,
+                       tuple, set, dict, type(None))
     __explicit_layers = [HTTPRequest, HTTPResponse]
     __cap = PacketList()
 
@@ -29,7 +31,8 @@ class Escapy:
         monitor_mode = False if os_name == "nt" else True
         logger.info(f"Monitor Mode: [{monitor_mode}]")
 
-        Escapy.__cap = AsyncSniffer(prn=action, monitor=monitor_mode, count=count, store=store)
+        Escapy.__cap = AsyncSniffer(prn=action, monitor=monitor_mode,
+                                    count=count, store=store)
         Escapy.__cap.start()
 
     @staticmethod

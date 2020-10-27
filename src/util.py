@@ -1,12 +1,12 @@
-from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
-from vault import Vault
-from scapy.all import wrpcap, rdpcap, PacketList, Packet
-from scapy.layers.http import HTTPRequest, HTTPResponse
 import sys
 import datetime
-from pprint import pformat
 from collections import OrderedDict
+from scapy.plist import PacketList, Packet
+from scapy.utils import wrpcap, rdpcap
+from scapy.layers.http import HTTPRequest, HTTPResponse
 
+from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
+from vault import Vault
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -33,7 +33,6 @@ class Util:
             return cap
         except FileNotFoundError as error:
             logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
-            exit(1)
 
     @staticmethod
     def save_cap(file_name, cap) -> bool:
@@ -42,7 +41,6 @@ class Util:
             logger.info(f"\"{file_name}{CAP_EXTENSION}\" saved")
         except FileNotFoundError as error:
             logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
-            exit(1)
 
     @staticmethod
     def start_saving():
@@ -93,14 +91,17 @@ class Util:
             size += sum([Util.get_size(k, seen) for k in obj.keys()])
         elif hasattr(obj, '__dict__'):
             size += Util.get_size(obj.__dict__, seen)
-        elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+        elif hasattr(obj, '__iter__') and not isinstance(obj,
+                                                         (str, bytes, bytearray)):
             size += sum([Util.get_size(i, seen) for i in obj])
         return size
 
     @staticmethod
+    @DeprecationWarning
     def convert_packet(packet, *args) -> OrderedDict:
         """
-        Converts "scapy.layers.l2.Ether" to a dictionary of dictionaries of packet information
+        Converts "scapy.layers.l2.Ether" to a dictionary of
+        dictionaries of packet information
         """
         string_packet = packet.__repr__()
 
@@ -136,7 +137,8 @@ class Util:
                     key, value = item.split("=", 1)
                 except ValueError:
                     continue
-                layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+                layer_dict[key] = value[1:-1] if layer_name in\
+                    ["Raw", "Padding"] else value
 
             # finally, add sanitized later into dict
             packet_dict[layer_name] = layer_dict
@@ -147,6 +149,7 @@ class Util:
         return packet_dict
 
     @classmethod
+    @DeprecationWarning
     def __conditional_convert(self, packet_type, args):
         # init dictionary
         return_list = []
@@ -173,10 +176,11 @@ class Util:
                 # get key and value for each item
                 try:
                     key, value = item.split("=", 1)
-                    layer_dict[key] = value[1:-1] if layer_name in ["Raw", "Padding"] else value
+                    layer_dict[key] = value[1:-1] if layer_name in\
+                        ["Raw", "Padding"] else value
                 except ValueError:
                     continue
 
             return_list[args.index(layer_name)] = layer_dict
-        # logger.info(return_list)
+
         return return_list[0] if len(return_list) == 1 else return_list

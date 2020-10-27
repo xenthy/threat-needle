@@ -1,4 +1,5 @@
-from scapy.all import PacketList
+from scapy.plist import PacketList
+from collections import Counter
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ class Vault:
     __saving = False
     __threading_packet_list = PacketList()
     __saving_packet_list = PacketList()
+    __mapping = Counter()
     __packet_count = 0
     __session_dict = {}
     __session_header = []
@@ -42,6 +44,23 @@ class Vault:
         return Vault.__saving
 
     @staticmethod
+    def update_mapping(packet):
+        try:
+            key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
+            Vault.__mapping.update([key])
+            logger.debug(f"Packet #{sum(Vault.__mapping.values())}:" +
+                         f"{packet[0][1].src} ==> {packet[0][1].dst}")
+        except AttributeError:
+            key = tuple(sorted([packet[0][0].src, packet[0][0].dst]))
+            Vault.__mapping.update([key])
+            logger.debug(f"Packet #{sum(Vault.__mapping.values())}:" +
+                         f"{packet[0][0].src} ==> {packet[0][0].dst}")
+
+    @staticmethod
+    def get_mapping():
+        return Vault.__mapping
+
+    @staticmethod
     def plist_append(packet):
         # increment total packet count
         Vault.__packet_count += 1
@@ -62,19 +81,20 @@ class Vault:
         return temp
 
     @staticmethod
-    def get_sessions():
-        return Vault.__session_dict
+    def get_sessions(reset=False):
+        if not reset:
+            return Vault.__session_dict
+        temp = Vault.__session_dict
+        Vault.__session_dict = {}
+        return temp
 
     @staticmethod
     def add_session(stream_dict):
         for header, plist in stream_dict.items():
-            Vault.__session_header += [header] if header not in Vault.__session_header else []
+            Vault.__session_header += [header] if header not in\
+                Vault.__session_header else []
             Vault.__session_dict[header] = Vault.__session_dict[header] +\
                 plist if header in Vault.__session_dict else plist
-
-    @staticmethod
-    def reset_session():
-        Vault.__session_dict = {}
 
     @staticmethod
     def get_session_headers():
@@ -94,8 +114,8 @@ class Vault:
 
     @staticmethod
     def add_carving_queue(session_header, timestamp, cont_type, cont_length):
-        Vault.__carving_queue.append((session_header, timestamp, cont_type, cont_length))
-        print(Vault.__carving_queue)
+        Vault.__carving_queue.append((session_header, timestamp,
+                                      cont_type, cont_length))
 
     @staticmethod
     def get_carving_queue() -> list:
@@ -105,7 +125,8 @@ class Vault:
 
     @staticmethod
     def add_carved_file(session_header, timestamp, filename, cont_type):
-        Vault.__carved_files.append((session_header, timestamp, filename, cont_type))
+        Vault.__carved_files.append((session_header, timestamp,
+                                     filename, cont_type))
 
     @staticmethod
     def get_carved_files() -> list:
