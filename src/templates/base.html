@@ -305,14 +305,82 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-
+          {%block intro %}
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            {% if status == False %}
             <button type="submit" id ="save" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Save</button>
+            {%else%}
+            <button type="submit" id ="save" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Stop Saving</button>
+            {% endif %}
+
           </div>
 
           <!-- Content Row -->
+          <div class="row">
 
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card bg-gradient-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-light text-uppercase mb-1">Total Packets Sniffed</div>
+                      <div class="h5 mb-0 font-weight-bold text-light">
+                        <p id="total_packets"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card bg-gradient-info h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-light text-uppercase mb-1">Total Streams</div>
+                      <div class="h5 mb-0 font-weight-bold text-light" id="total_streams"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card bg-gradient-danger shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-light text-uppercase mb-1">Flagged Packets</div>
+                      <div class="h5 mb-0 font-weight-bold text-light" id="total_flagged"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card bg-gradient-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-light text-uppercase mb-1">Status</div>
+                      {% if status == False %}
+                      <div class="h5 mb-0 font-weight-bold text-light" id="status">Monitoring</div>
+                      {%else%}
+                      <div class="h5 mb-0 font-weight-bold text-light" id="status">Capturing</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {%endblock%}
+
+        
+          </div>
           {%block content%}{%endblock%}
           <!-- /.container-fluid -->
 

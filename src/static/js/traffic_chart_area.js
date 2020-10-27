@@ -53,7 +53,7 @@ var data = {
       fill: false,
       lineTension: 0.0,
       backgroundColor: "rgba(75,192,192,0.4)",
-      borderColor: "#f6c23e",
+      borderColor: "#e74a3b",
       borderCapStyle: 'butt',
       borderDash: [],
       borderDashOffset: 0.0,

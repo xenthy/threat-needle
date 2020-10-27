@@ -6,7 +6,8 @@ import random
 from util import Util
 from vault import Vault
 from os.path import isfile, join
-from os import listdir
+from os import listdir ,name as os_name
+
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 from yara_create import create_rule 
 
@@ -35,19 +36,18 @@ log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)
 
 
-def open_file(header,sessions):
-    path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{sessions[header].replace(' ', '_').replace(':','-')}"
+# def open_file(header,sessions):
+#     path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{sessions[header].replace(' ', '_').replace(':','-')}"
     
-    try:
-        with open(path, "rb") as f:
-            payload = f.read()
+#     try:
+#         with open(path, "rb") as f:
+#             payload = f.read()
 
-        payload = payload.decode("utf-8")
-    except Exception as e:
-        logger.warning(format(e))
-        payload = None
-    return payload
-
+#         payload = payload.decode("utf-8")
+#     except Exception as e:
+#         logger.warning(format(e))
+#         payload = None
+#     return payload
 
 def get_formatted_header(prot_type):
     common_protocols = {"80": "HTTP",
@@ -72,6 +72,7 @@ def get_formatted_header(prot_type):
     return sessions
 
 
+
 def get_data():
 
     while not thread_stop_event.isSet():
@@ -85,7 +86,7 @@ def get_data():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", status=Vault.get_saving())
 
 
 @app.route("/viewfile")
@@ -96,52 +97,58 @@ def savefile():
     carved_files = [f for f in listdir(CARVED_DIR) if isfile(
         join(CARVED_DIR, f))]
 
-    return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files )
+    return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files , status=Vault.get_saving())
 
 @app.route("/viewfile/<file_name>")
-def savefile2(file_name):
-
+def download(file_name):
     
     pcap_files = [f for f in listdir(CAP_PATH) if isfile(
         join(CAP_PATH, f)) if f[-4:] == ".cap"]
     
     carved_files = [f for f in listdir(CARVED_DIR) if isfile(
         join(CARVED_DIR, f))]
-
-    if file_name in pcap_files:
+        
+    if file_name in pcap_files and os_name == "nt":
         return send_file(join("..\\cap\\",pcap_files[pcap_files.index(file_name)]), as_attachment=True)
-    elif file_name in carved_files:
+    elif file_name in carved_files and os_name == "nt":
         return send_file(join("..\\carved\\",carved_files[carved_files.index(file_name)]), as_attachment=True)
+    elif file_name in pcap_files and os_name != "nt":
+        return send_file(join(CAP_PATH,pcap_files[pcap_files.index(file_name)]), as_attachment=True)
+    elif file_name in carved_files and os_name != "nt":
+        return send_file(join(CARVED_DIR,carved_files[carved_files.index(file_name)]), as_attachment=True)
     else:
         return "Error"
 
+
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
-
     tcp_sessions= get_formatted_header('TCP')
     payload = None
-    if request.method == "POST":
-        header = request.form["session"]
-        payload = open_file(header , tcp_sessions)
-
-    return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload)
+    return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload , status=Vault.get_saving())
 
 @app.route("/viewudp", methods=["POST", "GET"])
 def view_udp():
     udp_sessions = get_formatted_header('UDP')
     payload = None
-    if request.method == "POST":
-        header = request.form["session"]
-        payload = open_file(header , udp_sessions)
-
-    return render_template("viewudp.html", udp_sessions=udp_sessions, payload=payload)
+    return render_template("viewudp.html", udp_sessions=udp_sessions, payload=payload , status=Vault.get_saving())
 
 
 @app.route("/viewarp")
 def view_arp():
     arp_sessions =[session for session in Vault.get_session_headers() if 'ARP' in session]
 
-    return render_template("viewarp.html", arp_sessions=arp_sessions)
+    return render_template("viewarp.html", arp_sessions=arp_sessions , status=Vault.get_saving())
+
+
+
+@app.route("/stream/<file_name>")
+def downloadstream(file_name):
+    s = get_formatted_header('TCP')
+    if os_name == "nt":
+        return send_file(join("..\\.cache\\",Vault.get_runtime_name(),s[file_name]), as_attachment=True)
+    else:
+        return send_file(join(SESSION_CACHE_PATH,Vault.get_runtime_name(),s[file_name]), as_attachment=True)
+
 
 @app.route("/save", methods=["POST"])
 def save():
@@ -168,7 +175,7 @@ def add_rule():
         create_rule(filename, author, rule_name, tag, description, strings, condition)
         return redirect(request.url)
     else:
-        return render_template("addrule.html")
+        return render_template("addrule.html", status=Vault.get_saving())
 
 
 @app.route("/flagged", methods=["POST", "GET"])
@@ -185,7 +192,7 @@ def flagged():
             flagged_obj.packet[0][1].dst
             return flagged_obj.packet[0][1]
     else:
-        return render_template("flagged.html" , flagged_packets=Vault.get_flagged())
+        return render_template("flagged.html" , flagged_packets=Vault.get_flagged() , status=Vault.get_saving())
 
 @socketio.on("connect", namespace="/test")
 def test_connect():

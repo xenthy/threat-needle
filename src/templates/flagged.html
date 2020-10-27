@@ -2,57 +2,12 @@
 <html>
 
 <head>
-  
+
 </head>
 
 <body>
   {% extends "base.html" %}
   {% block content %}
-  <div class="row">
-
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-primary shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Packets Sniffed</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800" id="total_packets"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-info shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Streams</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800" id = "total_streams"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-      <div class="card border-left-warning shadow h-100 py-2">
-        <div class="card-body">
-          <div class="row no-gutters align-items-center">
-            <div class="col mr-2">
-              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Flagged Packets</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800" id="total_flagged"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-
   <!-- DataTales Example -->
 
   <div class="card shadow mb-4">
@@ -73,10 +28,10 @@
             </tr>
           </thead>
           <tbody>
-           {% for timestamp, pkt in flagged_packets.items() %}
+            {% for timestamp, pkt in flagged_packets.items() %}
             <tr>
               <td>{{timestamp}}</td>
-            
+
               {% if pkt.identifier == "payload" %}
               <td>Malicious Payload</td>
               <td>{{pkt.stream_id}}</td>
@@ -87,9 +42,9 @@
               <td>{{pkt.strings[0][2]}}</td>
               <td>{{pkt.rule}}</td>
               <td>{{pkt.tags}}</td>
-              <td><button id ="dialog"class="payload btn btn-primary" value="{{timestamp}}">View Payload</button></td>
+              <td><button id="dialog" class="payload btn btn-primary" value="{{timestamp}}">View Payload</button></td>
             </tr>
-          {% endfor %}
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -103,10 +58,10 @@
     </div>
     <div class="card-body">
       <div id="dialog">
-      <pre id="payload" class="pre-scrollable">
+        <pre id="payload" class="pre-scrollable">
       </pre>
-    </div>
-  {% endblock content%}
+      </div>
+      {% endblock content%}
 
 
 </body>

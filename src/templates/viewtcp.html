@@ -6,41 +6,43 @@
 </head>
 
 <body>
-  {% extends "base.html" %}
-  {% block content %}
-    <div class="col-auto">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">TCP Sessions</h6>
-        </div>
-        <div class="card-body">
-            <div class="form-group">
-                <form action="/viewtcp" method="post">
-                <label for="sessions">Select Session:</label>
-                <select class="form-control" name="session" >
-                    {%for k in tcp_sessions%}
-                    <option >{{k}}</option>
-                    {%endfor%}
-                </select>
-            </br>
-                <input type="submit" value="view" class="btn-primary">
-                </form>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">TCP Sessions</h6>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <form action="/viewtcp" method="post">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Session Header</th>
+                                        <th>Packets</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for k ,v in tcp_sessions.items() %}
+                                    <tr>
+                                        <td><a href="/stream/{{k}}">{{k}}</a></td>
+                                        <td>{{v|length}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        </br>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Stream View</h6>
-        </div>
-        <div class="card-body">
-            <pre>{{payload}}</pre>
-        </div>
-    </div>
-
 
     </div>
-  {% endblock content%}
+    {% endblock content%}
 
 
 </body>
