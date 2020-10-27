@@ -1,7 +1,25 @@
-# ict2202-assignment-1 <!-- omit in toc -->
+<p align="center">
+➡️
+    <a href="https://github.com/xenthy/ict2202-assignment-1#installation-guide">Installation Guide</a> |
+    <a href="https://github.com/xenthy/ict2202-assignment-1#-usage">Usage Guide</a>
+⬅️
+    <br>
+    <img src="pictures/rustscan.png" height=400px width=400px>
+</p>
+<p align="center">
+<u><b> Making network forensics easy </b></u><br> Run the program, <b>sit back</b>, and relax.
+</p>
 
-## Table of Contents <!-- omit in toc -->
-- [Setting Up](#setting-up)
+<hr>
+
+| <p align="center"><a href="https://hub.docker.com/r/cmnatic/rustscan"> Debian (Recommended) </a></p>            | <p align="center"><a href="https://github.com/RustScan/RustScan/releases">👩‍💻 Windows </p>                    | <p align="center"><a href="https://aur.archlinux.org/packages/rustscan/"> 🐋 Docker </a></p>                      |
+| --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/kali.png?raw=true" /></p> | <p align="center"><img src=/></p>                                                                           | <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/docker.png?raw=true"/></p> | <p align="center"><img src="https://github.com/RustScan/RustScan/blob/master/pictures/rust.png?raw=true" /></p> |
+| [Usage](https://github.com/RustScan/RustScan#docker-whale)                                                      | [Read the install guide](https://github.com/Rustscan/RustScan/blob/master/README.md#%EF%B8%8F-debian--kali) |                                                                                                                  |
+
+<hr>
+
+- [Installation Guide](#installation-guide)
   - [Windows](#windows)
     - [Cloning GitHub Repository (using vscode)](#cloning-github-repository-using-vscode)
     - [Installing Python](#installing-python)
@@ -11,11 +29,9 @@
     - [Cloning GitHub Repository](#cloning-github-repository)
     - [Configuring](#configuring)
 - [Running the Project](#running-the-project)
-- [Project Details](#project-details)
-- [Milestones](#milestones)
 - [Collaborators](#collaborators)
 
-## Setting Up
+## Installation Guide
 ### Windows
 #### Cloning GitHub Repository (using [vscode](https://code.visualstudio.com/))
 1. Press: Ctrl + Shift + P
@@ -70,17 +86,9 @@ Install pip requirements
 > make clean
 ```
 
-## Project Details
-???
-
-## Milestones
-- [ ] Project Outline
-- [ ] TBD
-- [ ] TBD
-
 ## Collaborators
-| Name                | GitHub                                     | Job Scope          |
-| ------------------- | ------------------------------------------ | ------------------ |
-| **Zen Tan**         | [@xenthy](https://github.com/xenthy)       | Scaffold & Dumping |
-| **Wong Chong Peng** | [@chong00](https://github.com/chong00)     | Base Features      |
-| **Tan Yee Tat**     | [@ethancunt](https://github.com/ethancunt) | IOC                |
+| Name                | GitHub                                     |
+| ------------------- | ------------------------------------------ |
+| **Zen Tan**         | [@xenthy](https://github.com/xenthy)       |
+| **Wong Chong Peng** | [@chong00](https://github.com/chong00)     |
+| **Tan Yee Tat**     | [@ethancunt](https://github.com/ethancunt) |
