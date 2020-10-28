@@ -38,7 +38,6 @@ class ThreatIntel:
         http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
 
         if http_request:
-            print(http_request["Host"])
             extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
 
         if dns:
@@ -98,7 +97,7 @@ class ThreatIntel:
 
     # def get_threats(self):
         # if self.threat_list:
-            # return self.threat_list
+        # return self.threat_list
 
 
 if __name__ == "__main__":
