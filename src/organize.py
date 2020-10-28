@@ -16,6 +16,12 @@ logger.addHandler(file_handler)
 
 
 class Organize:
+
+    """
+    Organized flagging for yara_process.py scanning of 
+    - Streams
+    - Payload Data
+    """
     @staticmethod
     def add_stream_entry(stream_key, stream, stream_payload, yara_flagged, timestamp):
         flagged_dict = {}
@@ -32,6 +38,12 @@ class Organize:
         Vault.set_flagged(flagged_dict)
         logger.info(f"Payload: {stream_key} --> {yara_flagged[0].rule} [{Thread.name()}]")
 
+    """
+    Organized flagging for threat_intel.py scanning of 
+    - Protocol layers in packets
+    - Packet details
+    - Packet contents
+    """
     @staticmethod
     def add_packet_entry(threat_packet, threat_flagged, timestamp):
         flagged_dict = {}

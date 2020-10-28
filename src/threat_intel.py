@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import re
 import glob
 import datetime
@@ -32,9 +30,12 @@ class ThreatIntel:
             if extracted:
                 self.hunt_threat(timestamp, extracted, packet)
 
+    """
+    Retrieving the DNS, IP and HTTP_REQUEST layers of the packet
+    - To extract Domains and IPs
+    """
     def extract_ip_domains(self, packet):
         extracted = []
-
         http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
 
         if http_request:
@@ -52,6 +53,9 @@ class ThreatIntel:
 
         return timestamp, extracted
 
+    """
+    Use yara to scan the extracted Domain and/or IP found in the packet and details passed into this
+    """
     def hunt_threat(self, raw_timestamp, found, packet):
         timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
         for threat in found:
@@ -66,6 +70,11 @@ class ThreatIntel:
                 # else:
                 # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
+    """
+    Updating of the Compiled yara rules of threat_intel 
+    - Malicious Domains
+    - Malicious IPs
+    """
     def threat_update(self):
         filenames = Rule.prepare_lists()
         entries = {"domains": [], "ips": []}
@@ -94,12 +103,3 @@ class ThreatIntel:
                 Rule.add_rule(name, tag, author, purpose, chunk, category)
 
         self.rules = Rule.load_rules()
-
-    # def get_threats(self):
-        # if self.threat_list:
-        # return self.threat_list
-
-
-if __name__ == "__main__":
-    threat = ThreatIntel()
-    pass

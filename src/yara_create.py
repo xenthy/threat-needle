@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-
-'''
-(yeet todo)
-After threat_intel runs ok
-- add condition functions
-- organize and optimize dem codes properly
-'''
-
 import os
 import glob
 import math
@@ -57,14 +48,20 @@ class Yara_create:
         self.__tag = ""
         self.__meta = {"author":"someone","purpose":"something"}
         self.__strings = dict()
-        #self.any_condition = "\n\tcondition:\n\t\tany of them"
         self.any_condition = "any of them"
         self.__condition = ""
 
+    """
+    Define the new rule's Name and Tag
+    """
     def new_rule(self, name, tag):
         self.__name = name
         self.__tag = tag
     
+    """
+    Specify the metadata content (like a readme for different yara rules)
+    - key: "author" AND "purpose" 
+    """
     def add_meta(self, value, key):
         if key == "author":
             self.__meta["author"] = value
@@ -73,15 +70,28 @@ class Yara_create:
         else:
             return -1
 
-    '''
-    Not implementing condition as of yet, after finish threat_intel.py working, then implement condition for web UI adding rules
-    '''
+    """
+    Adding the matching variables into the new rule template created
+    - strings: matching variable's value
+    - identifier: matching variable's name
+    """
     def add_strings(self, strings, identifier):
         self.__strings[identifier] = strings
 
+    """
+    Specifying the conditions to the matching variables 
+    e.g. "any of them"
+    """
     def add_condition(self, condition):
         self.__condition = condition
 
+    """
+    Generation of the new yara rule based on the parameters and configurations speicified using functions:
+    - new_rule(name, tag)
+    - add_meta(value, key)
+    - add_strings(strings, identifier)
+    - add_condition(condition)
+    """
     def generate(self):
         head = f"rule {self.__name} : {self.__tag}\n{{"
         meta = f"\n\tmeta:\n\t\tauthor = \"{self.__meta['author']}\"\n\t\tpurpose = \"{self.__meta['purpose']}\""
@@ -98,10 +108,15 @@ class Yara_create:
         
         return head+meta+strings+"\n"+cond_format+self.__condition+tail
     
-    # For GUI adding of rules
-    def append(self):
-        pass
+    # # For GUI adding of rules
+    # def append(self):
+        # pass
 
+    """
+    Build the rule with valid syntax based on the threat intel folder's IP and Domains specified, to be loading by yara in another function
+    - Malicious IP: filename naming convention of  xxx_ipX.yar
+    - Malicious Domain: filename naming convention of  xxx_domainX.yar
+    """
     def build_rule(self, temp_category):
         category = temp_category.split("_")[0]
         if category in ("domains", "ips"):
@@ -116,13 +131,14 @@ class Yara_create:
                 
             with open(filename, 'a+') as f:
                 f.write(content)
-            
-            #logger.info("Threat Intel rules created")
         else:
             return -1
         
 class Rule:
-    # Loads in uncompiled rules files
+    """
+    Loads in yara rules files (.yar)
+    - Errors on invalid syntax during yara rules compilation
+    """
     @staticmethod
     def load_rules():
         rule_files = Rule.prepare_rules()
@@ -134,7 +150,9 @@ class Rule:
         except Exception as e:
             print(f"Invalid Rule file/syntax error: \n{e}")
 
-    # Prepare uncompile yara rules files
+    """
+    Prepare uncompile yara rules files
+    """
     @staticmethod
     def prepare_rules():
         results = {}
@@ -143,7 +161,9 @@ class Rule:
                 results[os.path.basename(fname)[:-4]] = fname
         return results
 
-    # Prepare uncompile yara rules files
+    """
+    Get the list of yara rules files from the "thread_intel" rules directory
+    """
     @staticmethod
     def prepare_lists():
         results = {}
@@ -166,6 +186,10 @@ class Rule:
         
         yar.build_rule(category)
 
+    """
+    Function mainly used for threat_intel rules compilation as the Domain and IP lists are longer than the allowed number of matching variables per yara rule file
+    - To split up the lists (.txt) files into multiple different chunks before compiling and writing to a new yara rule file per chunk
+    """
     @staticmethod
     def chunker(seq, size):
         num = math.ceil(len(seq)/size)
@@ -178,6 +202,9 @@ class Rule:
 
         return chunked
 
+    """
+    Function to add a new Yara rule via the Web GUI 
+    """
     @staticmethod
     def create_rule(filename, author, name, tag, desc, string, condition=None):
         yar = Yara_create()
@@ -201,7 +228,7 @@ class Rule:
 
 
 if __name__ == "__main__":
-    # Whole chunk below is for threat_intel.py
+    # Whole chunk below is for threat_intel.py (OLD, to be deleted before submission)
     rule = Rule()
     filenames = rule.prepare_lists()
     entries = {"domains":[],"ips":[]}

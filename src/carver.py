@@ -14,13 +14,16 @@ from config import SESSION_CACHE_PATH, CARVED_DIR
 
 
 class Carver:
+    # Specifying the different types of magic bytes for different filetypes (in dec)
     file_sigs = {"jgp": ['255', '216'], "jpeg": ['255', '216'], "png": ['137', '80'], "gif": ['71', '73'], "pdf": ['37', '80', '68', '70'], "docx": ['80', '75', '3', '4']}
 
+    """
+    Main carving function to carve out files from packet streams' payloads
+    """
     @staticmethod
     def carve_stream():
         Thread.set_name("carving-thread")
         magic = ""
-        # cont_type, cont_length = Carver.get_content_info(b)
         carving_queue = Vault.get_carving_queue()
 
         for k, timestamp, cont_type, cont_length in carving_queue:
@@ -51,9 +54,10 @@ class Carver:
 
                 return carved
 
-    # def carve_packet(self, packet):
-        # pass
-
+    """
+    Retrieve the stream payload's content type and its content lenght
+    - To be stored and used in carve_stream()
+    """
     @staticmethod
     def get_content_info(payload_b):
         cont_type = ""
@@ -75,6 +79,9 @@ class Carver:
 
         return None, None
 
+    """
+    Find the Start of File bytes based on the content-length specified in the packet/streams and the filetype's magic bytes
+    """
     @staticmethod
     def get_SOF(magic, payload_b):
         num_bytes = len(magic)
@@ -96,6 +103,9 @@ class Carver:
         print("NOT FOUND")
         return None
 
+    """
+    Used to set random strings as the carved filenames
+    """
     @staticmethod
     def random_str(length):
         letters = string.ascii_lowercase

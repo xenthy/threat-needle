@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-
-''' 
-    Need to make a separation of UDP and TCP searching, loading 2 different set of rules
-'''
-
 from util import Util
 from io import BytesIO
 from vault import Vault
@@ -38,7 +32,10 @@ class Yara:
     _matches = []
     udp_ports = ["53", "80", "443"]
 
-    # Loads in uncompiled rules files
+    """
+    Loads in yara rules files (.yar)
+    - Errors on invalid syntax during yara rules compilation
+    """
     @staticmethod
     def load_rules():
         rule_files = Yara._prepare_rules(RULES_DIR)
@@ -50,7 +47,9 @@ class Yara:
         except Exception as e:
             logger.error(f"Invalid Rule file/syntax error: \n{e} [{Thread.name()}]")
 
-    # Prepare uncompile yara rules files
+    """
+    Prepare uncompile yara rules files
+    """
     @staticmethod
     def _prepare_rules(rules):
         results = {}
@@ -59,9 +58,11 @@ class Yara:
                 results[os.path.basename(fname)[:-4]] = fname
         return results
 
+    """
+    Main start method for initializing the Yara scanning of packet's stream and payload data
+    """
     @staticmethod
     def run(stream_dict):
-        # Yara.load_rules()
         matches = None
         carver = Carver()
 
@@ -86,13 +87,10 @@ class Yara:
                     logger.critical(f"Yara rules error, check rules in \"rules/custom_rules/<file>\" [{Thread.name()}]")
 
     '''
-    function "url_yar(, stream, k, matches)" 
+    Yara scanning for any malicious Domains or IPs in the stream captured
+    E.g. When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
 
-    E.g. 
-    When there is a URL in an email (or in any stream payload), it will search through the "suspicious" or "malicious" urls/ips specified in threat_intel's yara rules, if matched, flag it
-
-    '''
-
+    ''' 
     @staticmethod
     def url_yar(stream, k, payload, matches, timestamp):
         for url in matches[0].strings:
@@ -100,6 +98,9 @@ class Yara:
             if (matches := Yara._url_rules.match(data=url[2])):
                 Organize.add_stream_entry(k, stream, payload, matches, timestamp)
 
+    """
+    Yara scanning of carved files
+    """
     @staticmethod
     def scan_carved(k, timestamp, payload):
         try:
@@ -111,13 +112,3 @@ class Yara:
                 Organize.add_stream_entry(k, None, payload, matches, timestamp)
         except AttributeError:
             logger.critical(f"Yara rules error, check rules in \"rules/custom_rules/<file>\" [{Thread.name()}]")
-
-
-if __name__ == "__main__":
-    #    RULES_DIR = "."+RULES_DIR
-    #    CAP_PATH = "."+CAP_PATH
-
-    pcap = Util.load_cap("testing2")
-    stream_dict = find_streams(pcap)
-    yar = Yara()
-    yar.run(stream_dict)
