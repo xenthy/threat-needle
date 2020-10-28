@@ -1,11 +1,8 @@
-import re
-import glob
 import datetime
 from escapy import Escapy
-from yara_create import *
+from yara_create import Rule
 from config import INTEL_DIR
 from organize import Organize
-from features import extract_payload, find_streams
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
 logger = logging.getLogger(__name__)
@@ -25,18 +22,21 @@ class ThreatIntel:
         self.threat_list = {}
 
     def run(self, temp_plist):
+        """
+        Main function to run ThretIntel
+        """
         for packet in temp_plist:
             timestamp, extracted = self.extract_ip_domains(packet)
             if extracted:
                 self.hunt_threat(timestamp, extracted, packet)
 
-    """
-    Retrieving the DNS, IP and HTTP_REQUEST layers of the packet
-    - To extract Domains and IPs
-    """
     def extract_ip_domains(self, packet):
+        """
+        Retrieving the DNS, IP and HTTP_REQUEST layers of the packet
+        - To extract Domains and IPs
+        """
         extracted = []
-        http_request, dns, ip, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
+        http_request, dns, ip_layer, timestamp = Escapy.convert_packet(packet, "HTTP Request", "DNS", "IP", "Timestamp")
 
         if http_request:
             extracted.append(http_request["Host"].decode('utf-8') + http_request["Path"].decode('utf-8'))
@@ -47,16 +47,16 @@ class ThreatIntel:
             except TypeError:
                 pass
 
-        if ip:
-            extracted.append(ip["src"])
-            extracted.append(ip["dst"])
+        if ip_layer:
+            extracted.append(ip_layer["src"])
+            extracted.append(ip_layer["dst"])
 
         return timestamp, extracted
 
-    """
-    Use yara to scan the extracted Domain and/or IP found in the packet and details passed into this
-    """
     def hunt_threat(self, raw_timestamp, found, packet):
+        """
+        Use yara to scan the extracted Domain and/or IP found in the packet and details
+        """
         timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
         for threat in found:
             if (matches := self.rules.match(data=threat)):
@@ -70,22 +70,22 @@ class ThreatIntel:
                 # else:
                 # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
-    """
-    Updating of the Compiled yara rules of threat_intel 
-    - Malicious Domains
-    - Malicious IPs
-    """
     def threat_update(self):
+        """
+        Updating of the Compiled yara rules of threat_intel 
+        - Malicious Domains
+        - Malicious IPs
+        """
         filenames = Rule.prepare_lists()
         entries = {"domains": [], "ips": []}
         for filename in filenames:
             identify = filename.split("_")[1]
-            with open(INTEL_DIR+filename+".txt", "r") as f:
-                lines = [line.strip() for line in f.readlines() if "#" not in line if line.strip() != ""]
+            with open(INTEL_DIR+filename+".txt", "r") as file_obj:
+                lines = [line.strip() for line in file_obj.readlines() if "#" not in line if line.strip() != ""]
 
-            if "domain" == identify:
+            if identify == "domain":
                 entries["domains"] += lines
-            elif "ip" == identify:
+            elif identify == "ip":
                 entries["ips"] += lines
 
         for entry, lines in entries.items():
@@ -95,9 +95,9 @@ class ThreatIntel:
                 tag = "emerging_"+entry
                 author = "Auto Generated"
                 purpose = "Threat Intel Domains/IPs"
-                if "domains" == entry:
+                if entry == "domains":
                     category = "domains_"+str(index)
-                elif "ips" == entry:
+                elif entry == "ips":
                     category = "ips_"+str(index)
 
                 Rule.add_rule(name, tag, author, purpose, chunk, category)
