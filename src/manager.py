@@ -1,7 +1,7 @@
 import threading
-from multiprocessing import Pool
 import tracemalloc
-from pathlib import Path
+from os import listdir
+from os.path import isfile, join
 
 from vault import Vault
 from thread import Thread
@@ -123,35 +123,24 @@ def session_caching(event):
     Thread.set_name("session-caching-thread")
 
     while not Thread.get_interrupt():
-
+        runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
+        cache_files = [f for f in listdir(runtime_path) if isfile(join(runtime_path, f))]
         sessions = Vault.get_sessions(reset=True)
 
-        pool = Pool()
-        pool.map(session_worker, sessions.items())
-
-        pool.close()
-        pool.join()
+        for header, plist in sessions.items():
+            if (payload := extract_payload(plist, pure=True)) is None:
+                continue
+            header = header.replace(" ", "_").replace(":", "-")
+            if header in cache_files:
+                with open(f"{runtime_path}/{header}", "ab+") as f:
+                    # f.seek(0, 2)
+                    f.write(payload)
+            else:
+                with open(f"{runtime_path}/{header}", "wb+") as f:
+                    f.write(payload)
 
         logger.info(f"cached to local file [{Thread.name()}]")
         event.wait(timeout=SESSION_CACHING_INTERVAL)
-
-
-def session_worker(obj):
-    header, plist = obj
-    if (payload := extract_payload(plist, pure=True)) is None:
-        return
-
-    header = header.replace(" ", "_").replace(":", "-")
-
-    runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
-    file = Path(f"{runtime_path}/{header}")
-
-    if file.is_file():
-        with open(f"{runtime_path}/{header}", "ab+") as f:
-            f.write(payload)
-    else:
-        with open(f"{runtime_path}/{header}", "wb+") as f:
-            f.write(payload)
 
 
 if __name__ == "__main__":
