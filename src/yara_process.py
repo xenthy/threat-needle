@@ -65,6 +65,7 @@ class Yara:
         matches = None
         carver = Carver()
 
+        # might change this to use multiprocessing too - zen
         for k, stream in stream_dict.items():
             if (payload := extract_payload(stream)) is not None:
                 raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
@@ -95,6 +96,7 @@ class Yara:
     @staticmethod
     def url_yar(stream, k, payload, matches, timestamp):
         for url in matches[0].strings:
+            # theres an error right below this line, use pylint - zen
             if (matches := Yara._url_rules.match(data=url[2])):
                 Organize.add_stream_entry(k, stream, payload, matches, timestamp)
 
