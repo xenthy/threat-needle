@@ -8,9 +8,6 @@ from config import SESSION_CACHE_PATH
 
 # TODO: Should revert back to no queue setting, just carve, then cache will cache the streams WITH the get headers
 
-# TODO: LEFT WITH using yara_scan(payload) to scan the files carved
-
-
 class Carver:
     # Specifying the different types of magic bytes for different filetypes (in dec)
     file_sigs = {"jgp": ['255', '216'], "jpeg": ['255', '216'], "png": ['137', '80'], "gif": ['71', '73'], "pdf": ['37', '80', '68', '70'], "docx": ['80', '75', '3', '4']}
