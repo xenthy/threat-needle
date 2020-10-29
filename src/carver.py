@@ -1,3 +1,4 @@
+import os
 import re
 import string
 import random
@@ -8,8 +9,12 @@ from config import SESSION_CACHE_PATH
 
 # TODO: Should revert back to no queue setting, just carve, then cache will cache the streams WITH the get headers
 
+# TODO: More checks to make sure its running as intended
+
 class Carver:
-    # Specifying the different types of magic bytes for different filetypes (in dec)
+    """
+    Specifying the different types of magic bytes for different filetypes (in decimals)
+    """
     file_sigs = {"jgp": ['255', '216'], "jpeg": ['255', '216'], "png": ['137', '80'], "gif": ['71', '73'], "pdf": ['37', '80', '68', '70'], "docx": ['80', '75', '3', '4']}
 
     @staticmethod
@@ -23,7 +28,10 @@ class Carver:
 
         for k, timestamp, cont_type, cont_length in carving_queue:
             k = k.replace(" ", "_").replace(":", "-")
-            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}", 'rb') as file_obj:
+
+            # with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}", 'rb') as file_obj:
+            path = os.path.join(SESSION_CACHE_PATH, Vault.get_runtime_name(), k)
+            with open(f"{path}", 'rb') as file_obj:
                 stream_payload = file_obj.read()
 
             bytes_content = BytesIO(stream_payload)
@@ -42,7 +50,9 @@ class Carver:
                 view = bytes_content.getbuffer()
                 carved = view[sof:eof]
 
-                with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
+                # with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
+                path = os.path.join(SESSION_CACHE_PATH, Vault.get_runtime_name(), (fname := Carver.random_str(5)))
+                with open(f"{path}", 'ab+') as file_obj:
                     file_obj.write(carved)
                     print(f"File {fname} carved")
                     Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
