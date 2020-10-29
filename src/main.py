@@ -1,7 +1,7 @@
-from os import mkdir, system, name
+import time
 import tracemalloc
 import threading
-import time
+from os import mkdir, system, name
 from app import app, socketio
 
 from vault import Vault
@@ -48,10 +48,9 @@ def main():
     # set up threading
     Thread.set_interrupt(False)
     event = threading.Event()
-    manager_thread = threading.Thread(target=manager, args=[event], daemon=True)
 
     # start threads
-    manager_thread.start()
+    manager_thread = manager(event)
     Escapy.async_sniff(custom_action)
 
     """ MENU """

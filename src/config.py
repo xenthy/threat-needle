@@ -20,9 +20,11 @@ CUSTOM_RULES_DIR = "./rules/custom_rules/"
 # Path to carved files directory
 CARVED_DIR = "./carved/"
 
-# SESSION
 # Path to session cache folder
 SESSION_CACHE_PATH = "./.cache"
 
-# session caching interval (in seconds)
+# THREAD INTERVALS
+MEMORY_WATCHDOG_INTERVAL = 5
+BULK_MANAGER_INTERVAL = 5  # handlings session yara and threat
 SESSION_CACHING_INTERVAL = 10
+CARVING_INTERVAL = 10
