@@ -1,12 +1,14 @@
-from flask import Flask, render_template, url_for, copy_current_request_context, request, redirect ,jsonify , send_file
-from flask_socketio import SocketIO, emit
-from time import sleep
+from os.path import isfile, join
+from os import listdir, name as os_name
+
 from threading import Thread, Event
-import random
+
+from flask import Flask, render_template, request, redirect, send_file
+from flask_socketio import SocketIO, emit
+
 from util import Util
 from vault import Vault
-from os.path import isfile, join
-from os import listdir ,name as os_name
+
 
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 from yara_create import Rule
@@ -76,13 +78,9 @@ def get_formatted_header(prot_type):
 def get_data():
 
     while not thread_stop_event.isSet():
-        # total_streams += int(random.random() * 100)
-        # total_flagged += int(random.random() * 100)
-
         socketio.emit(
             "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/test")
         socketio.sleep(0.01)
-
 
 @app.route("/")
 def index():
@@ -109,22 +107,22 @@ def download(file_name):
         join(CARVED_DIR, f))]
         
     if file_name in pcap_files and os_name == "nt":
-        return send_file(join("..\\cap\\",pcap_files[pcap_files.index(file_name)]), as_attachment=True)
+        return send_file(join("..\\cap\\", pcap_files[pcap_files.index(file_name)]), as_attachment=True)
     elif file_name in carved_files and os_name == "nt":
-        return send_file(join("..\\carved\\",carved_files[carved_files.index(file_name)]), as_attachment=True)
+        return send_file(join("..\\carved\\", carved_files[carved_files.index(file_name)]), as_attachment=True)
     elif file_name in pcap_files and os_name != "nt":
-        return send_file(join(CAP_PATH,pcap_files[pcap_files.index(file_name)]), as_attachment=True)
+        return send_file(join(CAP_PATH, pcap_files[pcap_files.index(file_name)]), as_attachment=True)
     elif file_name in carved_files and os_name != "nt":
-        return send_file(join(CARVED_DIR,carved_files[carved_files.index(file_name)]), as_attachment=True)
+        return send_file(join(CARVED_DIR, carved_files[carved_files.index(file_name)]), as_attachment=True)
     else:
         return "Error"
-
+    
 
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
     tcp_sessions= get_formatted_header('TCP')
     payload = None
-    return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload , status=Vault.get_saving())
+    return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload, status=Vault.get_saving())
 
 @app.route("/viewudp", methods=["POST", "GET"])
 def view_udp():
@@ -136,7 +134,6 @@ def view_udp():
 @app.route("/viewarp")
 def view_arp():
     arp_sessions =[session for session in Vault.get_session_headers() if 'ARP' in session]
-
     return render_template("viewarp.html", arp_sessions=arp_sessions , status=Vault.get_saving())
 
 
@@ -145,9 +142,9 @@ def view_arp():
 def downloadstream(file_name):
     s = get_formatted_header('TCP')
     if os_name == "nt":
-        return send_file(join("..\\.cache\\",Vault.get_runtime_name(),s[file_name]), as_attachment=True)
-    else:
-        return send_file(join(SESSION_CACHE_PATH,Vault.get_runtime_name(),s[file_name]), as_attachment=True)
+        return send_file(join("..\\.cache\\", Vault.get_runtime_name(),s[file_name]), as_attachment=True)
+        
+    return send_file(join(SESSION_CACHE_PATH, Vault.get_runtime_name(),s[file_name]), as_attachment=True)
 
 
 @app.route("/save", methods=["POST"])
@@ -192,7 +189,7 @@ def flagged():
             flagged_obj.packet[0][1].dst
             return flagged_obj.packet[0][1]
     else:
-        return render_template("flagged.html" , flagged_packets=Vault.get_flagged() , status=Vault.get_saving())
+        return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 
 @socketio.on("connect", namespace="/test")
 def test_connect():
