@@ -31,13 +31,11 @@ threat_intel = ThreatIntel()
 threat_intel.threat_update()
 
 
-@thread(name="bulk-manager-thread",
-        daemon=True)
+@thread(daemon=True)
 def manager(event):
     """
-    To be sent to the manager
+    Facilitates and creation of sub-threads
     """
-    Thread.set_name("main-manager-thread")
 
     # Load Yara rules recursively from the .yar files in the "rules" directory
     Yara.load_rules()
@@ -54,9 +52,10 @@ def manager(event):
     session_caching_thread.join()
     memory_thread.join()
 
+    logger.info(f"All sub-threads terminated [{Thread.name()}]")
 
-@thread(name="bulk-manager-thread",
-        daemon=True)
+
+@thread(daemon=True)
 def bulk_manager(event):
     """
     Manages session_yara() and threat()
@@ -77,20 +76,17 @@ def bulk_manager(event):
         event.wait(timeout=BULK_MANAGER_INTERVAL)
 
 
-@thread(name="session-yara-thread",
-        daemon=True)
+@thread(daemon=True)
 def session_yara(stream_dict):
     Yara.run(stream_dict)
 
 
-@thread(name="threat-thread",
-        daemon=True)
+@thread(daemon=True)
 def threat(temp_plist):
     threat_intel.run(temp_plist)
 
 
-@thread(name="carving_manager-thread",
-        daemon=True)
+@thread(daemon=True)
 def carving_manager(event):
     """
     Manages Carver.carve_stream()
@@ -101,8 +97,7 @@ def carving_manager(event):
         event.wait(timeout=CARVING_INTERVAL)
 
 
-@thread(name="memory-thread",
-        daemon=True)
+@thread(daemon=True)
 def memory(event):
     while not Thread.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
@@ -112,8 +107,7 @@ def memory(event):
         event.wait(timeout=MEMORY_WATCHDOG_INTERVAL)
 
 
-@thread(name="session-caching-thread",
-        daemon=True)
+@thread(daemon=True)
 def session_caching(event):
     while not Thread.get_interrupt():
         runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
@@ -136,8 +130,7 @@ def session_caching(event):
         event.wait(timeout=SESSION_CACHING_INTERVAL)
 
 
-@thread(name="session-caching-thread",
-        daemon=True)
+@thread(daemon=True)
 def session_caching_mp(event):
     while not Thread.get_interrupt():
 

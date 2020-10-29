@@ -29,8 +29,8 @@ def thread(name=None, daemon=False):
     def wrapper(function):
         def decorator_thread(*args):
             thread = threading.Thread(target=function, args=args, daemon=daemon)
-            if name != None:
-                thread.setName(name)
+            thread.setName(name) if name != None else\
+                thread.setName(function.__name__ + "_thread")
             thread.start()
             return thread
         return decorator_thread

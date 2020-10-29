@@ -16,8 +16,7 @@ class Carver:
     file_sigs = {"jgp": ['255', '216'], "jpeg": ['255', '216'], "png": ['137', '80'], "gif": ['71', '73'], "pdf": ['37', '80', '68', '70'], "docx": ['80', '75', '3', '4']}
 
     @staticmethod
-    @thread(name="carving-thread",
-            daemon=True)
+    @thread(daemon=True)
     def carve_stream():
         """
         Main carving function to carve out files from packet streams' payloads
