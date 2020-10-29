@@ -27,20 +27,20 @@
   <div class="col-xl-4 col-lg-5">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-info">Some chart lo</h6>
+        <h6 class="m-0 font-weight-bold text-info">Protocols In Network</h6>
       </div>
 
       <div class="card-body">
-
+        <div class="chart-area">
+          <canvas id="myPieChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-<script src="/static/js/socket.js"></script>
 <script src="/static/vendor/chart.js/Chart.min.js"></script>
 <script src="/static/js/traffic_chart_area.js"></script>
+<script src="/static/js/protocol_piechart.js"></script>
   {% endblock content%}
 
 

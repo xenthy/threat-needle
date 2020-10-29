@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="row">
+        <div class="col">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Network Mapping</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="tree">
+                        <ul>
+                            <li>
+                                <a href="#">Parent</a>
+                                <ul>
+                                    <li>
+                                        <a href="#">Child</a>
+                                        <ul>
+                                            <li>
+                                                <a href="#">Grand Child</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">Child</a>
+                                        <ul>
+                                            <li><a href="#">Grand Child</a></li>
+                                            <li>
+                                                <a href="#">Grand Child</a>
+                                                <ul>
+                                                    <li>
+                                                        <a href="#">Great Grand Child</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">Great Grand Child</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">Great Grand Child</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">Grand Child</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    {% endblock content%}
+
+
+
+</body>
+
+</html>
