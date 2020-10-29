@@ -29,9 +29,7 @@ class Carver:
         for k, timestamp, cont_type, cont_length in carving_queue:
             k = k.replace(" ", "_").replace(":", "-")
 
-            # with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}", 'rb') as file_obj:
-            path = os.path.join(SESSION_CACHE_PATH, Vault.get_runtime_name(), k)
-            with open(f"{path}", 'rb') as file_obj:
+            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}", 'rb') as file_obj:
                 stream_payload = file_obj.read()
 
             bytes_content = BytesIO(stream_payload)
@@ -50,9 +48,7 @@ class Carver:
                 view = bytes_content.getbuffer()
                 carved = view[sof:eof]
 
-                # with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
-                path = os.path.join(SESSION_CACHE_PATH, Vault.get_runtime_name(), (fname := Carver.random_str(5)))
-                with open(f"{path}", 'ab+') as file_obj:
+                with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
                     file_obj.write(carved)
                     print(f"File {fname} carved")
                     Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
