@@ -40,7 +40,7 @@ class Carver:
 
             with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
                 file_obj.write(carved)
-                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)")
+                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)") # REMOVE PRINTING? :THINKING:
                 Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
             return carved
