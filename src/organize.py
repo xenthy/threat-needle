@@ -33,7 +33,7 @@ class Organize:
             except:
                 flag_matches.append(match[2])
 
-        flagged_details = Payload_flagged(timestamp, stream_key, stream, stream_payload, yara_flagged[0].strings, yara_flagged[0].rule, yara_flagged[0].tags)
+        flagged_details = Payload_flagged(yara_flagged, timestamp, stream_key, stream, stream_payload, yara_flagged[0].strings, yara_flagged[0].rule, yara_flagged[0].tags)
         # flagged_dict[timestamp] = flagged_details
         Organize.packet_counter += 1
         flagged_dict[str(Organize.packet_counter)] = flagged_details
@@ -54,7 +54,7 @@ class Organize:
         for match in threat_flagged[0].strings:
             flag_matches.append(match[2].decode('utf-8'))
 
-        flagged_details = Threat_flagged(timestamp, threat_packet, threat_flagged[0].strings, threat_flagged[0].rule, threat_flagged[0].tags)
+        flagged_details = Threat_flagged(threat_flagged, timestamp, threat_packet, threat_flagged[0].strings, threat_flagged[0].rule, threat_flagged[0].tags)
         Organize.packet_counter += 1
         flagged_dict[str(Organize.packet_counter)] = flagged_details
 
@@ -63,8 +63,9 @@ class Organize:
 
 
 class Payload_flagged:
-    def __init__(self, timestamp, stream_id, stream, payload, strings, rule, tags):
+    def __init__(self, payload_flagged, timestamp, stream_id, stream, payload, strings, rule, tags):
         self.identifier = "payload"
+        self.mal_type = payload_flagged
         self.timestamp = timestamp
         self.stream_id = stream_id
         self.stream = stream
@@ -75,8 +76,9 @@ class Payload_flagged:
 
 
 class Threat_flagged:
-    def __init__(self, timestamp, packet, strings, rule, tags):
+    def __init__(self, threat_flagged, timestamp, packet, strings, rule, tags):
         self.identifier = "endpoint"
+        self.mal_type = threat_flagged
         self.timestamp = timestamp
         self.packet = packet
         self.strings = strings
