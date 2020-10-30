@@ -44,6 +44,8 @@ COMMON_PROTOCOLS = {"80": "HTTP",
                     "23": "Telnet",
                     "53": "DNS"
                     }
+
+
 def get_formatted_header(prot_type):
     global COMMON_PROTOCOLS
     sessions = {}
@@ -66,6 +68,7 @@ def get_data():
         socketio.emit(
             "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/test")
         socketio.sleep(0.01)
+
 
 @app.route("/", methods=["POST", "GET"])
 def index():
@@ -91,18 +94,23 @@ def index():
         return protocol_dict
     return render_template("index.html", status=Vault.get_saving())
 
-@app.route("/network")
+
+@app.route("/network", methods=["POST", "GET"])
 def network():
-    return render_template("network.html", status=Vault.get_saving())
+    if request.method == "POST":
+        return Vault.get_mapping()
+    return render_template("network.html", status=Vault.get_saving(), data=Vault.get_mapping())
+
 
 @app.route("/viewfile")
 def savefile():
     pcap_files = [f for f in listdir(CAP_PATH) if isfile(
         join(CAP_PATH, f)) if f[-4:] == ".cap"]
-    
+
     carved_files = [f for f in listdir(CARVED_DIR) if isfile(
         join(CARVED_DIR, f))]
     return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files, status=Vault.get_saving())
+
 
 @app.route("/viewfile/<file_name>")
 def download(file_name):
@@ -116,11 +124,13 @@ def download(file_name):
         return send_file(f"../{CARVED_DIR}/{carved_files[carved_files.index(file_name)]}", as_attachment=True)
     return "Error"
 
+
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
     tcp_sessions = get_formatted_header('TCP')
     payload = None
     return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload, status=Vault.get_saving())
+
 
 @app.route("/viewudp", methods=["POST", "GET"])
 def view_udp():
@@ -133,7 +143,6 @@ def view_udp():
 def view_arp():
     arp_sessions = [session for session in Vault.get_session_headers() if 'ARP' in session]
     return render_template("viewarp.html", arp_sessions=arp_sessions, status=Vault.get_saving())
-
 
 
 @app.route("/stream/<file_name>")
@@ -195,6 +204,7 @@ def test_connect():
     if not thread.isAlive():
         logger.info("starting socket thread")
         thread = socketio.start_background_task(get_data)
+
 
 @socketio.on("disconnect", namespace="/test")
 def test_disconnect():
