@@ -20,17 +20,20 @@ logger.addHandler(file_handler)
 
 
 # receive a list of packet in a stream and returns the payload
-def extract_payload(stream, pure=False):
+def extract_payload(stream, pure=False, headers=False):
     payload = bytes()
     for pkt in stream:
         raw, http_request, http_response = Escapy.convert_packet(pkt, "Raw", "HTTP Request", "HTTP Response")
 
-        if not pure:
+        if headers or not pure:
             if http_request:
                 payload += __http_helper(http_request, ["Method", "Path", "Http_Version"])
 
             if http_response:
                 payload += __http_helper(http_response, ["Http_Version", "Status_Code", "Reason_Phrase"])
+
+            if headers:
+                return payload if len(payload) != 0 else None
 
         if raw is not None:
             payload = payload + raw["load"]

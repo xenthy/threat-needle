@@ -4,10 +4,8 @@ import string
 import random
 from io import BytesIO
 from vault import Vault
-from thread import thread
 from config import SESSION_CACHE_PATH
-
-# TODO: Should revert back to no queue setting, just carve, then cache will cache the streams WITH the get headers
+from features import extract_payload
 
 # TODO: More checks to make sure its running as intended
 
@@ -18,42 +16,34 @@ class Carver:
     file_sigs = {"jgp": ['255', '216'], "jpeg": ['255', '216'], "png": ['137', '80'], "gif": ['71', '73'], "pdf": ['37', '80', '68', '70'], "docx": ['80', '75', '3', '4']}
 
     @staticmethod
-    @thread(daemon=True)
-    def carve_stream():
+    def carve_stream(k, timestamp, cont_type, cont_length, stream_payload):
         """
         Main carving function to carve out files from packet streams' payloads
         """
         magic = ""
-        carving_queue = Vault.get_carving_queue()
+        k = k.replace(" ", "_").replace(":", "-")
 
-        for k, timestamp, cont_type, cont_length in carving_queue:
-            k = k.replace(" ", "_").replace(":", "-")
+        bytes_content = BytesIO(stream_payload)
+        for file_type, magic_bytes in Carver.file_sigs.items():
+            if file_type == cont_type:
+                magic = magic_bytes
+                break
 
-            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{k}", 'rb') as file_obj:
-                stream_payload = file_obj.read()
+        if cont_type and cont_length and magic:
+            sof = Carver.get_sof(magic, bytes_content)
+            if sof is None:
+                return 0
 
-            bytes_content = BytesIO(stream_payload)
-            for file_type, magic_bytes in Carver.file_sigs.items():
-                if file_type == cont_type:
-                    magic = magic_bytes
-                    break
+            eof = sof + cont_length
+            view = bytes_content.getbuffer()
+            carved = view[sof:eof]
 
-            if cont_type and cont_length and magic:
-                sof = Carver.get_sof(magic, bytes_content)
-                if sof is None:
-                    return 0
+            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
+                file_obj.write(carved)
+                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)") # REMOVE PRINTING? :THINKING:
+                Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
-                eof = sof + cont_length
-
-                view = bytes_content.getbuffer()
-                carved = view[sof:eof]
-
-                with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
-                    file_obj.write(carved)
-                    print(f"File {fname} carved")
-                    Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
-
-                return carved
+            return carved
 
     @staticmethod
     def get_content_info(payload_b):
@@ -75,7 +65,7 @@ class Carver:
 
             # might have more than one file in a session
             if cont_type and cont_length:
-                print(f"{cont_type} - {cont_length}")
+                # print(f"{cont_type} - {cont_length}")
                 return cont_type[0], int(cont_length[0])
 
         return None, None
@@ -96,12 +86,10 @@ class Carver:
                 compare += str(all_bytes[i+j])
 
             if ''.join(magic) in compare:
-                print("FOUND")
                 return byte_count
 
             byte_count += 1
 
-        print("NOT FOUND")
         return None
 
     @staticmethod
