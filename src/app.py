@@ -67,7 +67,7 @@ def get_formatted_header(prot_type):
 def get_data():
     while not thread_stop_event.isSet():
         socketio.emit(
-            "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/test")
+            "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/socket")
         socketio.sleep(0.01)
 
 
@@ -99,8 +99,15 @@ def index():
 @app.route("/network", methods=["POST", "GET"])
 def network():
     if request.method == "POST":
+        mal_list=[]
         mapping, ip_list = Vault.get_mapping()
-        return jsonify(mapping, ip_list)
+        flagged_dict= Vault.get_flagged()
+        for _ , obj in flagged_dict.items():
+            if 'endpoint' in obj.identifier:
+                for match in obj.strings:
+                    mal_list.append(match[2].decode('utf-8'))
+
+        return jsonify(mapping, ip_list, mal_list)
 
     return render_template("network.html", status=Vault.get_saving(), data=Vault.get_mapping())
 
@@ -196,21 +203,29 @@ def flagged():
     else:
         return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 
+@app.route("/logs", methods=["POST", "GET"])
+def logs():
+    if request.method == "POST":
+        message = Util.tail(LOG_FILE,20)
+        return message
 
-@socketio.on("connect", namespace="/test")
-def test_connect():
+    return render_template("logs.html", status=Vault.get_saving())
+
+
+@socketio.on("connect", namespace="/socket")
+def connect():
     # need visibility of the global thread object
     global thread
     logger.info("client connected")
 
     # Start the random number generator thread only if the thread has not been started before.
-    if not thread.isAlive():
+    if not thread.is_alive():
         logger.info("starting socket thread")
         thread = socketio.start_background_task(get_data)
 
 
-@socketio.on("disconnect", namespace="/test")
-def test_disconnect():
+@socketio.on("disconnect", namespace="/socket")
+def disconnect():
     logger.info("client disconnected")
 
 
