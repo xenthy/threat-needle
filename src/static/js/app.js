@@ -1,5 +1,5 @@
 
-$(document).ready(function (){
+$(document).ready(function () {
     //connect to the socket server.
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/socket');
 
@@ -10,62 +10,65 @@ $(document).ready(function (){
         $('#total_flagged').html(msg.total_flagged.toString());
     });
 
-    $("#save").click(function(e){
+    $("#save").click(function (e) {
         e.preventDefault();
         var btn = document.getElementById("save");
         var status = document.getElementById("status");
         var save = btn.innerHTML;
         console.log(save);
-        if (btn.innerHTML == "Save"){
+        if (btn.innerHTML == "Save") {
             btn.innerHTML = "Stop Saving";
-            status.innerHTML ="Capturing"
-        }else{
+            status.innerHTML = "Capturing"
+        } else {
             console.log("change to Save");
             btn.innerHTML = "Save";
             status.innerHTML = "Monitoring"
         }
-        var a = {'data':save};
+        var a = { 'data': save };
         $.ajax({
-            type:'post',
-            url:'/save',
+            type: 'post',
+            url: '/save',
             contentType: "application/json",
-            data:JSON.stringify(a),
-            success:function(data){
+            data: JSON.stringify(a),
+            success: function (data) {
             }
-        });  
-            
+        });
+
     });
 
-    $(".payload").click(function(){
-        var a = {'data':$(this).val()};
+    $(".payload").click(function () {
+        var a = { 'data': $(this).val() };
         $.ajax({
 
-            type:'post',
-            url:'/flagged',
+            type: 'post',
+            url: '/flagged',
             contentType: "application/json",
-            data:JSON.stringify(a),
-            success:function(data){
+            data: JSON.stringify(a),
+            success: function (data) {
                 document.getElementById("payload").innerHTML = data;
             },
-            error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                alert("Status: " + textStatus); alert("Error: " + errorThrown); 
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
             }
 
-        });    
+        });
 
     });
+    function update() {
+        if (window.location.pathname == "/logs") {
+            $.ajax({
+                type: 'POST',
+                url: '/logs',
+                success: function (data) {
+                    var a = document.getElementById('output');
+                    a.innerHTML = data;
+                },
+            });
+        }
+
+    }
+
+    var refInterval = window.setInterval(function () { update();}, 1000);
+
 
 });
-
-// var update = function() {
-//     $.ajax({
-//        type : 'POST',
-//        url : '/logs',
-//        success : function(data){
-//             var a = document.getElementById('output');
-//             a.innerHTML = data;
-//        },
-//    });
-// };
-// update();
-// var refInterval = window.setInterval('update()', 1000); // 30 seconds
