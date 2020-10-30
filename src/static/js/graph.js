@@ -26,11 +26,25 @@ function draw() {
         success: function (data) {
             var mapping = data[0];
             var ip_list = data[1];
-
+            var mal_list = data[2];
+            console.log(mal_list.length);
             nodes = new vis.DataSet();
             edges = new vis.DataSet();
-            
-            ip_list.forEach(item => nodes.add({id: item, value: 1, label: item }));
+            ip_list.forEach(function(item){
+                if(mal_list.includes(item)){
+                    
+                    nodes.add({id: item, value: 1, label: item, color: {
+                        border: '#2B7CE9',
+                        background: '#e74a3b',
+                    }});
+                }else{
+                    nodes.add({id: item, value: 1, label: item, color: {
+                        border: '#2B7CE9',
+                        background: '#858796',
+                    }});
+                }
+                
+            });
 
             for (const [key, value] of Object.entries(mapping)) {
                 k = key.split(',');
@@ -45,7 +59,6 @@ function draw() {
             };
 
             var w = document.getElementById("graph_card");
-            console.log(w.width);
             var options = {
                 width: "100%",
                 height: "100%",

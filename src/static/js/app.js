@@ -1,7 +1,7 @@
 
 $(document).ready(function (){
     //connect to the socket server.
-    var socket = io.connect('http://' + document.domain + ':' + location.port + '/test');
+    var socket = io.connect('http://' + document.domain + ':' + location.port + '/socket');
 
     //receive details from server
     socket.on('data', function (msg) {
@@ -55,6 +55,17 @@ $(document).ready(function (){
 
     });
 
-
 });
 
+// var update = function() {
+//     $.ajax({
+//        type : 'POST',
+//        url : '/logs',
+//        success : function(data){
+//             var a = document.getElementById('output');
+//             a.innerHTML = data;
+//        },
+//    });
+// };
+// update();
+// var refInterval = window.setInterval('update()', 1000); // 30 seconds

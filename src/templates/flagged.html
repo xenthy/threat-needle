@@ -37,7 +37,7 @@
               <td>{{pkt.stream_id}}</td>
               {% else %}
               <td>Malicious Domain</td>
-              <td>{{pkt.packet[0][1].src}} -> {{pkt.packet[0][1].dst}}</td>
+              <td>{{pkt.packet[0][1].src}} <-> {{pkt.packet[0][1].dst}}</td>
               {% endif %}
               <td>{{pkt.strings[0][2]}}</td>
               <td>{{pkt.rule}}</td>
