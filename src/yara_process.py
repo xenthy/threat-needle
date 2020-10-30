@@ -105,7 +105,6 @@ class Yara:
         E.g. When there is a URL in an email (or in any stream payload)
         """
         for url in matches[0].strings:
-            # theres an error right below this line, use pylint - zen
             if (matches := Yara._url_rules.match(data=url[2])):
                 Organize.add_stream_entry(k, stream, payload, matches, timestamp)
 

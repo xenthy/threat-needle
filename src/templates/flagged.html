@@ -28,9 +28,9 @@
             </tr>
           </thead>
           <tbody>
-            {% for timestamp, pkt in flagged_packets.items() %}
+            {% for flagged_id, pkt in flagged_packets.items() %}
             <tr>
-              <td>{{timestamp}}</td>
+              <td>{{pkt.timestamp}}</td>
 
               {% if pkt.identifier == "payload" %}
               <td>Malicious Payload</td>
@@ -39,10 +39,14 @@
               <td>Malicious Domain</td>
               <td>{{pkt.packet[0][1].src}} <-> {{pkt.packet[0][1].dst}}</td>
               {% endif %}
-              <td>{{pkt.strings[0][2]}}</td>
+	      <td>
+	      {% for match in pkt.strings %}
+              {{match[2]}}
+	      {% endfor %}
+	      </td>
               <td>{{pkt.rule}}</td>
               <td>{{pkt.tags}}</td>
-              <td><button id="dialog" class="payload btn btn-primary" value="{{timestamp}}">View Payload</button></td>
+              <td><button id="dialog" class="payload btn btn-primary" value="{{flagged_id}}">View Payload</button></td>
             </tr>
             {% endfor %}
           </tbody>
