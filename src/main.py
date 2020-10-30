@@ -7,7 +7,7 @@ from app import app, socketio
 from vault import Vault
 from util import Util
 from manager import manager
-from thread import Thread
+from thread import thread, Thread
 from escapy import Escapy
 
 from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
@@ -30,6 +30,7 @@ def custom_action(packet):
     Vault.update_mapping(packet)
 
 
+@thread(daemon=True)
 def mapping(e):
     while not Thread.get_interrupt():
         system("cls") if name == "nt" else system("clear")
@@ -52,6 +53,7 @@ def main():
     # start threads
     manager_thread = manager(event)
     Escapy.async_sniff(custom_action)
+    # mapping_thread = mapping(event)
 
     """ MENU """
     info_data = [f"{RED}Sniffer is running but not saving anything locally{RESET}",
@@ -85,8 +87,10 @@ def main():
 
     # wait for threads to complete
     manager_thread.join()
+    # mapping_thread.join()
 
 
+@thread(daemon=True)
 def flask_app():
     socketio.run(app)
 
@@ -96,14 +100,13 @@ if __name__ == "__main__":
     logger.info("__INIT__")
 
     # set thread name
-    Thread.set_name("main-thread")
+    threading.current_thread().setName("main-thread")
 
     # track memory usage
     tracemalloc.start()
 
     # start flask app
-    flask_thread = threading.Thread(target=flask_app, daemon=True)
-    flask_thread.start()
+    flask_app()
     time.sleep(0.5)  # allow flask to init first
 
     # init main threads

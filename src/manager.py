@@ -1,4 +1,3 @@
-import threading
 import tracemalloc
 from os import listdir
 from os.path import isfile, join
@@ -72,6 +71,7 @@ def bulk_manager(event):
         logger.info(f"{len(all_sessions)} total sessions [{Thread.name()}]")
 
         event.wait(timeout=BULK_MANAGER_INTERVAL)
+    logger.info(f"Terminated [{Thread.name()}]")
 
 
 @thread(daemon=True)
@@ -93,6 +93,7 @@ def carving_manager(event):
         Carver.carve_stream()
 
         event.wait(timeout=CARVING_INTERVAL)
+    logger.info(f"Terminated [{Thread.name()}]")
 
 
 @thread(daemon=True)
@@ -103,6 +104,7 @@ def memory(event):
                     f"Peak: {peak / 10**6}MB [{Thread.name()}]")
 
         event.wait(timeout=MEMORY_WATCHDOG_INTERVAL)
+    logger.info(f"Terminated [{Thread.name()}]")
 
 
 @thread(daemon=True)
@@ -117,15 +119,16 @@ def session_caching(event):
                 continue
             header = header.replace(" ", "_").replace(":", "-")
             if header in cache_files:
-                with open(f"{runtime_path}/{header}", "ab+") as f:
+                with open(f"{runtime_path}/{header}", "ab+") as file:
                     # f.seek(0, 2)
-                    f.write(payload)
+                    file.write(payload)
             else:
-                with open(f"{runtime_path}/{header}", "wb+") as f:
-                    f.write(payload)
+                with open(f"{runtime_path}/{header}", "wb+") as file:
+                    file.write(payload)
 
-        logger.info(f"cached to local file [{Thread.name()}]")
+        logger.info(f"Cached to .cache [{Thread.name()}]")
         event.wait(timeout=SESSION_CACHING_INTERVAL)
+    logger.info(f"Terminated [{Thread.name()}]")
 
 
 @thread(daemon=True)
@@ -142,6 +145,7 @@ def session_caching_mp(event):
 
         logger.info(f"cached to local file [{Thread.name()}]")
         event.wait(timeout=SESSION_CACHING_INTERVAL)
+    logger.info(f"Terminated [{Thread.name()}]")
 
 
 def session_worker(obj):

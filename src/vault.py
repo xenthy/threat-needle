@@ -46,19 +46,27 @@ class Vault:
     @staticmethod
     def update_mapping(packet):
         try:
-            key = tuple(sorted([packet[0][1].src, packet[0][1].dst]))
+            tmp = sorted([packet[0][1].src, packet[0][1].dst])
+            key = f"{tmp[0]},{tmp[1]}"
             Vault.__mapping.update([key])
             logger.debug(f"Packet #{sum(Vault.__mapping.values())}:" +
                          f"{packet[0][1].src} ==> {packet[0][1].dst}")
         except AttributeError:
-            key = tuple(sorted([packet[0][0].src, packet[0][0].dst]))
+            tmp = sorted([packet[0][0].src, packet[0][0].dst])
+            key = f"{tmp[0]},{tmp[1]}"
             Vault.__mapping.update([key])
             logger.debug(f"Packet #{sum(Vault.__mapping.values())}:" +
                          f"{packet[0][0].src} ==> {packet[0][0].dst}")
 
     @staticmethod
     def get_mapping():
-        return Vault.__mapping
+        ip_list=[]
+        for key in Vault.__mapping:
+            ip1, ip2 = key.split(',')
+            ip_list.append(ip1)
+            ip_list.append(ip2)
+            
+        return Vault.__mapping , list(set(ip_list))
 
     @staticmethod
     def plist_append(packet):

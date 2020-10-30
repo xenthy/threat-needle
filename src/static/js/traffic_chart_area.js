@@ -130,14 +130,8 @@ function add_data() {
     var data_list = myLineChart.data.datasets[0].data;
 
     for (var i = 0; i < myLineChart.data.datasets[0].data.length; i++) {
-        // if (lowest > data_list[i] || lowest == null) {
-        // lowest = data_list[i];
-        // // continue;
-        // }
-
         if (highest < data_list[i] || highest == null) {
         highest = data_list[i];
-        // continue;
         }
     }
    // myLineChart.options.scales.yAxes[0].ticks.min = lowest;
