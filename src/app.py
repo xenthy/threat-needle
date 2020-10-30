@@ -10,6 +10,7 @@ from time import sleep
 from util import Util
 from vault import Vault
 
+from escapy import Escapy
 
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 from yara_create import Rule
@@ -197,9 +198,7 @@ def flagged():
         flagged_obj = flagged_dict[key]
         if flagged_obj.identifier == "payload":
             return flagged_obj.payload
-        flagged_obj.packet[0][1].src
-        flagged_obj.packet[0][1].dst
-        return flagged_obj.packet[0][1]
+        return jsonify(flagged_obj.strings)
     else:
         return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 

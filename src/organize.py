@@ -15,6 +15,8 @@ logger.addHandler(file_handler)
 
 
 class Organize:
+    stream_counter = 0
+    packet_counter = 0
 
     @staticmethod
     def add_stream_entry(stream_key, stream, stream_payload, yara_flagged, timestamp):
@@ -31,8 +33,10 @@ class Organize:
             except:
                 flag_matches.append(match[2])
 
-        flagged_details = Payload_flagged(stream_key, stream, stream_payload, yara_flagged[0].strings, yara_flagged[0].rule, yara_flagged[0].tags)
-        flagged_dict[timestamp] = flagged_details
+        flagged_details = Payload_flagged(timestamp, stream_key, stream, stream_payload, yara_flagged[0].strings, yara_flagged[0].rule, yara_flagged[0].tags)
+        # flagged_dict[timestamp] = flagged_details
+        Organize.packet_counter += 1
+        flagged_dict[str(Organize.packet_counter)] = flagged_details
 
         Vault.set_flagged(flagged_dict)
         logger.info(f"Payload: {stream_key} --> {yara_flagged[0].rule} [{Thread.name()}]")
@@ -50,16 +54,18 @@ class Organize:
         for match in threat_flagged[0].strings:
             flag_matches.append(match[2].decode('utf-8'))
 
-        flagged_details = Threat_flagged(threat_packet, threat_flagged[0].strings, threat_flagged[0].rule, threat_flagged[0].tags)
-        flagged_dict[timestamp] = flagged_details
+        flagged_details = Threat_flagged(timestamp, threat_packet, threat_flagged[0].strings, threat_flagged[0].rule, threat_flagged[0].tags)
+        Organize.packet_counter += 1
+        flagged_dict[str(Organize.packet_counter)] = flagged_details
 
         Vault.set_flagged(flagged_dict)
         logger.info(f"Threat: {flag_matches} --> {threat_flagged[0].rule} [{Thread.name()}]")
 
 
 class Payload_flagged:
-    def __init__(self, stream_id, stream, payload, strings, rule, tags):
+    def __init__(self, timestamp, stream_id, stream, payload, strings, rule, tags):
         self.identifier = "payload"
+        self.timestamp = timestamp
         self.stream_id = stream_id
         self.stream = stream
         self.payload = payload
@@ -69,8 +75,9 @@ class Payload_flagged:
 
 
 class Threat_flagged:
-    def __init__(self, packet, strings, rule, tags):
+    def __init__(self, timestamp, packet, strings, rule, tags):
         self.identifier = "endpoint"
+        self.timestamp = timestamp
         self.packet = packet
         self.strings = strings
         self.rule = rule
