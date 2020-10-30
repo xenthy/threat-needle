@@ -55,17 +55,22 @@ $(document).ready(function (){
 
     });
 
-});
+    if(window.location.pathname == "/logs"){
+        var update = function() {
+            $.ajax({
+               type : 'POST',
+               url : '/logs',
+               success : function(data){
+                    var a = document.getElementById('output');
+                    a.innerHTML = data;
+               },
+           });
+        };
+        update();
+        var refInterval = window.setInterval('update()', 1000);
 
-// var update = function() {
-//     $.ajax({
-//        type : 'POST',
-//        url : '/logs',
-//        success : function(data){
-//             var a = document.getElementById('output');
-//             a.innerHTML = data;
-//        },
-//    });
-// };
-// update();
-// var refInterval = window.setInterval('update()', 1000); // 30 seconds
+    }
+
+
+
+});
