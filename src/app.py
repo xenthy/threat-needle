@@ -92,14 +92,14 @@ def index():
 
             else:
                 protocol_dict["Other"] = protocol_dict["Other"] + 1 if "Other" in protocol_dict else 1
-        return protocol_dict
+        return jsonify(protocol_dict)
     return render_template("index.html", status=Vault.get_saving())
 
 
 @app.route("/network", methods=["POST", "GET"])
 def network():
     if request.method == "POST":
-        mapping , ip_list = Vault.get_mapping()
+        mapping, ip_list = Vault.get_mapping()
         return jsonify(mapping, ip_list)
 
     return render_template("network.html", status=Vault.get_saving(), data=Vault.get_mapping())
@@ -216,5 +216,3 @@ def test_disconnect():
 
 if __name__ == "__main__":
     socketio.run(app)
-
-
