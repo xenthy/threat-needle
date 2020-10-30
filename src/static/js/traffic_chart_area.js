@@ -147,11 +147,6 @@ function add_data() {
 
 setInterval(function () { add_data(); }, 2000);
 var option = {
-  layout:{
-    padding:{
-      bottom:55
-    }
-  },
   showLines: true,
   scales: {
     yAxes: [{
@@ -169,5 +164,4 @@ var option = {
 var myLineChart = Chart.Line(canvas, {
   data: data,
   options: option,
-  borderHeight: 1000
 });

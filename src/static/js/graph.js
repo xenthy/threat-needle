@@ -30,15 +30,12 @@ function draw() {
             nodes = new vis.DataSet();
             edges = new vis.DataSet();
             
-            ip_list.forEach(item => nodes.add({ ip: item, value: 1, label: item }));
-            console.log(typeof (mapping));
+            ip_list.forEach(item => nodes.add({id: item, value: 1, label: item }));
 
-            
             for (const [key, value] of Object.entries(mapping)) {
                 k = key.split(',');
-                edges.add({from:k[0], to:k[1], value:value ,title:" packets"})
+                edges.add({from:k[0], to:k[1], value:value ,title: value+" packets"});
             }
-            
      
             var container = document.getElementById("mynetwork");
 
@@ -46,7 +43,12 @@ function draw() {
                 nodes: nodes,
                 edges: edges
             };
+
+            var w = document.getElementById("graph_card");
+            console.log(w.width);
             var options = {
+                width: "100%",
+                height: "100%",
                 nodes: {
                     shape: "dot",
                 },
@@ -61,42 +63,7 @@ function draw() {
 
 
 }
-// var a = {'data':"getnetwork"};
-// $.ajax({
-//     type: 'post',
-//     url: '/network',
-//     contentType: "application/json",
-//     data: JSON.stringify(a),
-//     success: function (data) {
-//         console.log(data)
-//         nodes = [];
-//         Object.keys(data).forEach(function (key) {
-//             console.log(key)
-//             ip0_exist = false;
-//             ip1_exist = false;
-//             for (var i = 0; i < nodes.length; i++) {
-//                 if (key[0] == nodes[i].ip || !ip0_exist) {
-//                     ip0_exist = true;
-//                 } // for
-//                 if (key[1] == nodes[i].ip || !ip1_exist) {
-//                     ip1_exist = true;
-//                 } // for
-//             } // for
-
-//             if (!ip0_exist) {
-//                 nodes.push({ id: key[0], value: 1, label: key[0] });
-//             }
-//             if (!ip1_exist) {
-//                 nodes.push({ id: key[1], value: 1, label: key[1] });
-//             }
-//         })
-//     }
-// });
-
-
-
-setInterval(function () { draw(); }, 5000);
-
+setInterval(function () { draw(); }, 30000);
 
 window.addEventListener("load", () => {
     draw();
