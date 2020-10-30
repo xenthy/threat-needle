@@ -5,6 +5,41 @@ import random
 import subprocess
 import threading
 
+import smtplib
+from os.path import basename
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+
+def email_worker(index, attachment=None):
+    send_from = "malicious@gmail.com"
+    send_to = "drack@fisherman.ict"
+    subject = "Simulation"
+    text = "hey check the attached file and the link http://apll.org"
+    server="47.254.229.14"
+
+    msg = MIMEMultipart()
+    msg['From'] = send_from
+    msg['To'] = COMMASPACE.join(send_to)
+    msg['Date'] = formatdate(localtime=True)
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(text))
+
+    if attachment:
+        with open(attachment, "rb") as file_obj:
+            part = MIMEApplication(file_obj.read(), Name=basename(attachment))
+
+        part['Content-Disposition'] = 'attachment; filename="%s"' % basename(attachment)
+        msg.attach(part)
+
+    smtp = smtplib.SMTP(server, 1337)
+    smtp.sendmail(send_from, send_to, msg.as_string())
+    smtp.close()
+
+    print(f"[!] email[{index + 1}] sent windows/reverse_tcp")
+
 
 def ip_worker(file, index):
     while "#" in (random_ip := random.choice(file).strip()):
@@ -33,10 +68,19 @@ parser.add_argument("--url", "-u",
                     type=int,
                     dest="url_count",
                     help="number of URLs to probe (>= 0)")
-
+parser.add_argument("--email", "-e",
+                    default=0,
+                    type=int,
+                    dest="email_count",
+                    help="number of malicious Emails to simulate (>= 0)")
+parser.add_argument("--media", "-m",
+                    default=0,
+                    type=int,
+                    dest="media_count",
+                    help="number of malicious Media files to simulate (>= 0)")
 args = parser.parse_args()
 
-ip, url = args.ip_count, args.url_count
+media, email, ip, url = args.media_count, args.email_count, args.ip_count, args.url_count
 
 if ip < 0 and url < 0:
     parser.error("IP and URL count has to be more than 0")
@@ -44,11 +88,15 @@ if ip < 0:
     parser.error("IP count has to be more than 0")
 if url < 0:
     parser.error("URL count has to be more than 0")
+if email < 0:
+    parser.error("Email count has to be more than 0")
+if media < 0:
+    parser.error("Media count has to be more than 0")
 
-if ip == 0 and url == 0:
-    ip, url = 1, 1
+if ip == 0 and url == 0 and email == 0 and media == 0:
+    media, email, ip, url = 1, 1, 1, 1
 
-ip_threads, url_threads = [], []
+email_threads, ip_threads, url_threads = [], [], []
 
 if ip != 0:
     with open("rules/threat_intel/malware_ip.txt") as f:
@@ -66,9 +114,23 @@ if url != 0:
         url_threads.append(thread)
         thread.start()
 
+if email != 0:
+    # attachment = "doggo.jpg"
+    attachment = None
+    for index in range(email):
+        thread = threading.Thread(target=email_worker, args=(index,attachment,))
+        email_threads.append(thread)
+        thread.start()
+
+if media != 0:
+
+    pass
 
 for t in ip_threads:
     t.join()
 
 for t in url_threads:
+    t.join()
+    
+for t in email_threads:
     t.join()
