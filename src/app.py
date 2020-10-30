@@ -3,8 +3,9 @@ from os import listdir
 
 from threading import Thread, Event
 
-from flask import Flask, render_template, request, redirect, send_file
+from flask import Flask, render_template, request, redirect, send_file, jsonify
 from flask_socketio import SocketIO
+from time import sleep
 
 from util import Util
 from vault import Vault
@@ -98,7 +99,9 @@ def index():
 @app.route("/network", methods=["POST", "GET"])
 def network():
     if request.method == "POST":
-        return Vault.get_mapping()
+        mapping , ip_list = Vault.get_mapping()
+        return jsonify(mapping, ip_list)
+
     return render_template("network.html", status=Vault.get_saving(), data=Vault.get_mapping())
 
 
@@ -213,3 +216,5 @@ def test_disconnect():
 
 if __name__ == "__main__":
     socketio.run(app)
+
+

@@ -53,4 +53,5 @@ function add_pie_data() {
 
 }
 
+
 setInterval(function () { add_pie_data(); }, 5000);
