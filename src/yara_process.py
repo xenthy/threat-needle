@@ -6,7 +6,7 @@ import yara
 from vault import Vault
 from escapy import Escapy
 from carver import Carver
-from thread import Thread
+from thread import Thread, thread
 from organize import Organize
 from features import extract_payload
 from config import RULES_DIR, INTEL_DIR
@@ -62,27 +62,40 @@ class Yara:
         Main start method for initializing the Yara scanning of packet's stream and payload data
         """
         matches = None
-        carver = Carver()
 
-        # might change this to use multiprocessing too - zen
         for k, stream in stream_dict.items():
-            if (payload := extract_payload(stream)) is not None:
+            Yara.carving(k, stream)
+            Yara.raw_scan(k, stream)
+
+        
+    @staticmethod
+    @thread(daemon=True)
+    def carving(k, stream):
+        for pkt in stream:
+            if (payload := extract_payload([pkt], headers=True)) is not None:
+                cont_type, cont_length = Carver.get_content_info(BytesIO(payload))
                 raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
                 timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
 
-                cont_type, cont_length = carver.get_content_info(BytesIO(payload))
                 if all([cont_type, cont_length]):
-                    Vault.add_carving_queue(k, timestamp, cont_type, cont_length)
+                    payload = extract_payload(stream, pure=True)
+                    Carver.carve_stream(k, timestamp, cont_type, cont_length, payload)
 
-                try:
-                    if (matches := Yara._rules.match(data=payload)):
+    @staticmethod
+    @thread(daemon=True)
+    def raw_scan(k, stream):
+        if (payload := extract_payload(stream)) is not None:
+            raw_timestamp = Escapy.convert_packet(stream[0], "Timestamp")
+            timestamp = str(datetime.datetime.utcfromtimestamp(raw_timestamp))
 
-                        if "url" in matches[0].rule:
-                            Yara.url_yar(stream, k, payload, matches, timestamp)
+            try:
+                if (matches := Yara._rules.match(data=payload)):
+                    if "url" in matches[0].rule:
+                        Yara.url_yar(stream, k, payload, matches, timestamp)
 
-                        Organize.add_stream_entry(k, stream, payload, matches, timestamp)
-                except AttributeError:
-                    logger.critical(f"Yara rules error, check rules [{Thread.name()}]")
+                    Organize.add_stream_entry(k, stream, payload, matches, timestamp)
+            except AttributeError:
+                logger.critical(f"Yara rules error, check rules [{Thread.name()}]")
 
   
     @staticmethod

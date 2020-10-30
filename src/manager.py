@@ -42,13 +42,11 @@ def manager(event):
 
     # start threads
     session_yara_control = bulk_manager(event)
-    carving_control = carving_manager(event)
     session_caching_thread = session_caching(event)
     memory_thread = memory(event)
 
     # wait for threads to complete
     session_yara_control.join()
-    carving_control.join()
     session_caching_thread.join()
     memory_thread.join()
 
