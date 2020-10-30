@@ -55,6 +55,14 @@ class Util:
         Util.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
+    def tail(filename, N):
+        chunk = ""
+        with open(filename, "r") as file:
+            for line in (file.readlines()[-N:]):
+                chunk += line
+        return chunk
+
+    @staticmethod
     def convert_to_hex(string):
         hex_format = ""
         skip = 0
