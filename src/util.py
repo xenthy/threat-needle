@@ -1,12 +1,14 @@
+"""
+General and ad-hoc methods to accomplish program tasks
+"""
+
 import sys
 import datetime
 from collections import OrderedDict
-from scapy.plist import PacketList, Packet
-from scapy.utils import wrpcap, rdpcap
-from scapy.layers.http import HTTPRequest, HTTPResponse
 
-from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
+from config import DATETIME_FORMAT
 from vault import Vault
+from escapy import Escapy
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
@@ -21,26 +23,12 @@ logger.addHandler(file_handler)
 
 
 class Util:
+    """
+    Static class of general and ad-hoc methods to accomplish program tasks
+    """
     @staticmethod
     def datetime_to_string():
         return datetime.datetime.now().strftime(DATETIME_FORMAT)
-
-    @staticmethod
-    def load_cap(file_name) -> PacketList:
-        try:
-            cap = rdpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}")
-            logger.info(f"\"{file_name}{CAP_EXTENSION}\" loaded")
-            return cap
-        except FileNotFoundError as error:
-            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
-
-    @staticmethod
-    def save_cap(file_name, cap) -> bool:
-        try:
-            wrpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}", cap)
-            logger.info(f"\"{file_name}{CAP_EXTENSION}\" saved")
-        except FileNotFoundError as error:
-            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
 
     @staticmethod
     def start_saving():
@@ -52,13 +40,13 @@ class Util:
     def stop_saving():
         logger.info("Terminating saving to file...")
         Vault.set_saving(False)
-        Util.save_cap(Util.file_name, Vault.get_saving_plist())
+        Escapy.save_cap(Util.file_name, Vault.get_saving_plist())
 
     @staticmethod
-    def tail(filename, N):
+    def tail(filename, num_lines):
         chunk = ""
         with open(filename, "r") as file:
-            for line in (file.readlines()[-N:]):
+            for line in file.readlines()[-num_lines:]:
                 chunk += line
         return chunk
 
@@ -156,9 +144,9 @@ class Util:
         packet_dict["Size"] = len(packet)
         return packet_dict
 
-    @classmethod
+    @staticmethod
     @DeprecationWarning
-    def __conditional_convert(self, packet_type, args):
+    def __conditional_convert(packet_type, args):
         # init dictionary
         return_list = []
 

@@ -1,3 +1,7 @@
+"""
+Manage thread creation and program flow
+"""
+
 import tracemalloc
 from os import listdir
 from os.path import isfile, join
@@ -13,7 +17,7 @@ from threat_intel import ThreatIntel
 from carver import Carver
 from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL,\
     BULK_MANAGER_INTERVAL, MEMORY_WATCHDOG_INTERVAL, CARVING_INTERVAL
-    
+
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
@@ -76,16 +80,25 @@ def bulk_manager(event):
 
 @thread(daemon=True)
 def session_yara(stream_dict):
+    """
+    Thread to create threads for carving of files and scanning of payloads
+    """
     Yara.run(stream_dict)
 
 
 @thread(daemon=True)
 def threat(temp_plist):
+    """
+    Thread to scan for malware triads other than from the payload
+    """
     threat_intel.run(temp_plist)
 
 
 @thread(daemon=True)
 def memory(event):
+    """
+    Thread to monitor program memory allocations
+    """
     while not Thread.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
         logger.info(f"Current: {current / 10**6}MB | " +
@@ -97,6 +110,9 @@ def memory(event):
 
 @thread(daemon=True)
 def session_caching(event):
+    """
+    Thread to periodically cache session payload into .cache
+    """
     while not Thread.get_interrupt():
         runtime_path = f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}"
         cache_files = [f for f in listdir(runtime_path) if isfile(join(runtime_path, f))]
@@ -120,7 +136,15 @@ def session_caching(event):
 
 
 @thread(daemon=True)
+@DeprecationWarning
 def session_caching_mp(event):
+    """
+    DEPRECIATED!
+
+    Process to periodically cache session payload into .cache.\n
+    Process creation is expensive and shared memory in python is out of my pay grade,
+    hence the usage of threads instead
+    """
     while not Thread.get_interrupt():
 
         sessions = Vault.get_sessions(reset=True)
@@ -136,7 +160,13 @@ def session_caching_mp(event):
     logger.info(f"Terminated [{Thread.name()}]")
 
 
+@DeprecationWarning
 def session_worker(obj):
+    """
+    DEPRECIATED!
+
+    Worker to periodically cache session payload into .cache
+    """
     header, plist = obj
     if (payload := extract_payload(plist, pure=True)) is None:
         return

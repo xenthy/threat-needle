@@ -1,8 +1,16 @@
+"""
+Insanely good wrapper for scapy. Aids in asynchronous sniffing and
+extracting data in scapy.packets
+"""
+
 from os import name as os_name
+from collections import OrderedDict
 from scapy.all import AsyncSniffer
 from scapy.plist import PacketList
+from scapy.utils import wrpcap, rdpcap
 from scapy.layers.http import HTTPRequest, HTTPResponse
-from collections import OrderedDict
+
+from config import CAP_PATH, CAP_EXTENSION
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
@@ -17,6 +25,10 @@ logger.addHandler(file_handler)
 
 
 class Escapy:
+    """
+    Insanely good wrapper for scapy. Aids in asynchronous sniffing and
+    extracting data in scapy.packets
+    """
     __packet_values = (int, float, str, bytes, bool, list,
                        tuple, set, dict, type(None))
     __explicit_layers = [HTTPRequest, HTTPResponse]
@@ -24,11 +36,14 @@ class Escapy:
 
     @staticmethod
     def async_sniff(action=None, count=0, store=False):
+        """
+        Sniffs packets asynchronously
+        """
         # prepare for a fresh run (threading safety)
         Escapy.__cap = PacketList
 
         # enable monitor mode on linux based systems
-        monitor_mode = False if os_name == "nt" else True
+        monitor_mode = not os_name == "nt"
         logger.info(f"Monitor Mode: [{monitor_mode}]")
 
         Escapy.__cap = AsyncSniffer(prn=action, monitor=monitor_mode,
@@ -37,12 +52,41 @@ class Escapy:
 
     @staticmethod
     def stop():
+        """
+        Stop async_sniff()
+        """
         Escapy.__cap.stop()
         Escapy.__cap.join()
 
     @staticmethod
     def get_cap():
+        """
+        Returns the scapy async_sniff "thread"
+        """
         return Escapy.__cap
+
+    @staticmethod
+    def load_cap(file_name) -> PacketList:
+        """
+        Load .cap into scapy.plist
+        """
+        try:
+            cap = rdpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}")
+            logger.info(f"\"{file_name}{CAP_EXTENSION}\" loaded")
+            return cap
+        except FileNotFoundError as error:
+            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
+
+    @staticmethod
+    def save_cap(file_name, cap) -> bool:
+        """
+        Save scapy.plist into .cap
+        """
+        try:
+            wrpcap(f"{CAP_PATH}{file_name}{CAP_EXTENSION}", cap)
+            logger.info(f"\"{file_name}{CAP_EXTENSION}\" saved")
+        except FileNotFoundError as error:
+            logger.warning(f"{type(error).__name__}: \"{format(error)}\"")
 
     @staticmethod
     def convert_packet(packet, *args, explicit_layers=[]) -> OrderedDict:
@@ -97,7 +141,7 @@ class Escapy:
         Returns a dictionary of a layer
         """
         if not getattr(layer, 'fields_desc', None):
-            return
+            return None
 
         layer_dict = {}
 
@@ -115,6 +159,9 @@ class Escapy:
 
 
 def init_test_sniffer():
+    """
+    For testing
+    """
     # packets = AsyncSniffer(monitor=True, count=0)
     packets = AsyncSniffer(count=0)
     packets.start()

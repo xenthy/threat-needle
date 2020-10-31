@@ -41,6 +41,7 @@
   - [🐋 Docker](#-docker)
 - [📜 User Guide](#-user-guide)
   - [Startup](#startup)
+  - [Configuration](#configuration)
   - [Overview](#overview)
   - [Global Functions](#global-functions)
   - [Dashboard](#dashboard)
@@ -152,6 +153,46 @@ or
 The tool will start monitoring your network traffic upon program execution. Visit `http://127.0.0.1:8000` to view the dashboard. In the event of you not being able to view the dashboard, try to restart your browser, computer and/or check if port 8000 is in use. You may press `q` and `enter` in your terminal to safely terminate the session.
 
 It is recommended that you run the tool using docker in detached mode. [See how](https://github.com/xenthy/ict2202-assignment-1#-docker).
+
+## Configuration
+You can change default file paths and thread creation intervals in `./src/config.py`. You will have to manually create the folders yourself. Failure to do so will lead to a runtime error.
+
+**Default Configuration:**
+```py
+# Path to logger folder
+LOGGER_PATH = "./logs/"
+
+# Datetime format
+DATETIME_FORMAT = "%Y-%m-%d_%H-%M-%S"
+
+# Path to cap folder
+CAP_PATH = "./cap/"
+CAP_EXTENSION = ".cap"
+
+# Path to rules folder
+RULES_DIR = "./rules/"
+
+# Path to threat-intel folder
+INTEL_DIR = "./rules/threat_intel/"
+
+# Path to threat-intel folder
+CUSTOM_RULES_DIR = "./rules/custom_rules/"
+
+# Path to malware rules folder
+MAL_DIR = "./rules/malware/"
+
+# Path to carved files directory
+CARVED_DIR = "./carved/"
+
+# Path to session cache folder
+SESSION_CACHE_PATH = "./.cache"
+
+# THREAD INTERVALS
+MEMORY_WATCHDOG_INTERVAL = 5
+BULK_MANAGER_INTERVAL = 5  # handling "session yara" and "threat"
+SESSION_CACHING_INTERVAL = 10
+CARVING_INTERVAL = 10
+```
 
 ## Overview
 ![dashboard](images/dashboard.png)

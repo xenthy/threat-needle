@@ -1,3 +1,7 @@
+"""
+Config file for file paths and thread creation intervals
+"""
+
 # Path to logger folder
 LOGGER_PATH = "./logs/"
 
@@ -28,6 +32,6 @@ SESSION_CACHE_PATH = "./.cache"
 
 # THREAD INTERVALS
 MEMORY_WATCHDOG_INTERVAL = 5
-BULK_MANAGER_INTERVAL = 5  # handlings session yara and threat
+BULK_MANAGER_INTERVAL = 5  # handling "session yara" and "threat"
 SESSION_CACHING_INTERVAL = 10
 CARVING_INTERVAL = 10
