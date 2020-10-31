@@ -55,6 +55,25 @@ $(document).ready(function () {
 
     });
 
+    $("#view_rules").click(function () {
+        var d = document.getElementById("yara_files").value;
+        $.ajax({
+            type: 'post',
+            url: '/rules',
+            dataType : "text",
+            contentType : "text/plain",
+            data: d,
+            success: function (data) {
+                document.getElementById("rules").innerHTML = data;
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+
+        });
+
+    });
+
     $("#reset").click(function () {
         $.ajax({
             type: 'post',
