@@ -70,7 +70,9 @@
 ## 🐋 Docker
 ```zsh
 > sudo docker build -t <name>:latest .
-> sudo docker run --network host -p 8000:8000  -ti ict2202
+> sudo docker run --network host -ti <name> (run in interactive mode, able to view stdout, stderr)
+or
+> sudo docker run --network host -td <name> (run in detached mode)
 ```
 # 🏃‍♂️ Running the Application
 1. To run the program

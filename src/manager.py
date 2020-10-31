@@ -85,18 +85,6 @@ def threat(temp_plist):
 
 
 @thread(daemon=True)
-def carving_manager(event):
-    """
-    Manages Carver.carve_stream()
-    """
-    while not Thread.get_interrupt():
-        Carver.carve_stream()
-
-        event.wait(timeout=CARVING_INTERVAL)
-    logger.info(f"Terminated [{Thread.name()}]")
-
-
-@thread(daemon=True)
 def memory(event):
     while not Thread.get_interrupt():
         current, peak = tracemalloc.get_traced_memory()
