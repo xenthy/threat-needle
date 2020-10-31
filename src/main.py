@@ -1,7 +1,11 @@
+"""
+Entry point of the application
+"""
+
 import time
 import tracemalloc
 import threading
-from os import mkdir, system, name
+from os import mkdir
 from app import app, socketio
 
 from vault import Vault
@@ -10,7 +14,7 @@ from manager import manager
 from thread import thread, Thread
 from escapy import Escapy
 
-from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL
+from config import SESSION_CACHE_PATH
 
 from colour import GREEN, RED, YELLOW, RESET
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -30,16 +34,10 @@ def custom_action(packet):
     Vault.update_mapping(packet)
 
 
-@thread(daemon=True)
-def mapping(e):
-    while not Thread.get_interrupt():
-        system("cls") if name == "nt" else system("clear")
-        print("\n".join(f"{f'{key[0]} <--> {key[1]}'}: {count}"
-                        for key, count in Vault.get_mapping().items()))
-        e.wait(timeout=10)
-
-
 def main():
+    """
+    Main method to control the program flow
+    """
     # set runtime name
     Vault.set_runtime_name(Util.datetime_to_string())
 
@@ -53,9 +51,8 @@ def main():
     # start threads
     manager_thread = manager(event)
     Escapy.async_sniff(custom_action)
-    # mapping_thread = mapping(event)
 
-    """ MENU """
+    # menu
     info_data = [f"{RED}Sniffer is running but not saving anything locally{RESET}",
                  f"{GREEN}Sniffer is running saving packets locally{RESET}"]
     option = ["Type \"start\" to start saving: ",
@@ -63,11 +60,12 @@ def main():
 
     while True:
         print(info_data[0 if not Vault.get_saving() else 1], end="\n")
+        print(f"Dashboard: {YELLOW}http://127.0.0.1:8000{RESET} | \'q\' to stop")
         user_input = input(option[0 if not Vault.get_saving() else 1])
-        if Vault.get_saving() == False and user_input == "start":
+        if not Vault.get_saving() and user_input == "start":
             Util.start_saving()
 
-        elif Vault.get_saving() == True and user_input == "stop":
+        elif Vault.get_saving() and user_input == "stop":
             Util.stop_saving()
 
         elif user_input == "q":
@@ -76,8 +74,8 @@ def main():
         else:
             print(f"{YELLOW}Invalid option{RESET}", end="\n\n")
 
-    """ SAVE TO FILE IF PROGRAM ENDED AND SAVING IS TRUE """
-    if Vault.get_saving() == True:
+    # SAVE TO FILE IF PROGRAM ENDED AND SAVING IS TRUE
+    if Vault.get_saving():
         Util.stop_saving()
 
     # interrupt threads
@@ -87,11 +85,13 @@ def main():
 
     # wait for threads to complete
     manager_thread.join()
-    # mapping_thread.join()
 
 
 @thread(daemon=True)
 def flask_app():
+    """
+    Run the Flask Application on a separate thread
+    """
     socketio.run(app)
 
 

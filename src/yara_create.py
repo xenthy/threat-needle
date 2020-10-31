@@ -17,7 +17,8 @@ logger.addHandler(file_handler)
 
 # TODO: rename class to PascalNaming convention
 
-class Yara_create:
+
+class YaraCreate:
     """Yara_create
 
     There are 3 defined functions to craft a Yara Rule
@@ -44,10 +45,11 @@ class Yara_create:
     2. add_meata("Ella Vader","author")
     3. add_strings("X-Attachment-Id","attachment_id", )
     """
+
     def __init__(self):
         self.__name = ""
         self.__tag = ""
-        self.__meta = {"author":"someone","purpose":"something"}
+        self.__meta = {"author": "someone", "purpose": "something"}
         self.__strings = dict()
         self.any_condition = "any of them"
         self.__condition = ""
@@ -68,7 +70,6 @@ class Yara_create:
             self.__meta["author"] = value
         elif key == "purpose":
             self.__meta["purpose"] = value
-
 
     def add_strings(self, strings, identifier):
         """
@@ -103,11 +104,10 @@ class Yara_create:
             self.__condition = self.any_condition
 
         cond_format = "\n\tcondition:\n\t\t"
-# 
+#
         tail = "\n}"
-        
-        return head+meta+strings+"\n"+cond_format+self.__condition+tail
 
+        return head+meta+strings+"\n"+cond_format+self.__condition+tail
 
     def build_rule(self, temp_category):
         """
@@ -126,10 +126,11 @@ class Yara_create:
                 open(filename, 'w').close()
             except:
                 pass
-                
+
             with open(filename, 'a+') as f:
                 f.write(content)
-        
+
+
 class Rule:
     @staticmethod
     def load_rules():
@@ -170,15 +171,15 @@ class Rule:
 
     @staticmethod
     def add_rule(name, tag, author, purpose, lines, category):
-        yar = Yara_create()
+        yar = YaraCreate()
         yar.new_rule(name, tag)
         yar.add_meta(author, "author")
         yar.add_meta(purpose, "purpose")
-        
+
         for index, line in enumerate(lines):
             identifier = "x"+str(index)
             yar.add_strings(line, identifier)
-        
+
         yar.build_rule(category)
 
     @staticmethod
@@ -195,7 +196,7 @@ class Rule:
         for _ in range(num):
             chunked.append(seq[index:size])
             index = size
-            size = size*2 +1
+            size = size*2 + 1
 
         return chunked
 
@@ -204,21 +205,21 @@ class Rule:
         """
         Function to add a new Yara rule via the Web GUI 
         """
-        yar = Yara_create()
+        yar = YaraCreate()
         yar.new_rule(name, tag)
         yar.add_meta(author, "author")
         yar.add_meta(desc, "purpose")
 
         strings = string.split('\n')
         for string in strings:
-            identifier = (string.split("=")[0]).replace("$","")
-            string_val = ((string.split("=")[1]).replace("\"","")).strip()
+            identifier = (string.split("=")[0]).replace("$", "")
+            string_val = ((string.split("=")[1]).replace("\"", "")).strip()
 
             yar.add_strings(string_val, identifier)
 
         if condition:
             yar.add_condition(condition)
-            
+
         content = yar.generate()
         with open(CUSTOM_RULES_DIR+filename+".yar", 'a+') as file_obj:
             file_obj.write(content)
@@ -246,9 +247,9 @@ class Rule:
             # author = "Auto Generated"
             # purpose = "Threat Intel Domains/IPs"
             # if "domains" == entry:
-                # category = "domains_"+str(index)
+            # category = "domains_"+str(index)
             # elif "ips" == entry:
-                # category = "ips_"+str(index)
+            # category = "ips_"+str(index)
 
             # rule.add_rule(name, author, purpose, chunk, category)
 

@@ -67,7 +67,6 @@ class Yara:
             Yara.carving(k, stream)
             Yara.raw_scan(k, stream)
 
-        
     @staticmethod
     @thread(daemon=True)
     def carving(k, stream):
@@ -97,7 +96,6 @@ class Yara:
             except AttributeError:
                 logger.critical(f"Yara rules error, check rules [{Thread.name()}]")
 
-  
     @staticmethod
     def url_yar(stream, k, payload, matches, timestamp):
         """
