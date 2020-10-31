@@ -193,7 +193,8 @@ Dashboard: http://127.0.0.1:8000 | 'q' to end the program
 Type "stop" to stop saving:
 ➜ stop
 
-# Note: entering `q` to end the program would automatically stop and save the captured packets if saving was enabled
+# Note: entering `q` to end the program would automatically stop and
+# save the captured packets if saving was enabled
 ```
 
 ## Dashboard
@@ -258,8 +259,17 @@ However, our tool is able to automatically detect and carve out files. These fil
 ## View Saved Files
 > path: /viewfile
 
-![saved-files](images/saved-files.png)
+![cap-files](images/cap-files.png)
 
+`.cap` files are files that are saved (by you) and can be located in the `cap/` folder. These files can then be viewed in network packet viewing tools such as [Wireshark](https://www.wireshark.org).
+
+![carved-files](images/carved-files.png)
+
+Carving of files is automated and runs in the background upon program execution. The tool analyses the payload of selected packets and scans for traces of files.
+
+Both the `.cap` files and carved files can be downloaded from the dashboard or viewed in the `cap/` and `carved/` folder respectively.
+
+![carved-folder](images/carved-folder.png)
 
 ## Flagged Packets
 > path: /flagged
