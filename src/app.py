@@ -203,14 +203,19 @@ def flagged():
         flagged_obj = flagged_dict[key]
         if flagged_obj.identifier == "payload":
             return flagged_obj.payload
-        return jsonify(flagged_obj.strings)
+
+        strings_list=[]
+        for i in range(len(flagged_obj.strings)):
+            strings_list.append((flagged_obj.strings[i][0], flagged_obj.strings[i][0], flagged_obj.strings[i][2].decode('utf-8')))
+
+        return jsonify(strings_list)
     else:
         return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 
 
 @app.route("/rules", methods=["POST", "GET"])
 def yara_rules():
-    
+
     threat_rules = YaraFiles.get_threat_rules()
     mal_rules = YaraFiles.get_mal_rules()
     custom_rules = YaraFiles.get_custom_rules()

@@ -45,7 +45,7 @@
 	      </td>
               <td>{{pkt.rule}}</td>
               <td>{{pkt.tags}}</td>
-              <td><button id="dialog" class="payload btn btn-primary" value="{{flagged_id}}">View Payload</button></td>
+              <td><button class="payload btn btn-primary" data-toggle="modal"  data-target="#myModal" value="{{flagged_id}}">View Payload</button></td>
             </tr>
             {% endfor %}
           </tbody>
@@ -54,16 +54,23 @@
     </div>
   </div>
 
-
-  <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Payload</h6>
-    </div>
-    <div class="card-body">
-      <div id="dialog">
-        <pre id="payload" class="pre-scrollable">
-      </pre>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        </div>
+        <div class="modal-body">
+          <pre id="payload" class="pre-scrollable"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
       </div>
+    </div>
+  </div>
       {% endblock content%}
 
 

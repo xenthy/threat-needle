@@ -4,7 +4,7 @@ var data = {
   datasets: [
     {
       
-      label: "Packets per second",
+      label: "Packets/Second",
       fill: false,
       lineTension: 0.0,
       backgroundColor: "rgba(75,192,192,0.4)",
@@ -26,7 +26,7 @@ var data = {
     },
     {
       
-        label: "Streams per second",
+        label: "Streams/Second",
         fill: false,
         lineTension: 0.0,
         backgroundColor: "rgba(75,192,192,0.4)",
@@ -49,7 +49,7 @@ var data = {
 
     {
       
-      label: "Flagged Packets",
+      label: "Flagged Packets/Second",
       fill: false,
       lineTension: 0.0,
       backgroundColor: "rgba(75,192,192,0.4)",
