@@ -6,66 +6,66 @@
 </head>
 
 <body>
-  {% extends "base.html" %}
-  {% block content %}
-  <!-- DataTales Example -->
-  <div class="row">
-    <div class="col-xl-8 col-lg-7">
-      <div class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Pcap Files</h6>
+    {% extends "base.html" %}
+    {% block content %}
+    <!-- DataTales Example -->
+    <div class="row">
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Cap Files</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in pcap_files %}
+                                <tr>
+                                    <td><a href="/viewfile/{{file}}">{{file}}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>File Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for file in pcap_files %}
-                <tr>
-                  <td><a href="/viewfile/{{file}}">{{file}}</a></td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Carved Files</h6>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Carved Files</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in carved_files %}
+                                <tr>
+                                    <td><a href="/viewfile/{{file}}">{{file}}</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-    </div>
-    <div class="col-xl-4 col-lg-5">
-      <div class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Carved Files</h6>
-        </div>
-
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-              <thead>
-                <tr>
-                  <th>Carved Files</th>
-
-                </tr>
-              </thead>
-              <tbody>
-                {% for file in carved_files %}
-                <tr>
-                  <td><a href="/viewfile/{{file}}">{{file}}</a></td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {% endblock content%}
+        {% endblock content%}
 
 
 </body>

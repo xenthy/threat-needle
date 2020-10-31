@@ -133,7 +133,7 @@ or
 **Running ThreatNeedle:**
 
 Due to the nature of this network forensic tool, the docker container has to run with the `--network host` flag in order to listen for network packets on the host's network interfaces.
-Hence, this tool will **not work as intended on windows** as `--network host` is not supported on docker for windows.
+Hence, this tool will **not work as intended on Windows** as `--network host` is not supported on docker for Windows.
 
 ```console
 ➜ make doc
@@ -170,7 +170,7 @@ The main dashboard for ThreadNeedle displays an overview of all the data collect
 **Save/Stop Saving**
 You may choose to save the captured packets in a `.cap` file by clicking on the `save` button. Once clicked, a `stop saving` button would be available to stop the capturing of packets.
 
-The `.cap` files are saved in the `cap/` folder in the following format: `YYYY-MM-DD_HH-MM-SS.cap`. The timestamp of the file would be the date and time of when you start the saving.
+The `.cap` files are saved in the `cap/` folder in the following format: `yyyy-mm-dd_HH-MM-SS.cap`. The timestamp of the file would be the date and time of when you started the saving.
 
 You may also wish to start/stop saving on your terminal ([interactive mode](https://github.com/xenthy/ict2202-assignment-1#-docker) for docker)
 ```console
@@ -184,7 +184,7 @@ Dashboard: http://127.0.0.1:8000 | 'q' to end the program
 Type "stop" to stop saving:
 ➜ stop
 
-# Note: entering `q` to end the program would stop and save the captured packets if saving was enabled
+# Note: entering `q` to end the program would automatically stop and save the captured packets if saving was enabled
 ```
 
 ## Dashboard
@@ -198,35 +198,47 @@ Type "stop" to stop saving:
 - **Protocols in Network** shows the different protocols identified in the form of a pie-chart
 
 ## Network Mapping
-![network-mapping](images/network-mapping.png)
 > path: /network
+![network-mapping](images/network-mapping.png)
 
-The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts. The number of packets sent can be viewed by clicking on an edge as shown below.
+The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts.
+
+**Features of the map:**
+- The map updates itself every 30 seconds.
+- All the nodes are also interactive so you may choose to move them around to your liking.
+- The number of packets sent can be viewed by clicking on an edge as shown below.
 
 ![network-mapping](images/network-mapping-packets.png)
 
-Hosts in **red** are hosts flagged by our detection system using YARA rules. More on [YARA](https://github.com/xenthy/ict2202-assignment-1#yara)
+Hosts in **red** are hosts flagged by our detection system using YARA rules. More on [YARA](https://github.com/xenthy/ict2202-assignment-1#yara).
 
-An attack by a malicious host would look something like the following. Where hosts `192.168.86.20`, `192.168.86.25` and `192.168.86.28` are residing on the same network (your network).
+An attack conducted by a malicious host would look similar to the following. Where hosts `192.168.86.20`, `192.168.86.25` and `192.168.86.28` are residing on the same network (your network).
 
 ![network-mapping](images/network-mapping-attack.png)
 
 ## Protocol Streams
-**TCP Streams**
-> path: /viewtcp
+> **TCP Streams** path: /viewtcp |
+> **UDP Streams** path: /viewudp |
+> **ARP Streams** path: /viewarp
 
-**UDP Streams**
-> path: /viewudp
+![tcp-sessions](images/tcp-sessions.png)
 
-**ARP Streams**
-> path: /viewarp
+![tcp-download](images/tcp-download.png)
 
 ## Yara
 **View Rules**
 > path: /rules
 
+![tcp-download](images/view-rules.png)
+
+![tcp-download](images/view-rules2.png)
+
 **Add Rule**
 > path: /addrule
+
+![tcp-download](images/add-rule.png)
+
+![tcp-download](images/view-added-rule.png)
 
 ## View Saved Files
 > path: /viewfile
