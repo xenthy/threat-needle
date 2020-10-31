@@ -21,7 +21,7 @@ doc:
 	sudo docker build -t threat_needle:latest .
 	sudo docker run --network host -ti threat_needle
 
-cdoc:
+docclean:
 	sudo docker system prune -a
 
 clean:
