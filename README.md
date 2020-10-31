@@ -68,7 +68,10 @@
    3. Click on Edit, enter Make location. Usually: `C:\Program Files (x86)\GnuWin32\bin`
 
 ## 🐋 Docker
-
+```zsh
+> sudo docker build -t <name>:latest .
+> sudo docker run --network host -p 8000:8000  -ti ict2202
+```
 # 🏃‍♂️ Running the Application
 1. To run the program
 ```bash
