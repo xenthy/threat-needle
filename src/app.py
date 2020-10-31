@@ -46,7 +46,6 @@ COMMON_PROTOCOLS = {"80": "HTTP",
                     "23": "Telnet",
                     "53": "DNS"}
 
-
 def get_formatted_header(prot_type):
     global COMMON_PROTOCOLS
     sessions = {}
@@ -171,6 +170,12 @@ def save():
     else:
         Util.stop_saving()
     return f"sucessful operation: {saving}"
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    if request.method == "POST":
+        Vault.refresh()
+        return f"Sucessfully Refreshed"
 
 
 @app.route("/addrule", methods=["POST", "GET"])

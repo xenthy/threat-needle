@@ -210,16 +210,21 @@
                     {%block intro %}
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        {% if status == False %}
-                        <button type="submit" id="save"
-                            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                            Save</button>
-                        {%else%}
-                        <button type="submit" id="save"
-                            class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Stop
-                            Saving</button>
-                        {% endif %}
+                        <div class="align-items-right">
+                            <button type="submit" id="reset"
+                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">Reset
+                            </button>
 
+                            {% if status == False %}
+                            <button type="submit" id="save"
+                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+                                Save</button>
+                            {%else%}
+                            <button type="submit" id="save"
+                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"> Stop
+                                Saving</button>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Content Row -->

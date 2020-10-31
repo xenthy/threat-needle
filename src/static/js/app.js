@@ -54,6 +54,22 @@ $(document).ready(function () {
         });
 
     });
+
+    $("#reset").click(function () {
+        $.ajax({
+            type: 'post',
+            url: '/reset',
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Status: " + textStatus); alert("Error: " + errorThrown);
+            }
+
+        });
+
+    });
+
     function update() {
         if (window.location.pathname == "/logs") {
             $.ajax({
