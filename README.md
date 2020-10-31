@@ -29,6 +29,9 @@
 
 <hr>
 
+- [🤔 What is this?](#-what-is-this)
+- [✨ Features](#-features)
+- [📊 ThreatNeedle vs Wireshark vs NetworkMiner](#-threatneedle-vs-wireshark-vs-networkminer)
 - [🛠️ Installation Guide](#️-installation-guide)
   - [🖥️ Linux (Debian)](#️-linux-debian)
   - [🪟 Windows](#-windows)
@@ -49,6 +52,12 @@
   - [Flagged Packets](#flagged-packets)
   - [Program Logs](#program-logs)
 - [✨ Collaborators](#-collaborators)
+
+# 🤔 What is this?
+
+# ✨ Features
+
+# 📊 ThreatNeedle vs Wireshark vs NetworkMiner
 
 # 🛠️ Installation Guide
 ## 🖥️ Linux (Debian)
@@ -264,7 +273,20 @@ However, our tool is able to automatically detect and carve out files. These fil
 
 ![logs](images/logs.png)
 
-You are also able to change the verbose level of the logs in `./src/logger.py`
+Here, you are able to observe the program flow. Memory usage for memory allocations can also be viewed here. If the dashboard seems to load slower than usual or if the [network map](https://github.com/xenthy/ict2202-assignment-1#network-mapping) is too cluttered, [reset](https://github.com/xenthy/ict2202-assignment-1#global-functions) the session and you are good to go.
+
+Uncaught/Unhandled errors would normally appear here or in the standard error.
+
+You are also able to change the verbose level of the logs in `./src/logger.py`.
+
+**Verbose Levels (highest to lowest):**
+- `logging.DEBUG`
+- `logging.INFO` (default)
+- `logging.WARNING`
+- `logging.ERROR`
+- `logging.CRITICAL`
+
+If you come across a peculiar issue, do open an [issue](https://github.com/xenthy/ict2202-assignment-1/issues).
 
 # ✨ Collaborators
 | Name                | GitHub                                     |
