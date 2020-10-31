@@ -1,8 +1,8 @@
 <p align="center">
-➡️
-    <a href="https://github.com/xenthy/ict2202-assignment-1#-installation-guide">Installation Guide</a> |
+🛠️
+    <a href="https://github.com/xenthy/ict2202-assignment-1#%EF%B8%8F-installation-guide">Installation Guide</a> |
     <a href="https://github.com/xenthy/ict2202-assignment-1#-usage">Usage Guide</a>
-⬅️
+🤸
     <br>
     <img src="images/threat_needle.png" height=400px width=385px>
 </p>
@@ -10,6 +10,16 @@
 <u><b> Making network forensics easy </b></u><br> Run the program, set rules, <b>sit back</b>, and monitor.
 </p>
 
+<p align="center">
+<img alt="Issues" src="https://img.shields.io/badge/Debian-Supported-brightgreen?style=flat&logo=debian">
+<img alt="Issues" src="https://img.shields.io/badge/Docker-Supported-brightgreen?style=flat&logo=docker">
+<img alt="Issues" src="https://img.shields.io/badge/Windows-Supported-brightgreen?style=flat&logo=windows">
+<img alt="Issues" src="https://img.shields.io/badge/Python-v3.8.5-informational?style=flat&logo=python">
+<img alt="Issues" src="https://img.shields.io/badge/Flask-v1.0.2-informational?style=flat&logo=flask">
+<img alt="Issues" src="https://img.shields.io/badge/SocketIO-v3.1.2-informational?style=flat&logo=socket.io">
+<img alt="Issues" src="https://img.shields.io/badge/Scapy-v2.4.4-informational?style=flat">
+<img alt="Issues" src="https://img.shields.io/badge/Yara-v4.0.2-informational?style=flat">
+</p>
 <hr>
 
 | <p align="center">👩‍💻 Linux (Debian) Recommended </p>                                                                       | <p align="center">🪟 Windows </p>                                                                                          | <p align="center"> 🐋 Docker </p>                                                                                         | <p align="center"> 🥔 Potato </p>                                                                                         |
