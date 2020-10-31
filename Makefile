@@ -17,6 +17,13 @@ all:
 check:
 	python -m py_compile $(SOURCES)
 
+doc:
+	sudo docker build -t threat_needle:latest .
+	sudo docker run --network host -ti threat_needle
+
+cdoc:
+	sudo docker system prune -a
+
 clean:
 ifeq ($(OS),Windows_NT)
 	@powershell "(Get-ChildItem * -Include *.pyc -Recurse | Remove-Item)"
