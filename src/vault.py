@@ -24,7 +24,6 @@ class Vault:
     __session_dict = {}
     __session_header = []
     __flagged_dict = {}
-    __carving_queue = []
     __carved_files = []
 
     @staticmethod
@@ -44,6 +43,16 @@ class Vault:
         return Vault.__saving
 
     @staticmethod
+    def refresh():
+        Vault.__threading_packet_list = PacketList()
+        Vault.__mapping = Counter()
+        Vault.__packet_count = 0
+        Vault.__session_dict = {}
+        Vault.__session_header = []
+        Vault.__flagged_dict = {}
+        Vault.__carved_files = []
+
+    @staticmethod
     def update_mapping(packet):
         try:
             tmp = sorted([packet[0][1].src, packet[0][1].dst])
@@ -60,13 +69,13 @@ class Vault:
 
     @staticmethod
     def get_mapping():
-        ip_list=[]
+        ip_list = []
         for key in Vault.__mapping:
             ip1, ip2 = key.split(',')
             ip_list.append(ip1)
             ip_list.append(ip2)
-            
-        return Vault.__mapping , list(set(ip_list))
+
+        return Vault.__mapping, list(set(ip_list))
 
     @staticmethod
     def plist_append(packet):
@@ -119,17 +128,6 @@ class Vault:
     @staticmethod
     def set_flagged(flagged_dict):
         Vault.__flagged_dict.update(flagged_dict)
-
-    @staticmethod
-    def add_carving_queue(session_header, timestamp, cont_type, cont_length):
-        Vault.__carving_queue.append((session_header, timestamp,
-                                      cont_type, cont_length))
-
-    @staticmethod
-    def get_carving_queue() -> list:
-        temp = Vault.__carving_queue
-        Vault.__carving_queue = []
-        return temp
 
     @staticmethod
     def add_carved_file(session_header, timestamp, filename, cont_type):

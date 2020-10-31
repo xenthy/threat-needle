@@ -31,12 +31,11 @@
             {% for flagged_id, pkt in flagged_packets.items() %}
             <tr>
               <td>{{pkt.timestamp}}</td>
-
               {% if pkt.identifier == "payload" %}
-              <td>Malicious Payload</td>
+	      <td>{{pkt.mal_type}}</td>
               <td>{{pkt.stream_id}}</td>
               {% else %}
-              <td>Malicious Domain</td>
+	      <td>{{pkt.mal_type}}</td>
               <td>{{pkt.packet[0][1].src}} <-> {{pkt.packet[0][1].dst}}</td>
               {% endif %}
 	      <td>

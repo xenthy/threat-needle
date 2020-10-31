@@ -44,8 +44,7 @@ COMMON_PROTOCOLS = {"80": "HTTP",
                     "21": "FTP",
                     "22": "SSH",
                     "23": "Telnet",
-                    "53": "DNS"
-                    }
+                    "53": "DNS"}
 
 
 def get_formatted_header(prot_type):
@@ -67,43 +66,45 @@ def get_formatted_header(prot_type):
 
 def get_data():
     while not thread_stop_event.isSet():
-        socketio.emit(
-            "data", {"total_packets": Vault.get_total_packet_count(), "total_streams": len(Vault.get_session_headers()), "total_flagged": len(Vault.get_flagged())}, namespace="/socket")
+        socketio.emit("data", {"total_packets": Vault.get_total_packet_count(),
+                               "total_streams": len(Vault.get_session_headers()),
+                               "total_flagged": len(Vault.get_flagged())}, namespace="/socket")
         socketio.sleep(0.01)
 
 
 @app.route("/", methods=["POST", "GET"])
 def index():
 
-    if request.method == "POST":
-        global COMMON_PROTOCOLS
-        protocol_dict = {}
+    if request.method != "POST":
+        return render_template("index.html", status=Vault.get_saving())
 
-        for header in Vault.get_session_headers():
-            if 'TCP' in header or 'UDP' in header:
-                header_list = header[4:].replace('_', '-').split('-')
-                if header_list[1] in COMMON_PROTOCOLS or header_list[3] in COMMON_PROTOCOLS:
-                    try:
-                        prot = COMMON_PROTOCOLS[header_list[1]]
-                    except:
-                        prot = COMMON_PROTOCOLS[header_list[3]]
-                    protocol_dict[prot] = protocol_dict[prot] + 1 if prot in protocol_dict else 1
-                else:
-                    protocol_dict["Other"] = protocol_dict["Other"] + 1 if "Other" in protocol_dict else 1
+    global COMMON_PROTOCOLS
+    protocol_dict = {}
 
+    for header in Vault.get_session_headers():
+        if 'TCP' in header or 'UDP' in header:
+            header_list = header[4:].replace('_', '-').split('-')
+            if header_list[1] in COMMON_PROTOCOLS or header_list[3] in COMMON_PROTOCOLS:
+                try:
+                    prot = COMMON_PROTOCOLS[header_list[1]]
+                except Exception:
+                    prot = COMMON_PROTOCOLS[header_list[3]]
+                protocol_dict[prot] = protocol_dict[prot] + 1 if prot in protocol_dict else 1
             else:
                 protocol_dict["Other"] = protocol_dict["Other"] + 1 if "Other" in protocol_dict else 1
-        return jsonify(protocol_dict)
-    return render_template("index.html", status=Vault.get_saving())
+
+        else:
+            protocol_dict["Other"] = protocol_dict["Other"] + 1 if "Other" in protocol_dict else 1
+    return jsonify(protocol_dict)
 
 
 @app.route("/network", methods=["POST", "GET"])
 def network():
     if request.method == "POST":
-        mal_list=[]
+        mal_list = []
         mapping, ip_list = Vault.get_mapping()
-        flagged_dict= Vault.get_flagged()
-        for _ , obj in flagged_dict.items():
+        flagged_dict = Vault.get_flagged()
+        for _, obj in flagged_dict.items():
             if 'endpoint' in obj.identifier:
                 for match in obj.strings:
                     mal_list.append(match[2].decode('utf-8'))
@@ -115,11 +116,11 @@ def network():
 
 @app.route("/viewfile")
 def savefile():
-    pcap_files = [f for f in listdir(CAP_PATH) if isfile(
-        join(CAP_PATH, f)) if f[-4:] == ".cap"]
+    pcap_files = [f for f in listdir(CAP_PATH) if
+                  isfile(join(CAP_PATH, f)) if f[-4:] == ".cap"]
 
-    carved_files = [f for f in listdir(CARVED_DIR) if isfile(
-        join(CARVED_DIR, f))]
+    carved_files = [f for f in listdir(CARVED_DIR) if
+                    isfile(join(CARVED_DIR, f))]
     return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files, status=Vault.get_saving())
 
 
@@ -158,8 +159,8 @@ def view_arp():
 
 @app.route("/stream/<file_name>")
 def downloadstream(file_name):
-    sess = get_formatted_header('TCP')
-    return send_file(f"../{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{sess[file_name]}", as_attachment=True)
+    session = get_formatted_header('TCP')
+    return send_file(f"../{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{session[file_name]}", as_attachment=True)
 
 
 @app.route("/save", methods=["POST"])
@@ -202,10 +203,11 @@ def flagged():
     else:
         return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 
+
 @app.route("/logs", methods=["POST", "GET"])
 def logs():
     if request.method == "POST":
-        message = Util.tail(LOG_FILE,20)
+        message = Util.tail(LOG_FILE, 20)
         return message
 
     return render_template("logs.html", status=Vault.get_saving())
@@ -215,7 +217,7 @@ def logs():
 def connect():
     # need visibility of the global thread object
     global thread
-    logger.info("client connected")
+    logger.debug("client connected")
 
     # Start the random number generator thread only if the thread has not been started before.
     if not thread.is_alive():
@@ -225,7 +227,7 @@ def connect():
 
 @socketio.on("disconnect", namespace="/socket")
 def disconnect():
-    logger.info("client disconnected")
+    logger.debug("client disconnected")
 
 
 if __name__ == "__main__":
