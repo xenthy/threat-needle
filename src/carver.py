@@ -4,10 +4,19 @@ import string
 import random
 from io import BytesIO
 from vault import Vault
-from config import SESSION_CACHE_PATH
+from config import SESSION_CACHE_PATH, CARVED_DIR
 from features import extract_payload
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
-# TODO: More checks to make sure its running as intended
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(FORMATTER, TIMESTAMP)
+
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 
 class Carver:
@@ -39,9 +48,9 @@ class Carver:
             view = bytes_content.getbuffer()
             carved = view[sof:eof]
 
-            with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
+            with open(f"{CARVED_DIR}{(fname := Carver.random_str(5))}.{cont_type}", 'ab+') as file_obj:
                 file_obj.write(carved)
-                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)")  # REMOVE PRINTING? :THINKING:
+                logger.info(f"File {fname}.{cont_type} carved ({cont_length} bytes)")
                 Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
             return carved
@@ -64,9 +73,7 @@ class Carver:
             if not cont_type:
                 cont_type = re.findall(r"Content\_Type:\ \w+/(\w+)", line)
 
-            # might have more than one file in a session
             if cont_type and cont_length:
-                # print(f"{cont_type} - {cont_length}")
                 return cont_type[0], int(cont_length[0])
 
         return None, None
