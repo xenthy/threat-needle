@@ -17,11 +17,11 @@ all:
 check:
 	python -m py_compile $(SOURCES)
 
-doc:
+docker:
 	sudo docker build -t threat_needle:latest .
 	sudo docker run --network host -ti threat_needle
 
-docclean:
+dockerclean:
 	sudo docker system prune -a
 
 clean:
