@@ -275,12 +275,19 @@ However, our tool is able to automatically detect and carve out files. These fil
 
 ![view-rules](images/view-rules.png)
 
+This page allows you to see all of the YARA rules that are loaded in the program.
+
 ![view-rules2](images/view-rules2.png)
+
+You are also able to view the individual rules to reference.
 
 **Add Rule**
 > path: /addrule
 
 ![add-rule](images/add-rule.png)
+
+This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `./rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
+> Note: this form does not check for naming errors, therefore you need to ensure that the variable names are proper and correct
 
 ![view-added-rule](images/view-added-rule.png)
 
@@ -304,7 +311,20 @@ Both the `.cap` files and carved files can be downloaded from the dashboard or v
 
 ![flagged](images/flagged.png)
 
+This page will show any packets that have been flagged by YARA scans.
+Each flagged packet will show 
+- timestamp of the packet
+- the malicious category that the YARA rule(s) classified
+- Source and Destination IP address and ports of that packet
+- the pattern that was matched and flagged (in bytes)
+- YARA rule's name that triggered the flag
+- the YARA rule's tag (sub-classification of YARA rule)
+
+> Note: There may be an occurance of multiple flags of a single packet
+
 ![view-flagged](images/view-flagged.png)
+
+You are able to view the payload of an individual packet that triggered the YARA scan.
 
 ## Program Logs
 > path: /logs
