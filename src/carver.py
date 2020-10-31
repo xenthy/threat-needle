@@ -4,6 +4,7 @@ import string
 import random
 from io import BytesIO
 from vault import Vault
+from thread import Thread
 from config import SESSION_CACHE_PATH, CARVED_DIR
 from features import extract_payload
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
@@ -50,7 +51,7 @@ class Carver:
 
             with open(f"{CARVED_DIR}{(fname := Carver.random_str(5))}.{cont_type}", 'ab+') as file_obj:
                 file_obj.write(carved)
-                logger.info(f"File {fname}.{cont_type} carved ({cont_length} bytes)")
+                logger.info(f"File {fname}.{cont_type} carved ({cont_length} bytes) [{Thread.name()}]")
                 Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
             return carved
