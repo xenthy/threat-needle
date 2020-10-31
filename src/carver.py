@@ -9,6 +9,7 @@ from features import extract_payload
 
 # TODO: More checks to make sure its running as intended
 
+
 class Carver:
     """
     Specifying the different types of magic bytes for different filetypes (in decimals)
@@ -40,7 +41,7 @@ class Carver:
 
             with open(f"{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{(fname := Carver.random_str(5))}."+cont_type, 'ab+') as file_obj:
                 file_obj.write(carved)
-                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)") # REMOVE PRINTING? :THINKING:
+                print(f"File {fname}.{cont_type} carved ({cont_length} bytes)")  # REMOVE PRINTING? :THINKING:
                 Vault.add_carved_file(k, timestamp, f"{fname}.{cont_type}", cont_length)
 
             return carved

@@ -92,7 +92,7 @@ def flask_app():
     """
     Run the Flask Application on a separate thread
     """
-    socketio.run(app)
+    socketio.run(app, host="0.0.0.0", port=8000)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
     <a href="https://github.com/xenthy/ict2202-assignment-1#-usage">Usage Guide</a>
 ⬅️
     <br>
-    <img src="pictures/rustscan.png" height=400px width=400px>
+    <img src="images/threat_needle.png" height=400px width=385px>
 </p>
 <p align="center">
 <u><b> Making network forensics easy </b></u><br> Run the program, set rules, <b>sit back</b>, and monitor.
@@ -68,7 +68,12 @@
    3. Click on Edit, enter Make location. Usually: `C:\Program Files (x86)\GnuWin32\bin`
 
 ## 🐋 Docker
-
+```zsh
+> sudo docker build -t <name>:latest .
+> sudo docker run --network host -ti <name> (run in interactive mode, able to view stdout, stderr)
+or
+> sudo docker run --network host -td <name> (run in detached mode)
+```
 # 🏃‍♂️ Running the Application
 1. To run the program
 ```bash
