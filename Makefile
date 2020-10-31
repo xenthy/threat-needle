@@ -31,9 +31,10 @@ ifeq ($(OS),Windows_NT)
 	@powershell "(Get-Item ./.cache/* -exclude placeholder | Remove-Item -Recurse)"
 	@echo Cleaned up .pyc, .cap files and .cache files
 else
-	@echo "Cleaning up [.pyc, .cap, .cache] files..."
+	@echo "Cleaning up [.pyc, .cap, .cache, carved] files..."
 	@sudo find . -type f -name "*.pyc" -delete
 	@sudo find . -type f -name "*.cap" -delete
 	@sudo find ./.cache/* -type f,d -not -name 'placeholder' -delete
+	@sudo find ./carved/* -type f,d -not -name 'placeholder' -delete
 	@echo "Cleaning complete!"
 endif
