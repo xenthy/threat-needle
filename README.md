@@ -4,7 +4,7 @@
     <a href="https://github.com/xenthy/ict2202-assignment-1#-usage">Usage Guide</a>
 ⬅️
     <br>
-    <img src="pictures/rustscan.png" height=400px width=400px>
+    <img src="images/threat_needle.png" height=400px width=385px>
 </p>
 <p align="center">
 <u><b> Making network forensics easy </b></u><br> Run the program, set rules, <b>sit back</b>, and monitor.
