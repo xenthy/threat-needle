@@ -15,8 +15,6 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 
-# TODO: rename class to PascalNaming convention
-
 
 class YaraCreate:
     """Yara_create
@@ -98,7 +96,10 @@ class YaraCreate:
         meta = f"\n\tmeta:\n\t\tauthor = \"{self.__meta['author']}\"\n\t\tpurpose = \"{self.__meta['purpose']}\""
         strings = "\n\n\tstrings:"
         for k, v in self.__strings.items():
-            strings += f"\n\t\t${k} = \"{v}\""
+            if "{" in v[0] and "}" in v[-1]:
+                strings += f"\n\t\t${k} = {v}"
+            else:
+                strings += f"\n\t\t${k} = \"{v}\""
 
         if not self.__condition:
             self.__condition = self.any_condition
