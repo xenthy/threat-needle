@@ -2,7 +2,7 @@ import os
 import glob
 import math
 import yara
-from config import INTEL_DIR, CUSTOM_RULES_DIR
+from config import INTEL_DIR, CUSTOM_RULES_DIR, MAL_DIR
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 
 logger = logging.getLogger(__name__)
@@ -138,7 +138,7 @@ class Rule:
         Loads in yara rules files (.yar)
         - Errors on invalid syntax during yara rules compilation
         """
-        rule_files = Rule.prepare_rules()
+        rule_files = Rule.prepare_rules(INTEL_DIR)
         # Compile all rules file in specified paths
         try:
             rules = yara.compile(filepaths=rule_files)
@@ -148,12 +148,12 @@ class Rule:
             print(f"Invalid Rule file/syntax error: \n{error}")
 
     @staticmethod
-    def prepare_rules():
+    def prepare_rules(rules_directory):
         """
         Prepare uncompile yara rules files
         """
         results = {}
-        for fname in glob.iglob(INTEL_DIR+"**/*.yar", recursive=True):
+        for fname in glob.iglob(rules_directory+"**/*.yar", recursive=True):
             if os.path.isfile(fname):
                 results[os.path.basename(fname)[:-4]] = fname
         return results
@@ -225,32 +225,33 @@ class Rule:
             file_obj.write(content)
 
 
-# if __name__ == "__main__":
-    # # Whole chunk below is for threat_intel.py (OLD, to be deleted before submission)
-    # rule = Rule()
-    # filenames = rule.prepare_lists()
-    # entries = {"domains":[],"ips":[]}
-    # for filename in filenames:
-        # identify = filename.split("_")[1]
-        # with open(INTEL_DIR+filename+".txt",'r') as f:
-            # lines = [line.strip() for line in f.readlines() if "#" not in line if line.strip() != ""]
+class YaraFiles:
+    threat_contents = {}
+    mal_contents = {}
+    custom_contents = {}
 
-        # if "domain" == identify:
-            # entries["domains"]+= lines
-        # elif "ip" == identify:
-            # entries["ips"]+= lines
+    @staticmethod
+    def get_threat_rules():
+        files = Rule.prepare_rules(INTEL_DIR) 
+        for filename, filepath in files.items():
+            with open(filepath, 'r') as f:
+                YaraFiles.threat_contents[filename+".yar"] = f.read()
+        return YaraFiles.threat_contents
 
-    # for entry, lines in entries.items():
-        # chunked = rule.chunker(lines,9999)
-        # for index, chunk in enumerate(chunked):
-            # name = entry+str(index)
-            # author = "Auto Generated"
-            # purpose = "Threat Intel Domains/IPs"
-            # if "domains" == entry:
-            # category = "domains_"+str(index)
-            # elif "ips" == entry:
-            # category = "ips_"+str(index)
+    @staticmethod
+    def get_mal_rules():
+        files = Rule.prepare_rules(MAL_DIR) 
+        for filename, filepath in files.items():
+            with open(filepath, 'r') as f:
+                YaraFiles.mal_contents[filename+".yar"] = f.read()
+        return YaraFiles.mal_contents
+    
+    @staticmethod
+    def get_custom_rules():
+        files = Rule.prepare_rules(CUSTOM_RULES_DIR) 
+        for filename, filepath in files.items():
+            with open(filepath, 'r') as f:
+                YaraFiles.custom_contents[filename+".yar"] = f.read()
+        return YaraFiles.custom_contents
 
-            # rule.add_rule(name, author, purpose, chunk, category)
-
-    # rule.load_rules()
+    
