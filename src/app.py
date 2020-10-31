@@ -11,13 +11,13 @@ from util import Util
 from vault import Vault
 
 from escapy import Escapy
-
-from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 from yara_create import Rule , YaraFiles
 
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
+
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

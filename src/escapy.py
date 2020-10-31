@@ -4,9 +4,9 @@ from scapy.plist import PacketList
 from scapy.layers.http import HTTPRequest, HTTPResponse
 from collections import OrderedDict
 
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

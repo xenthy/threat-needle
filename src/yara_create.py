@@ -3,10 +3,9 @@ import glob
 import math
 import yara
 from config import INTEL_DIR, CUSTOM_RULES_DIR, MAL_DIR
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
-
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

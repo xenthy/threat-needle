@@ -221,33 +221,50 @@ An attack conducted by a malicious host would look similar to the following. Whe
 > **UDP Streams** path: /viewudp |
 > **ARP Streams** path: /viewarp
 
+Streams or Sessions for TCP, UDP and ARP can be viewed on this page. 
+
 ![tcp-sessions](images/tcp-sessions.png)
 
+You are also able to download and view the binary files of each stream which consists of all of the payloads from each packet in the stream/session. In a case where a host is not using a secure protocol (SSH, HTTPS, SFTP), you might be able to manually carve out files.
+
 ![tcp-download](images/tcp-download.png)
+
+However, our tool is able to automatically detect and carve out files. These files can be viewed [here](https://github.com/xenthy/ict2202-assignment-1#view-saved-files).
 
 ## Yara
 **View Rules**
 > path: /rules
 
-![tcp-download](images/view-rules.png)
+![view-rules](images/view-rules.png)
 
-![tcp-download](images/view-rules2.png)
+![view-rules2](images/view-rules2.png)
 
 **Add Rule**
 > path: /addrule
 
-![tcp-download](images/add-rule.png)
+![add-rule](images/add-rule.png)
 
-![tcp-download](images/view-added-rule.png)
+![view-added-rule](images/view-added-rule.png)
 
 ## View Saved Files
 > path: /viewfile
 
+![saved-files](images/saved-files.png)
+
+
 ## Flagged Packets
 > path: /flagged
 
+![flagged](images/flagged.png)
+
+![view-flagged](images/view-flagged.png)
+
 ## Program Logs
 > path: /logs
+
+![logs](images/logs.png)
+
+You are also able to change the verbose level of the logs in `./src/logger.py`
 
 # ✨ Collaborators
 | Name                | GitHub                                     |

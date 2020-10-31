@@ -13,10 +13,10 @@ from threat_intel import ThreatIntel
 from carver import Carver
 from config import SESSION_CACHE_PATH, SESSION_CACHING_INTERVAL,\
     BULK_MANAGER_INTERVAL, MEMORY_WATCHDOG_INTERVAL, CARVING_INTERVAL
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
-
+    
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

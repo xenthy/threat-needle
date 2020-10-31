@@ -11,10 +11,9 @@ from organize import Organize
 from features import extract_payload
 from config import RULES_DIR, INTEL_DIR
 
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
-
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

@@ -3,13 +3,12 @@ from escapy import Escapy
 from scapy.layers.inet import IP, UDP, TCP ,ICMP
 from scapy.layers.l2 import ARP
 from pprint import pformat
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 from collections import OrderedDict
 
 
-
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

@@ -8,9 +8,9 @@ from scapy.layers.http import HTTPRequest, HTTPResponse
 from config import DATETIME_FORMAT, CAP_PATH, CAP_EXTENSION, SESSION_CACHE_PATH
 from vault import Vault
 
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

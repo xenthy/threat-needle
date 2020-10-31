@@ -1,9 +1,9 @@
 from scapy.plist import PacketList
 from collections import Counter
 
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 

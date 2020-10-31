@@ -17,9 +17,9 @@ from escapy import Escapy
 from config import SESSION_CACHE_PATH
 
 from colour import GREEN, RED, YELLOW, RESET
-from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
+from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP, LOG_LEVEL
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(LOG_LEVEL)
 
 formatter = logging.Formatter(FORMATTER, TIMESTAMP)
 
