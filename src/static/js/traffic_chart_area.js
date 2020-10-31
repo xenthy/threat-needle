@@ -88,10 +88,7 @@ function add_data() {
     lowest = null;
     var pkts = document.getElementById("total_packets").innerText;
     var stream_count = document.getElementById("total_streams").innerText;
-    var flagged_count =document.getElementById("total_flagged").innerHTML;
-
-
-
+    var flagged_count =document.getElementById("total_flagged").innerText;
     var str = myLineChart.data.labels.slice(-1)[0];
     if(str.slice(-2) == "59"){
         a = Number(str.slice(0,2)) + 1;
@@ -123,7 +120,7 @@ function add_data() {
     myLineChart.data.datasets[1].data.splice(0, 1);
     myLineChart.data.datasets[1].data.push(temp);
 
-    temp = (Number(prev_flagged) - prev_flagged);
+    temp = (Number(flagged_count) - prev_flagged);
     myLineChart.data.datasets[2].data.splice(0, 1);
     myLineChart.data.datasets[2].data.push(temp);
     
