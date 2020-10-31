@@ -6,57 +6,57 @@
 </head>
 
 <body>
-  {% extends "base.html" %}
-  {% block content %}
-  <!-- DataTales Example -->
-  <div class="row">
-  <div class="col-xl-8 col-lg-7">
-  <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Yara Files</h6>
+    {% extends "base.html" %}
+    {% block content %}
+    <!-- DataTales Example -->
+    <div class="row">
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Yara Files</h6>
+                </div>
+                <div class="card-body">
+                    <label for="cars">Yara Files:</label>
+                    <select class="form-control" name="yara_files" id="yara_files">
+
+                        <optgroup label="Threat">
+                            {% for file in threat_rules %}
+                            <option value="{{file}}">{{file}}</option>
+                            {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Malware">
+                            {% for file in mal_rules %}
+                            <option value="{{file}}">{{file}}</option>
+                            {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Custom">
+                            {% for file in custom_rules %}
+                            <option value="{{file}}">{{file}}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                    <br><br>
+                    <button class="btn btn-primary" type="button" id="view_rules"> View Rules</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <label for="cars">Yara Files:</label>
-        <select class="form-control" name="yara_files" id="yara_files">
 
-          <optgroup label="Threat">
-            {% for file in threat_rules %}
-            <option value="{{file}}">{{file}}</option>
-            {% endfor %}
-          </optgroup>
-
-          <optgroup label="Malware">
-            {% for file in mal_rules %}
-            <option value="{{file}}">{{file}}</option>
-            {% endfor %}
-          </optgroup>
-
-          <optgroup label="Custom">
-            {% for file in custom_rules %}
-            <option value="{{file}}">{{file}}</option>
-            {% endfor %}
-          </optgroup>
-        </select>
-        <br><br>
-        <button class="btn btn-primary" type="button" id="view_rules"> View Rules</button>
-    </div>
-  </div>
-</div>
-</div>
-
-  <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Yara Rules</h6>
-    </div>
-    <div class="card-body">
-      <div id="dialog">
-        <pre id="rules" class="pre-scrollable">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Yara Rules</h6>
+        </div>
+        <div class="card-body">
+            <div id="dialog">
+                <pre id="rules" class="pre-scrollable">
       </pre>
-      </div>
-    </div>
+            </div>
+        </div>
     </div>
 
-      {% endblock content%}
+    {% endblock content%}
 
 
 </body>

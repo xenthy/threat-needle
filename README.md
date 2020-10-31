@@ -35,7 +35,6 @@
 - [🛠️ Installation Guide](#️-installation-guide)
   - [🖥️ Linux (Debian)](#️-linux-debian)
   - [🪟 Windows](#-windows)
-- [🏃‍♂️ Running the Application](#️-running-the-application)
 - [🤸 Usage](#-usage)
   - [🖥️ Linux (Debian)](#️-linux-debian-1)
   - [🪟 Windows](#-windows-1)
@@ -99,17 +98,6 @@
    2. Under System Variable, Select PATH
    3. Click on Edit, enter Make location. Usually: `C:\Program Files (x86)\GnuWin32\bin`
 
-
-# 🏃‍♂️ Running the Application
-1. To run the program
-```console
-➜ cd \Path\to\ict2202-assignment-1
-➜ make (password required)
-```
-2. To clean temporary files (.pyc, .cap, ./.cache)
-```console
-➜ make clean
-```
 
 # 🤸 Usage
 ## 🖥️ Linux (Debian)

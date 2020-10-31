@@ -6,25 +6,25 @@
 </head>
 
 <body>
-  {% extends "base.html" %}
-  {% block content %}
-  <div class="row">
-    <div class="col">
-      <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-          <h6 class="m-0 font-weight-bold text-primary">Program Logs</h6>
+    {% extends "base.html" %}
+    {% block content %}
+    <div class="row">
+        <div class="col">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Program Logs</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <pre id="output"></pre>
+
+                </div>
+            </div>
         </div>
-        <!-- Card Body -->
-        <div class="card-body">
-          <pre id="output"></pre>
-          
-        </div>
-      </div>
-    </div>
 
 
-  {% endblock content%}
+        {% endblock content%}
 
 </body>
 

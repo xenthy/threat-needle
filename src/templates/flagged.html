@@ -6,72 +6,74 @@
 </head>
 
 <body>
-  {% extends "base.html" %}
-  {% block content %}
-  <!-- DataTales Example -->
+    {% extends "base.html" %}
+    {% block content %}
+    <!-- DataTales Example -->
 
-  <div class="card shadow mb-4">
-    <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">Malicious packet</h6>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Malicious packet</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>TimeStamp</th>
+                            <th>Malicious Type</th>
+                            <th>Source Destination</th>
+                            <th>Matching Pattern</th>
+                            <th>Rule Name</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flagged_id, pkt in flagged_packets.items() %}
+                        <tr>
+                            <td>{{pkt.timestamp}}</td>
+                            {% if pkt.identifier == "payload" %}
+                            <td>{{pkt.mal_type}}</td>
+                            <td>{{pkt.stream_id}}</td>
+                            {% else %}
+                            <td>{{pkt.mal_type}}</td>
+                            <td>{{pkt.packet[0][1].src}} <-> {{pkt.packet[0][1].dst}}</td>
+                            {% endif %}
+                            <td>
+                                {% for match in pkt.strings %}
+                                {{match[2]}}
+                                {% endfor %}
+                            </td>
+                            <td>{{pkt.rule}}</td>
+                            <td>{{pkt.tags}}</td>
+                            <td><button class="payload btn btn-primary" data-toggle="modal" data-target="#myModal"
+                                    value="{{flagged_id}}">View Payload</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-          <thead>
-            <tr>
-              <th>TimeStamp</th>
-              <th>Malicious Type</th>
-              <th>Source Destination</th>
-              <th>Matching Pattern</th>
-              <th>Rule Name</th>
-              <th>Tags</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for flagged_id, pkt in flagged_packets.items() %}
-            <tr>
-              <td>{{pkt.timestamp}}</td>
-              {% if pkt.identifier == "payload" %}
-	      <td>{{pkt.mal_type}}</td>
-              <td>{{pkt.stream_id}}</td>
-              {% else %}
-	      <td>{{pkt.mal_type}}</td>
-              <td>{{pkt.packet[0][1].src}} <-> {{pkt.packet[0][1].dst}}</td>
-              {% endif %}
-	      <td>
-	      {% for match in pkt.strings %}
-              {{match[2]}}
-	      {% endfor %}
-	      </td>
-              <td>{{pkt.rule}}</td>
-              <td>{{pkt.tags}}</td>
-              <td><button class="payload btn btn-primary" data-toggle="modal"  data-target="#myModal" value="{{flagged_id}}">View Payload</button></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
-  
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span
+                            aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="payload" class="pre-scrollable"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <pre id="payload" class="pre-scrollable"></pre>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
     </div>
-  </div>
-      {% endblock content%}
+    {% endblock content%}
 
 
 </body>
