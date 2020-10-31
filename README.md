@@ -134,7 +134,7 @@ Due to the nature of this network forensic tool, the docker container has to run
 Hence, this tool will **not work as intended on Windows** as `--network host` is not supported on docker for Windows.
 
 ```console
-➜ make doc
+➜ make docker
 or
 ➜ sudo docker build -t <name>:latest .
 ➜ sudo docker run --network host -ti <name> (run in interactive mode, able to view stdout, stderr)
@@ -143,7 +143,7 @@ or
 
 **Cleaning up (removes ALL images, containers, volumes, and networks):**
 ```console
-➜ make docclean
+➜ make dockerclean
 ```
 
 # 📜 User Guide
@@ -237,6 +237,7 @@ Type "stop" to stop saving:
 
 ## Network Mapping
 > path: /network
+
 ![network-mapping](images/network-mapping.png)
 
 The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts.
