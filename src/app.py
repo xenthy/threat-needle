@@ -13,7 +13,7 @@ from vault import Vault
 from escapy import Escapy
 
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
-from yara_create import Rule
+from yara_create import Rule , YaraFiles
 
 from logger import logging, LOG_FILE, FORMATTER, TIMESTAMP
 logger = logging.getLogger(__name__)
@@ -177,7 +177,6 @@ def reset():
         Vault.refresh()
         return f"Sucessfully Refreshed"
 
-
 @app.route("/addrule", methods=["POST", "GET"])
 def add_rule():
     if request.method == "POST":
@@ -207,6 +206,28 @@ def flagged():
         return jsonify(flagged_obj.strings)
     else:
         return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
+
+
+@app.route("/rules", methods=["POST", "GET"])
+def yara_rules():
+    
+    threat_rules = YaraFiles.get_threat_rules()
+    mal_rules = YaraFiles.get_mal_rules()
+    custom_rules = YaraFiles.get_custom_rules()
+
+    if request.method == "POST":
+        f = request.data.decode('utf-8')
+        if f in threat_rules:
+            return threat_rules[f]
+        elif f in mal_rules:
+            return mal_rules[f]
+        elif f in custom_rules:
+            return custom_rules[f]
+        else:
+            return "Yara File Not Found"
+    
+    return render_template("viewrules.html", threat_rules=threat_rules.keys(), mal_rules=mal_rules.keys(), custom_rules=custom_rules.keys(), status=Vault.get_saving())
+
 
 
 @app.route("/logs", methods=["POST", "GET"])
