@@ -194,7 +194,7 @@ SESSION_CACHING_INTERVAL = 10
 ```
 
 ## Overview
-![dashboard](images/dashboard.png)
+![dashboard](images/dashboard.gif)
 
 The main dashboard for ThreadNeedle displays an overview of all the data collected in the network. All of these elements update in real-time so you would be able to monitor your network without pressing a single button.
 
