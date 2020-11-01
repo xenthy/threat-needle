@@ -5,13 +5,11 @@ from threading import Thread, Event
 
 from flask import Flask, render_template, request, redirect, send_file, jsonify
 from flask_socketio import SocketIO
-from time import sleep
 
 from util import Util
 from vault import Vault
 
-from escapy import Escapy
-from yara_create import Rule , YaraFiles
+from yara_create import Rule, YaraFiles
 
 from config import CAP_PATH, SESSION_CACHE_PATH, CARVED_DIR
 
@@ -46,7 +44,9 @@ COMMON_PROTOCOLS = {"80": "HTTP",
                     "23": "Telnet",
                     "53": "DNS"}
 
+
 def get_formatted_header(prot_type):
+    '''Receives either TCP or UDP to return actual header '''
     global COMMON_PROTOCOLS
     sessions = {}
     for session_header in Vault.get_session_headers():
@@ -54,16 +54,17 @@ def get_formatted_header(prot_type):
             header_list = session_header[4:].replace('_', '-').split('-')
             for i in range(1, 4, 2):
                 if header_list[i] in COMMON_PROTOCOLS:
-                    formatted_header = COMMON_PROTOCOLS[header_list[i]] + " " + " ".join(header_list)
+                    formatted_header = COMMON_PROTOCOLS[header_list[i]] +\
+                    " " + " ".join(header_list)
                     sessions[formatted_header] = session_header
                     break
-
-                if index == 3:
+                if i == 3:
                     sessions[session_header] = session_header
     return sessions
 
 
 def get_data():
+    ''' repeatedly send updated packet count data to socket'''
     while not thread_stop_event.isSet():
         socketio.emit("data", {"total_packets": Vault.get_total_packet_count(),
                                "total_streams": len(Vault.get_session_headers()),
@@ -73,7 +74,9 @@ def get_data():
 
 @app.route("/", methods=["POST", "GET"])
 def index():
-
+    ''' If method == GET , returns HTML Page 
+        If method == POST, returns data for protocl piechart
+    '''
     if request.method != "POST":
         return render_template("index.html", status=Vault.get_saving())
 
@@ -96,9 +99,11 @@ def index():
             protocol_dict["Other"] = protocol_dict["Other"] + 1 if "Other" in protocol_dict else 1
     return jsonify(protocol_dict)
 
-
 @app.route("/network", methods=["POST", "GET"])
 def network():
+    ''' If method == GET , returns network mapping page 
+        If method == POST, returns mapping_dict,ip_list,mal_list for network mapping
+    '''
     if request.method == "POST":
         mal_list = []
         mapping, ip_list = Vault.get_mapping()
@@ -115,16 +120,19 @@ def network():
 
 @app.route("/viewfile")
 def savefile():
+    ''' returns viewfile page with all the saved files '''
     pcap_files = [f for f in listdir(CAP_PATH) if
                   isfile(join(CAP_PATH, f)) if f[-4:] == ".cap"]
 
     carved_files = [f for f in listdir(CARVED_DIR) if
                     isfile(join(CARVED_DIR, f))]
-    return render_template("viewfile.html", pcap_files=pcap_files, carved_files=carved_files, status=Vault.get_saving())
+    return render_template("viewfile.html", pcap_files=pcap_files,
+                           carved_files=carved_files, status=Vault.get_saving())
 
 
 @app.route("/viewfile/<file_name>")
 def download(file_name):
+    '''returns a file for user to download'''
     pcap_files = [f for f in listdir(CAP_PATH) if isfile(
         join(CAP_PATH, f)) if f[-4:] == ".cap"]
     carved_files = [f for f in listdir(CARVED_DIR) if isfile(
@@ -138,6 +146,7 @@ def download(file_name):
 
 @app.route("/viewtcp", methods=["POST", "GET"])
 def view_tcp():
+    '''returns TCP stream page'''
     tcp_sessions = get_formatted_header('TCP')
     payload = None
     return render_template("viewtcp.html", tcp_sessions=tcp_sessions, payload=payload, status=Vault.get_saving())
@@ -145,6 +154,7 @@ def view_tcp():
 
 @app.route("/viewudp", methods=["POST", "GET"])
 def view_udp():
+    '''returns UDP stream page'''
     udp_sessions = get_formatted_header('UDP')
     payload = None
     return render_template("viewudp.html", udp_sessions=udp_sessions, payload=payload, status=Vault.get_saving())
@@ -152,18 +162,21 @@ def view_udp():
 
 @app.route("/viewarp")
 def view_arp():
+    '''returns arp page'''
     arp_sessions = [session for session in Vault.get_session_headers() if 'ARP' in session]
     return render_template("viewarp.html", arp_sessions=arp_sessions, status=Vault.get_saving())
 
 
 @app.route("/stream/<file_name>")
 def downloadstream(file_name):
+    '''returns binary file of a stream'''
     session = get_formatted_header('TCP')
     return send_file(f"../{SESSION_CACHE_PATH}/{Vault.get_runtime_name()}/{session[file_name]}", as_attachment=True)
 
 
 @app.route("/save", methods=["POST"])
 def save():
+    '''Called by UI to start capturing packets'''
     saving = request.json["data"].strip()
     if saving == "Save":
         Util.start_saving()
@@ -171,14 +184,19 @@ def save():
         Util.stop_saving()
     return f"sucessful operation: {saving}"
 
+
 @app.route("/reset", methods=["POST"])
 def reset():
-    if request.method == "POST":
-        Vault.refresh()
-        return f"Sucessfully Refreshed"
+    '''Called by UI to reset packet capture'''
+    Vault.refresh()
+    return f"Sucessfully Refreshed"
+
 
 @app.route("/addrule", methods=["POST", "GET"])
 def add_rule():
+    ''' If method == GET , returns addrule page
+        If method == POST, creates yara rule , and return back to page
+    '''
     if request.method == "POST":
         filename = request.form["filename"]
         author = request.form["author"]
@@ -196,6 +214,9 @@ def add_rule():
 
 @app.route("/flagged", methods=["POST", "GET"])
 def flagged():
+    ''' If method == GET , returns flagged page
+        If method == POST, returns payload of flagged packet
+    '''
     if request.method == "POST":
         key = request.json["data"].strip()
         flagged_dict = Vault.get_flagged()
@@ -204,39 +225,43 @@ def flagged():
         if flagged_obj.identifier == "payload":
             return flagged_obj.payload
 
-        strings_list=[]
+        strings_list = []
         for i in range(len(flagged_obj.strings)):
-            strings_list.append((flagged_obj.strings[i][0], flagged_obj.strings[i][0], flagged_obj.strings[i][2].decode('utf-8')))
+            strings_list.append((flagged_obj.strings[i][0], flagged_obj.strings[i][0],
+                                 flagged_obj.strings[i][2].decode('utf-8')))
 
         return jsonify(strings_list)
-    else:
-        return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
+    return render_template("flagged.html", flagged_packets=Vault.get_flagged(), status=Vault.get_saving())
 
 
 @app.route("/rules", methods=["POST", "GET"])
 def yara_rules():
-
+    ''' If method == GET , returns rule page
+        If method == POST, returns content of selected rule file
+    '''
     threat_rules = YaraFiles.get_threat_rules()
     mal_rules = YaraFiles.get_mal_rules()
     custom_rules = YaraFiles.get_custom_rules()
 
     if request.method == "POST":
-        f = request.data.decode('utf-8')
-        if f in threat_rules:
-            return threat_rules[f]
-        elif f in mal_rules:
-            return mal_rules[f]
-        elif f in custom_rules:
-            return custom_rules[f]
-        else:
-            return "Yara File Not Found"
-    
-    return render_template("viewrules.html", threat_rules=threat_rules.keys(), mal_rules=mal_rules.keys(), custom_rules=custom_rules.keys(), status=Vault.get_saving())
+        file_name = request.data.decode('utf-8')
+        if file_name in threat_rules:
+            return threat_rules[file_name]
+        elif file_name in mal_rules:
+            return mal_rules[file_name]
+        elif file_name in custom_rules:
+            return custom_rules[file_name]
 
+        return "Yara File Not Found"
+
+    return render_template("viewrules.html", threat_rules=threat_rules.keys(), mal_rules=mal_rules.keys(), custom_rules=custom_rules.keys(), status=Vault.get_saving())
 
 
 @app.route("/logs", methods=["POST", "GET"])
 def logs():
+    ''' If method == GET , returns logs page
+        If method == POST, returns content of selected rule file
+    '''
     if request.method == "POST":
         message = Util.tail(LOG_FILE, 20)
         return message
@@ -246,11 +271,10 @@ def logs():
 
 @socketio.on("connect", namespace="/socket")
 def connect():
-    # need visibility of the global thread object
+    ''' Initiates socket to allow polling packet count data'''
     global thread
     logger.debug("client connected")
 
-    # Start the random number generator thread only if the thread has not been started before.
     if not thread.is_alive():
         logger.info("starting socket thread")
         thread = socketio.start_background_task(get_data)
@@ -258,6 +282,7 @@ def connect():
 
 @socketio.on("disconnect", namespace="/socket")
 def disconnect():
+    '''disconnects'''
     logger.debug("client disconnected")
 
 

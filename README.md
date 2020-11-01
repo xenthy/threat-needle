@@ -22,42 +22,22 @@
 </p>
 <hr>
 
-| <p align="center">👩‍💻 Linux (Debian) Recommended </p>                                                                       | <p align="center">🪟 Windows </p>                                                                                          | <p align="center"> 🐋 Docker </p>                                                                                         | <p align="center"> 🥔 Potato </p>                                                                                         |
+| <p align="center">👩‍💻 Linux (Debian) </p>                                                                                   | <p align="center">🪟 Windows </p>                                                                                          | <p align="center"> 🐋 Docker (Recommended)</p>                                                                            | <p align="center"> 🥔 Potato </p>                                                                                         |
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/debian.jpg?raw=true" /></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/windows.png?raw=true"/></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/docker.png?raw=true"/></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/potato.png?raw=true"/></p> |
 | [Install Guide](https://github.com/xenthy/ict2202-assignment-1#️-linux-debian)                                             | [Install guide](https://github.com/xenthy/ict2202-assignment-1#-windows)                                                  | [Usage guide](https://github.com/xenthy/ict2202-assignment-1#-usage)                                                     | [Usage guide](https://www.youtube.com/watch?v=Qijju-y_NzI)                                                               |
 
 <hr>
 
-- [🤔 What is this?](#-what-is-this)
-- [✨ Features](#-features)
-- [📊 ThreatNeedle vs Wireshark vs NetworkMiner](#-threatneedle-vs-wireshark-vs-networkminer)
-- [🛠️ Installation Guide](#️-installation-guide)
-  - [🖥️ Linux (Debian)](#️-linux-debian)
-  - [🪟 Windows](#-windows)
-- [🤸 Usage](#-usage)
-  - [🖥️ Linux (Debian)](#️-linux-debian-1)
-  - [🪟 Windows](#-windows-1)
-  - [🐋 Docker](#-docker)
-- [📜 User Guide](#-user-guide)
-  - [Startup](#startup)
-  - [Configuration](#configuration)
-  - [Overview](#overview)
-  - [Global Functions](#global-functions)
-  - [Dashboard](#dashboard)
-  - [Network Mapping](#network-mapping)
-  - [Protocol Streams](#protocol-streams)
-  - [Yara](#yara)
-  - [View Saved Files](#view-saved-files)
-  - [Flagged Packets](#flagged-packets)
-  - [Program Logs](#program-logs)
-- [✨ Collaborators](#-collaborators)
-
-# 🤔 What is this?
-
 # ✨ Features
-
-# 📊 ThreatNeedle vs Wireshark vs NetworkMiner
+- **Real-time** updates
+- View traffic on an **interactive network map**
+- Identify malicious hosts on the network map (marked in red)
+- On-demand saving packets to .cap file
+- Automated **file carving**
+- **Scan network traffic** against a database of YARA rules
+- Add **custom** YARA rules
+- **Super easy installation** ✨
 
 # 🛠️ Installation Guide
 ## 🖥️ Linux (Debian)
@@ -149,13 +129,55 @@ or
 # 📜 User Guide
 > Also available in the [wiki](https://github.com/xenthy/ict2202-assignment-1/wiki) page
 
+## Table of Contents
+  - [Setup](#setup)
+  - [Startup](#startup)
+  - [Configuration](#configuration)
+  - [Overview](#overview)
+  - [Global Functions](#global-functions)
+  - [Dashboard](#dashboard)
+  - [Network Mapping](#network-mapping)
+  - [Protocol Streams](#protocol-streams)
+  - [Yara](#yara)
+  - [View Saved Files](#view-saved-files)
+  - [Flagged Packets](#flagged-packets)
+  - [Program Logs](#program-logs)
+  - [Simulating an Attack](#simulating-an-attack)
+
+## Setup
+It is important to properly configure your environment to obtain the best results when monitoring your network. Improper configurations would lead to false negatives. 2 examples will be provided on how you may want to configure your environment.
+
+**Example 1:**
+
+![setup-1](images/setup-1.png)
+
+You may choose to place ThreatNeedle in between switches to monitor the traffic of a single access switch. This configuration requires you to have at least 2 network interfaces. Don't worry, by default, ThreatNeedle sniffs packets from all interfaces on your device.
+
+**Example 2:**
+
+![setup-2](images/setup-2.png)
+
+You may also choose to opt for an easier setup by connecting directly to a switch and enabling monitoring mode on that interface (port on the switch). The following would be an example on how to achieve that on most Cisco devices.
+
+```console
+➜ Switch(config)# monitor session 1 source interfaces <interface> both
+➜ Switch(config)# monitor session 1 source vlan <vlan>
+```
+
+Read more on monitoring sessions on Cisco devices [here](https://www.cisco.com/c/en/us/td/docs/routers/nfvis/switch_command/b-nfvis-switch-command-reference/monitor_commands.html).
+
+~~If you are feeling adventurous, you may also choose to perform a ARP poisoning attack on your own network to redirect all the traffic towards you. Do remember to enable IPv4/IPv6 forwarding. This method would however introduce unwanted traffic and might deteriorate the performance of ThreatNeedle.~~
+
+**Monitoring on Wi-Fi:**
+Monitoring your wireless traffic is also possible. Just connect ThreatNeedle to a wireless access point and you're good to go. But do note that ThreatNeedle will automatically use monitor mode **only on Linux based systems** due to the limitations of sniffing using monitor mode on Windows based systems.
+
 ## Startup
 The tool will start monitoring your network traffic upon program execution. Visit `http://127.0.0.1:8000` to view the dashboard. In the event of you not being able to view the dashboard, try to restart your browser, computer and/or check if port 8000 is in use. You may press `q` and `enter` in your terminal to safely terminate the session.
 
 It is recommended that you run the tool using docker in detached mode. [See how](https://github.com/xenthy/ict2202-assignment-1#-docker).
 
 ## Configuration
-You can change default file paths and thread creation intervals in `./src/config.py`. You will have to manually create the folders yourself. Failure to do so will lead to a runtime error.
+You can change default file paths and thread creation intervals in `src/config.py`. You will have to manually create the folders yourself. Failure to do so will lead to a runtime error.
 
 **Default Configuration:**
 ```py
@@ -194,11 +216,13 @@ SESSION_CACHING_INTERVAL = 10
 ```
 
 ## Overview
-![dashboard](images/dashboard.png)
+![dashboard](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/dashboard.gif)
 
 The main dashboard for ThreadNeedle displays an overview of all the data collected in the network. All of these elements update in real-time so you would be able to monitor your network without pressing a single button.
 
 ## Global Functions
+The following functions are available on every page of the dashboard.
+
 **Reset Button**: To reset all collected data without having to restart the tool.
 - Carved files and .cap files in the cap/ folder would not be deleted
 - You would still be able to view previously captured sessions
@@ -238,7 +262,7 @@ Type "stop" to stop saving:
 ## Network Mapping
 > path: /network
 
-![network-mapping](images/network-mapping.png)
+![network-mapping](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/network-mapping.gif)
 
 The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts.
 
@@ -247,13 +271,11 @@ The network map displays all the hosts detected through sniffing as a circle (no
 - All the nodes are also interactive so you may choose to move them around to your liking.
 - The number of packets sent can be viewed by clicking on an edge as shown below.
 
-![network-mapping](images/network-mapping-packets.png)
-
 Hosts in **red** are hosts flagged by our detection system using YARA rules. More on [YARA](https://github.com/xenthy/ict2202-assignment-1#yara).
 
 An attack conducted by a malicious host would look similar to the following. Where hosts `192.168.86.20`, `192.168.86.25` and `192.168.86.28` are residing on the same network (your network).
 
-![network-mapping](images/network-mapping-attack.png)
+![network-mapping](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/network-mapping-attack.png)
 
 ## Protocol Streams
 > **TCP Streams** path: /viewtcp |
@@ -262,11 +284,11 @@ An attack conducted by a malicious host would look similar to the following. Whe
 
 Streams or Sessions for TCP, UDP and ARP can be viewed on this page. 
 
-![tcp-sessions](images/tcp-sessions.png)
+![tcp-sessions](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/tcp-sessions.png)
 
 You are also able to download and view the binary files of each stream which consists of all of the payloads from each packet in the stream/session. In a case where a host is not using a secure protocol (SSH, HTTPS, SFTP), you might be able to manually carve out files.
 
-![tcp-download](images/tcp-download.png)
+![tcp-download](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/tcp-download.png)
 
 However, our tool is able to automatically detect and carve out files. These files can be viewed [here](https://github.com/xenthy/ict2202-assignment-1#view-saved-files).
 
@@ -274,23 +296,28 @@ However, our tool is able to automatically detect and carve out files. These fil
 **View Rules**
 > path: /rules
 
-![view-rules](images/view-rules.png)
+![view-rules](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-rules.png)
 
 This page allows you to see all of the YARA rules that are loaded in the program.
 
-![view-rules2](images/view-rules2.png)
+![view-rules2](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-rules2.png)
 
 You are also able to view the individual rules to reference.
 
 **Add Rule**
 > path: /addrule
 
-![add-rule](images/add-rule.png)
+![add-rule](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/add-rule.png)
 
-This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `./rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
+This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
+
 > Note: this form does not check for naming errors, therefore you need to ensure that the variable names are proper and correct
 
-![view-added-rule](images/view-added-rule.png)
+You may also wish to find or craft your own set of rules and add them into the `rules/` folder. The following are links to crafting your own rule and online databases for existing YARA rules.
+- Crafting YARA rules. [Link](https://yara.readthedocs.io/en/stable/writingrules.html)
+- YARA Rules Database example. [Link](https://github.com/Yara-Rules/rules)
+
+![view-added-rule](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-added-rule.png)
 
 ## View Saved Files
 > path: /viewfile
@@ -299,44 +326,43 @@ This form allows you to add your own custom rules into the program, which will i
 
 `.cap` files are files that are saved (by you) and can be located in the `cap/` folder. These files can then be viewed in network packet viewing tools such as [Wireshark](https://www.wireshark.org).
 
-![carved-files](images/carved-files.png)
+![carved-files](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/carved-files.png)
 
 Carving of files is automated and runs in the background upon program execution. The tool analyses the payload of selected packets and scans for traces of files.
 
 Both the `.cap` files and carved files can be downloaded from the dashboard or viewed in the `cap/` and `carved/` folder respectively.
 
-![carved-folder](images/carved-folder.png)
+![carved-folder](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/carved-folder.png)
 
 ## Flagged Packets
 > path: /flagged
 
-![flagged](images/flagged.png)
+![flagged](images/flagged.gif)
 
 This page will show any packets that have been flagged by YARA scans.
 Each flagged packet will show 
 - timestamp of the packet
 - the malicious category that the YARA rule(s) classified
-- Source and Destination IP address and ports of that packet
+- source and destination IP address and ports of that packet
 - the pattern that was matched and flagged (in bytes)
 - YARA rule's name that triggered the flag
 - the YARA rule's tag (sub-classification of YARA rule)
 
-> Note: There may be an occurance of multiple flags of a single packet
-
-![view-flagged](images/view-flagged.png)
-
 You are able to view the payload of an individual packet that triggered the YARA scan.
+
+> Note: There may be an occurrence of multiple flags of a single packet
+
 
 ## Program Logs
 > path: /logs
 
-![logs](images/logs.png)
+![logs](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/logs.gif)
 
 Here, you are able to observe the program flow. Memory usage for memory allocations can also be viewed here. If the dashboard seems to load slower than usual or if the [network map](https://github.com/xenthy/ict2202-assignment-1#network-mapping) is too cluttered, [reset](https://github.com/xenthy/ict2202-assignment-1#global-functions) the session and you are good to go.
 
 Uncaught/Unhandled errors would normally appear here or in the standard error.
 
-You are also able to change the verbose level of the logs in `./src/logger.py`.
+You are also able to change the verbose level of the logs in `src/logger.py`.
 
 **Verbose Levels (highest to lowest):**
 - `logging.DEBUG`
@@ -345,7 +371,42 @@ You are also able to change the verbose level of the logs in `./src/logger.py`.
 - `logging.ERROR`
 - `logging.CRITICAL`
 
+> The complete log file is available at `logs/program.log`
+
 If you come across a peculiar issue, do open an [issue](https://github.com/xenthy/ict2202-assignment-1/issues).
+
+## Simulating a Malicious Host
+If you want to test TreatNeedle's accuracy in your network, you are in luck! We have created a simple script that utilizes multithreading to send network packets to trigger ThreatNeedle's detection system. Copy `simulate.py` and the whole `rules/` folder to another host and you may begin testing.
+
+**Usage of `simulate.py`:**
+```console
+➜ ./simulate.py -h
+usage: simulate.py [-h] [--ip IP_COUNT] [--url URL_COUNT] [--email EMAIL_COUNT] [--media MEDIA_COUNT]
+
+Simulate threats
+
+optional arguments:
+   -h, --help           show this help message and exit
+  --ip IP_COUNT, -i IP_COUNT
+                        number of IPs to probe (>= 0)
+  --url URL_COUNT, -u URL_COUNT
+                        number of URLs to probe (>= 0)
+  --email EMAIL_COUNT, -e EMAIL_COUNT
+                        number of malicious Emails to simulate (>= 0)
+  --media MEDIA_COUNT, -m MEDIA_COUNT
+                        number of malicious Media files to simulate (>= 0)
+```
+
+**Example Use Cases:**
+```console
+➜ ./simulate.py
+# probes 1 IP, 1 domain, and sends an email phishing payload
+
+➜ ./simulate.py --ip 10 --url 100
+# probes 10 IPs, 100 domain
+```
+
+Don't worry, this script uses `ping` and `nslookup` and does not connect to any of the malicious hosts. 
 
 # ✨ Collaborators
 | Name                | GitHub                                     |
