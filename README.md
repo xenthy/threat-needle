@@ -238,7 +238,7 @@ Type "stop" to stop saving:
 ## Network Mapping
 > path: /network
 
-![network-mapping](images/network-mapping.png)
+![network-mapping](images/network-mapping.gif)
 
 The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts.
 
@@ -246,8 +246,6 @@ The network map displays all the hosts detected through sniffing as a circle (no
 - The map updates itself every 30 seconds.
 - All the nodes are also interactive so you may choose to move them around to your liking.
 - The number of packets sent can be viewed by clicking on an edge as shown below.
-
-![network-mapping](images/network-mapping-packets.png)
 
 Hosts in **red** are hosts flagged by our detection system using YARA rules. More on [YARA](https://github.com/xenthy/ict2202-assignment-1#yara).
 
@@ -310,7 +308,7 @@ Both the `.cap` files and carved files can be downloaded from the dashboard or v
 ## Flagged Packets
 > path: /flagged
 
-![flagged](images/flagged.png)
+![flagged](images/flagged.gif)
 
 This page will show any packets that have been flagged by YARA scans.
 Each flagged packet will show 
@@ -321,16 +319,15 @@ Each flagged packet will show
 - YARA rule's name that triggered the flag
 - the YARA rule's tag (sub-classification of YARA rule)
 
-> Note: There may be an occurance of multiple flags of a single packet
-
-![view-flagged](images/view-flagged.png)
-
 You are able to view the payload of an individual packet that triggered the YARA scan.
+
+> Note: There may be an occurrence of multiple flags of a single packet
+
 
 ## Program Logs
 > path: /logs
 
-![logs](images/logs.png)
+![logs](images/logs.gif)
 
 Here, you are able to observe the program flow. Memory usage for memory allocations can also be viewed here. If the dashboard seems to load slower than usual or if the [network map](https://github.com/xenthy/ict2202-assignment-1#network-mapping) is too cluttered, [reset](https://github.com/xenthy/ict2202-assignment-1#global-functions) the session and you are good to go.
 
