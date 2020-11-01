@@ -163,7 +163,7 @@ You may choose to place ThreatNeedle in between switches to monitor the traffic 
 
 ![setup-2](images/setup-2.png)
 
-You may also choose to opt for an easier setup by connecting directly to a switch and enabling monitoring mode on that interface (port on the switch). The following would be an example on how to achieve that on most Cisco switches.
+You may also choose to opt for an easier setup by connecting directly to a switch and enabling monitoring mode on that interface (port on the switch). The following would be an example on how to achieve that on most Cisco devices.
 
 ```console
 ➜ Switch(config)# monitor session 1 source interfaces <interface> both
