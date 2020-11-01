@@ -216,7 +216,7 @@ SESSION_CACHING_INTERVAL = 10
 ```
 
 ## Overview
-![dashboard](images/dashboard.gif)
+![dashboard](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/dashboard.gif)
 
 The main dashboard for ThreadNeedle displays an overview of all the data collected in the network. All of these elements update in real-time so you would be able to monitor your network without pressing a single button.
 
@@ -262,7 +262,7 @@ Type "stop" to stop saving:
 ## Network Mapping
 > path: /network
 
-![network-mapping](images/network-mapping.gif)
+![network-mapping](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/network-mapping.gif)
 
 The network map displays all the hosts detected through sniffing as a circle (node). Hosts are then joined to other hosts if they had communicated. The thickness of each line (edge) represents the number of packets sent from either of the hosts.
 
@@ -275,7 +275,7 @@ Hosts in **red** are hosts flagged by our detection system using YARA rules. Mor
 
 An attack conducted by a malicious host would look similar to the following. Where hosts `192.168.86.20`, `192.168.86.25` and `192.168.86.28` are residing on the same network (your network).
 
-![network-mapping](images/network-mapping-attack.png)
+![network-mapping](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/network-mapping-attack.png)
 
 ## Protocol Streams
 > **TCP Streams** path: /viewtcp |
@@ -284,11 +284,11 @@ An attack conducted by a malicious host would look similar to the following. Whe
 
 Streams or Sessions for TCP, UDP and ARP can be viewed on this page. 
 
-![tcp-sessions](images/tcp-sessions.png)
+![tcp-sessions](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/tcp-sessions.png)
 
 You are also able to download and view the binary files of each stream which consists of all of the payloads from each packet in the stream/session. In a case where a host is not using a secure protocol (SSH, HTTPS, SFTP), you might be able to manually carve out files.
 
-![tcp-download](images/tcp-download.png)
+![tcp-download](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/tcp-download.png)
 
 However, our tool is able to automatically detect and carve out files. These files can be viewed [here](https://github.com/xenthy/ict2202-assignment-1#view-saved-files).
 
@@ -296,18 +296,18 @@ However, our tool is able to automatically detect and carve out files. These fil
 **View Rules**
 > path: /rules
 
-![view-rules](images/view-rules.png)
+![view-rules](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-rules.png)
 
 This page allows you to see all of the YARA rules that are loaded in the program.
 
-![view-rules2](images/view-rules2.png)
+![view-rules2](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-rules2.png)
 
 You are also able to view the individual rules to reference.
 
 **Add Rule**
 > path: /addrule
 
-![add-rule](images/add-rule.png)
+![add-rule](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/add-rule.png)
 
 This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
 
@@ -317,7 +317,7 @@ You may also wish to find or craft your own set of rules and add them into the `
 - Crafting YARA rules. [Link](https://yara.readthedocs.io/en/stable/writingrules.html)
 - YARA Rules Database example. [Link](https://github.com/Yara-Rules/rules)
 
-![view-added-rule](images/view-added-rule.png)
+![view-added-rule](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/view-added-rule.png)
 
 ## View Saved Files
 > path: /viewfile
@@ -326,13 +326,13 @@ You may also wish to find or craft your own set of rules and add them into the `
 
 `.cap` files are files that are saved (by you) and can be located in the `cap/` folder. These files can then be viewed in network packet viewing tools such as [Wireshark](https://www.wireshark.org).
 
-![carved-files](images/carved-files.png)
+![carved-files](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/carved-files.png)
 
 Carving of files is automated and runs in the background upon program execution. The tool analyses the payload of selected packets and scans for traces of files.
 
 Both the `.cap` files and carved files can be downloaded from the dashboard or viewed in the `cap/` and `carved/` folder respectively.
 
-![carved-folder](images/carved-folder.png)
+![carved-folder](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/carved-folder.png)
 
 ## Flagged Packets
 > path: /flagged
@@ -356,7 +356,7 @@ You are able to view the payload of an individual packet that triggered the YARA
 ## Program Logs
 > path: /logs
 
-![logs](images/logs.gif)
+![logs](https://github.com/xenthy/ict2202-assignment-1/blob/master/images/logs.gif)
 
 Here, you are able to observe the program flow. Memory usage for memory allocations can also be viewed here. If the dashboard seems to load slower than usual or if the [network map](https://github.com/xenthy/ict2202-assignment-1#network-mapping) is too cluttered, [reset](https://github.com/xenthy/ict2202-assignment-1#global-functions) the session and you are good to go.
 
@@ -406,7 +406,7 @@ optional arguments:
 # probes 10 IPs, 100 domain
 ```
 
-Don't worry, this script uses `ping` and `nslookup`and does not connect to any of the malicious hosts. 
+Don't worry, this script uses `ping` and `nslookup` and does not connect to any of the malicious hosts. 
 
 # ✨ Collaborators
 | Name                | GitHub                                     |
