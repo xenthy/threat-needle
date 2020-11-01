@@ -38,7 +38,7 @@ def email_worker(index, attachment=None):
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
 
-    print(f"[!] email[{index + 1}] sent windows/reverse_tcp")
+    print(f"[!] Phishing email[{index + 1}] sent")
 
 
 def ip_worker(file, index):
