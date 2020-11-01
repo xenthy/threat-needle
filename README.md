@@ -40,6 +40,7 @@
   - [🪟 Windows](#-windows-1)
   - [🐋 Docker](#-docker)
 - [📜 User Guide](#-user-guide)
+  - [Setup](#setup)
   - [Startup](#startup)
   - [Configuration](#configuration)
   - [Overview](#overview)
@@ -149,13 +150,40 @@ or
 # 📜 User Guide
 > Also available in the [wiki](https://github.com/xenthy/ict2202-assignment-1/wiki) page
 
+## Setup
+It is important to properly configure your environment to obtain the best results when monitoring your network. Improper configurations would lead to false negatives. I will provide 2 examples on how you may configure your environment.
+
+**Example 1:**
+
+![setup-1](images/setup-1.png)
+
+You may choose to place ThreatNeedle in between switches to monitor the traffic of a single access switch. This configuration requires you to have at least 2 network interfaces. Don't worry, by default, ThreatNeedle sniffs packets from all interfaces on your device.
+
+**Example 2:**
+
+![setup-2](images/setup-2.png)
+
+You may also choose to opt for an easier setup by connecting directly to a switch and enabling monitoring mode on that interface (port on the switch). The following would be an example on how to achieve that on most Cisco switches.
+
+```console
+➜ Switch(config)# monitor session 1 source interfaces <interface> both
+➜ Switch(config)# monitor session 1 source vlan <vlan>
+```
+
+Read more on monitoring sessions on Cisco devices [here](https://www.cisco.com/c/en/us/td/docs/routers/nfvis/switch_command/b-nfvis-switch-command-reference/monitor_commands.html).
+
+~~If you are feeling adventurous, you may also choose to perform a ARP poisoning attack on your own network to redirect all the traffic towards you. Do remember to enable IPv4/IPv6 forwarding. This method would however introduce unwanted traffic and might deteriorate the performance of ThreatNeedle.~~
+
+**Monitoring on Wi-Fi:**
+Monitoring your wireless traffic is also possible. Just connect ThreatNeedle to a wireless access point and you're good to go. But do note that ThreatNeedle will automatically use monitor mode **only on Linux based systems** due to the limitations of sniffing using monitor mode on Windows based systems.
+
 ## Startup
 The tool will start monitoring your network traffic upon program execution. Visit `http://127.0.0.1:8000` to view the dashboard. In the event of you not being able to view the dashboard, try to restart your browser, computer and/or check if port 8000 is in use. You may press `q` and `enter` in your terminal to safely terminate the session.
 
 It is recommended that you run the tool using docker in detached mode. [See how](https://github.com/xenthy/ict2202-assignment-1#-docker).
 
 ## Configuration
-You can change default file paths and thread creation intervals in `./src/config.py`. You will have to manually create the folders yourself. Failure to do so will lead to a runtime error.
+You can change default file paths and thread creation intervals in `src/config.py`. You will have to manually create the folders yourself. Failure to do so will lead to a runtime error.
 
 **Default Configuration:**
 ```py
@@ -285,7 +313,7 @@ You are also able to view the individual rules to reference.
 
 ![add-rule](images/add-rule.png)
 
-This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `./rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
+This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
 > Note: this form does not check for naming errors, therefore you need to ensure that the variable names are proper and correct
 
 ![view-added-rule](images/view-added-rule.png)
@@ -333,7 +361,7 @@ Here, you are able to observe the program flow. Memory usage for memory allocati
 
 Uncaught/Unhandled errors would normally appear here or in the standard error.
 
-You are also able to change the verbose level of the logs in `./src/logger.py`.
+You are also able to change the verbose level of the logs in `src/logger.py`.
 
 **Verbose Levels (highest to lowest):**
 - `logging.DEBUG`
@@ -341,6 +369,8 @@ You are also able to change the verbose level of the logs in `./src/logger.py`.
 - `logging.WARNING`
 - `logging.ERROR`
 - `logging.CRITICAL`
+
+> The complete log file is available at `logs/program.log`
 
 If you come across a peculiar issue, do open an [issue](https://github.com/xenthy/ict2202-assignment-1/issues).
 
