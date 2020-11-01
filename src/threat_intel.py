@@ -42,7 +42,7 @@ class ThreatIntel:
 
         if dns:
             try:
-                extracted.append(dns["qd"]["DNS Question Record"]["qname"].decode('utf-8'))  # bytes
+                extracted.append(dns["qd"]["DNS Question Record"]["qname"].decode('utf-8'))
             except TypeError:
                 pass
 
@@ -61,13 +61,6 @@ class ThreatIntel:
             if (matches := self.rules.match(data=threat)):
                 self.threat_list[threat] = [packet]
                 Organize.add_packet_entry(packet, matches, timestamp)
-
-                # To prevent multiple flags (TBC)
-                # if threat not in self.threat_list:
-                # self.threat_list[threat] = [packet]
-                # Organize.add_packet_entry(threat, packet, matches, timestamp)
-                # else:
-                # self.threat_list[threat] = self.threat_list[threat] + [packet]
 
     def threat_update(self):
         """

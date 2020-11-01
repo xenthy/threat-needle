@@ -34,7 +34,6 @@ class Organize:
 
         flagged_details = PayloadFlagged(yara_flagged, timestamp, stream_key, stream, stream_payload,
                                          yara_flagged[0].strings, yara_flagged[0].rule, yara_flagged[0].tags)
-        # flagged_dict[timestamp] = flagged_details
         Organize.packet_counter += 1
         flagged_dict[str(Organize.packet_counter)] = flagged_details
 

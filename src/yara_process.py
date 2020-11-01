@@ -37,7 +37,6 @@ class Yara:
         """
         rule_files = Yara._prepare_rules(RULES_DIR)
         url_rule_files = Yara._prepare_rules(INTEL_DIR)
-        # Compile all rules file in specified paths
         try:
             Yara._rules = yara.compile(filepaths=rule_files)
             Yara._url_rules = yara.compile(filepaths=url_rule_files)

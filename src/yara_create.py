@@ -171,6 +171,9 @@ class Rule:
 
     @staticmethod
     def add_rule(name, tag, author, purpose, lines, category):
+        """
+        To add a YARA rule based on the details specified in the function parameters
+        """
         yar = YaraCreate()
         yar.new_rule(name, tag)
         yar.add_meta(author, "author")
@@ -232,6 +235,9 @@ class YaraFiles:
 
     @staticmethod
     def get_threat_rules():
+        """
+        Returns the filename and file contents of the ./rules/threat_intel YARA rules
+        """
         files = Rule.prepare_rules(INTEL_DIR) 
         for filename, filepath in files.items():
             with open(filepath, 'r') as f:
@@ -240,6 +246,9 @@ class YaraFiles:
 
     @staticmethod
     def get_mal_rules():
+        """
+        Returns the filename and file contents of the ./rules/malware YARA rules
+        """
         files = Rule.prepare_rules(MAL_DIR) 
         for filename, filepath in files.items():
             with open(filepath, 'r') as f:
@@ -248,6 +257,9 @@ class YaraFiles:
     
     @staticmethod
     def get_custom_rules():
+        """
+        Returns the filename and file contents of the ./rules/custom_rules YARA rules
+        """
         files = Rule.prepare_rules(CUSTOM_RULES_DIR) 
         for filename, filepath in files.items():
             with open(filepath, 'r') as f:
