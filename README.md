@@ -22,43 +22,22 @@
 </p>
 <hr>
 
-| <p align="center">👩‍💻 Linux (Debian) Recommended </p>                                                                       | <p align="center">🪟 Windows </p>                                                                                          | <p align="center"> 🐋 Docker </p>                                                                                         | <p align="center"> 🥔 Potato </p>                                                                                         |
+| <p align="center">👩‍💻 Linux (Debian) </p>                                                                                   | <p align="center">🪟 Windows </p>                                                                                          | <p align="center"> 🐋 Docker (Recommended)</p>                                                                            | <p align="center"> 🥔 Potato </p>                                                                                         |
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/debian.jpg?raw=true" /></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/windows.png?raw=true"/></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/docker.png?raw=true"/></p> | <p align="center"><img src="https://github.com/xenthy/ict2202-assignment-1/blob/master/images/potato.png?raw=true"/></p> |
 | [Install Guide](https://github.com/xenthy/ict2202-assignment-1#️-linux-debian)                                             | [Install guide](https://github.com/xenthy/ict2202-assignment-1#-windows)                                                  | [Usage guide](https://github.com/xenthy/ict2202-assignment-1#-usage)                                                     | [Usage guide](https://www.youtube.com/watch?v=Qijju-y_NzI)                                                               |
 
 <hr>
 
-- [🤔 What is this?](#-what-is-this)
-- [✨ Features](#-features)
-- [📊 ThreatNeedle vs Wireshark vs NetworkMiner](#-threatneedle-vs-wireshark-vs-networkminer)
-- [🛠️ Installation Guide](#️-installation-guide)
-  - [🖥️ Linux (Debian)](#️-linux-debian)
-  - [🪟 Windows](#-windows)
-- [🤸 Usage](#-usage)
-  - [🖥️ Linux (Debian)](#️-linux-debian-1)
-  - [🪟 Windows](#-windows-1)
-  - [🐋 Docker](#-docker)
-- [📜 User Guide](#-user-guide)
-  - [Setup](#setup)
-  - [Startup](#startup)
-  - [Configuration](#configuration)
-  - [Overview](#overview)
-  - [Global Functions](#global-functions)
-  - [Dashboard](#dashboard)
-  - [Network Mapping](#network-mapping)
-  - [Protocol Streams](#protocol-streams)
-  - [Yara](#yara)
-  - [View Saved Files](#view-saved-files)
-  - [Flagged Packets](#flagged-packets)
-  - [Program Logs](#program-logs)
-- [✨ Collaborators](#-collaborators)
-
-# 🤔 What is this?
-
 # ✨ Features
-
-# 📊 ThreatNeedle vs Wireshark vs NetworkMiner
+- **Real-time** updates
+- View traffic on an **interactive network map**
+- Identify malicious hosts on the network map (marked in red)
+- On-demand saving packets to .cap file
+- Automated **file carving**
+- **Scan network traffic** against a database of YARA rules
+- Add **custom** YARA rules
+- **Super easy installation** ✨
 
 # 🛠️ Installation Guide
 ## 🖥️ Linux (Debian)
@@ -149,6 +128,21 @@ or
 
 # 📜 User Guide
 > Also available in the [wiki](https://github.com/xenthy/ict2202-assignment-1/wiki) page
+
+## Table of Contents
+  - [Setup](#setup)
+  - [Startup](#startup)
+  - [Configuration](#configuration)
+  - [Overview](#overview)
+  - [Global Functions](#global-functions)
+  - [Dashboard](#dashboard)
+  - [Network Mapping](#network-mapping)
+  - [Protocol Streams](#protocol-streams)
+  - [Yara](#yara)
+  - [View Saved Files](#view-saved-files)
+  - [Flagged Packets](#flagged-packets)
+  - [Program Logs](#program-logs)
+  - [Simulating an Attack](#simulating-an-attack)
 
 ## Setup
 It is important to properly configure your environment to obtain the best results when monitoring your network. Improper configurations would lead to false negatives. I will provide 2 examples on how you may configure your environment.
@@ -314,7 +308,12 @@ You are also able to view the individual rules to reference.
 ![add-rule](images/add-rule.png)
 
 This form allows you to add your own custom rules into the program, which will instantly be saved locally in the `rules/` directory. Upon adding a new rule, it will be loaded and compiled instantly to be used in the running program's YARA scans.
+
 > Note: this form does not check for naming errors, therefore you need to ensure that the variable names are proper and correct
+
+You may also wish to find or craft your own set of rules and add them into the `rules/` folder. The following are links to crafting your own rule and online databases for existing YARA rules.
+- Crafting YARA rules. [Link](https://yara.readthedocs.io/en/stable/writingrules.html)
+- YARA Rules Database example. [Link](https://github.com/Yara-Rules/rules)
 
 ![view-added-rule](images/view-added-rule.png)
 
@@ -373,6 +372,39 @@ You are also able to change the verbose level of the logs in `src/logger.py`.
 > The complete log file is available at `logs/program.log`
 
 If you come across a peculiar issue, do open an [issue](https://github.com/xenthy/ict2202-assignment-1/issues).
+
+## Simulating an Attack
+If you want to test TreatNeedle's accuracy in your network, you are in luck! We have created a simple script that utilizes multithreading to send network packets to trigger ThreatNeedle's detection system. Copy `simulate.py` and the whole `rules/` folder to another host and you may begin testing.
+
+**Usage of `simulate.py`:**
+```console
+➜ ./simulate.py -h                                                                                         130 ⨯
+usage: simulate.py [-h] [--ip IP_COUNT] [--url URL_COUNT] [--email EMAIL_COUNT] [--media MEDIA_COUNT]
+
+Simulate threats
+
+optional arguments:
+   -h, --help           show this help message and exit
+  --ip IP_COUNT, -i IP_COUNT
+                        number of IPs to probe (>= 0)
+  --url URL_COUNT, -u URL_COUNT
+                        number of URLs to probe (>= 0)
+  --email EMAIL_COUNT, -e EMAIL_COUNT
+                        number of malicious Emails to simulate (>= 0)
+  --media MEDIA_COUNT, -m MEDIA_COUNT
+                        number of malicious Media files to simulate (>= 0)
+```
+
+**Example Use Cases:**
+```console
+➜ ./simulate.py
+# probes 1 IP, 1 domain, and sends an email phishing payload
+
+➜ ./simulate.py --ip 10 --url 100
+# probes 10 IPs, 100 domain
+```
+
+Don't worry, this script uses `ping` and `nslookup`and does not connect to any of the malicious hosts. 
 
 # ✨ Collaborators
 | Name                | GitHub                                     |
