@@ -145,7 +145,7 @@ or
   - [Simulating an Attack](#simulating-an-attack)
 
 ## Setup
-It is important to properly configure your environment to obtain the best results when monitoring your network. Improper configurations would lead to false negatives. I will provide 2 examples on how you may configure your environment.
+It is important to properly configure your environment to obtain the best results when monitoring your network. Improper configurations would lead to false negatives. 2 examples will be provided on how you may want to configure your environment.
 
 **Example 1:**
 
@@ -221,6 +221,8 @@ SESSION_CACHING_INTERVAL = 10
 The main dashboard for ThreadNeedle displays an overview of all the data collected in the network. All of these elements update in real-time so you would be able to monitor your network without pressing a single button.
 
 ## Global Functions
+The following functions are available on every page of the dashboard.
+
 **Reset Button**: To reset all collected data without having to restart the tool.
 - Carved files and .cap files in the cap/ folder would not be deleted
 - You would still be able to view previously captured sessions
@@ -341,7 +343,7 @@ This page will show any packets that have been flagged by YARA scans.
 Each flagged packet will show 
 - timestamp of the packet
 - the malicious category that the YARA rule(s) classified
-- Source and Destination IP address and ports of that packet
+- source and destination IP address and ports of that packet
 - the pattern that was matched and flagged (in bytes)
 - YARA rule's name that triggered the flag
 - the YARA rule's tag (sub-classification of YARA rule)
@@ -373,12 +375,12 @@ You are also able to change the verbose level of the logs in `src/logger.py`.
 
 If you come across a peculiar issue, do open an [issue](https://github.com/xenthy/ict2202-assignment-1/issues).
 
-## Simulating an Attack
+## Simulating a Malicious Host
 If you want to test TreatNeedle's accuracy in your network, you are in luck! We have created a simple script that utilizes multithreading to send network packets to trigger ThreatNeedle's detection system. Copy `simulate.py` and the whole `rules/` folder to another host and you may begin testing.
 
 **Usage of `simulate.py`:**
 ```console
-➜ ./simulate.py -h                                                                                         130 ⨯
+➜ ./simulate.py -h
 usage: simulate.py [-h] [--ip IP_COUNT] [--url URL_COUNT] [--email EMAIL_COUNT] [--media MEDIA_COUNT]
 
 Simulate threats
