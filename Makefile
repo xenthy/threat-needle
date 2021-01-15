@@ -18,11 +18,11 @@ check:
 	python -m py_compile $(SOURCES)
 
 docker:
-	sudo docker build -t threat_needle:latest .
-	sudo docker run --network host -ti threat_needle
+	docker build -t threat_needle:latest .
+	docker run --network host -ti threat_needle
 
 dockerclean:
-	sudo docker system prune -a
+	docker system prune -a
 
 clean:
 ifeq ($(OS),Windows_NT)
